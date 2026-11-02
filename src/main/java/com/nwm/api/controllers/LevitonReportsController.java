@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.nwm.api.entities.ViewReportEntity;
+import com.nwm.api.entities.report.ReportDetail;
 import com.nwm.api.services.LevitonReportsService;
 import com.nwm.api.utils.Constants;
 
@@ -31,17 +32,12 @@ public class LevitonReportsController extends BaseController {
 	 * @return data (status, message, array, total_row
 	 */
 	@PostMapping("/get-report")
-	public Object getDataReport(@RequestBody ViewReportEntity obj) {
+	public Object getDataReport(@RequestBody ViewReportEntity req) {
 		try {
-			ViewReportEntity dataObj = service.getDataReport(obj);
-			if (dataObj != null) {
-				return this.jsonResult(true, Constants.GET_SUCCESS_MSG, dataObj, 1);
-			} else {
-				return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
-			}
+			ReportDetail reportDetail = service.getDataReport(req);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, reportDetail, 1);
 		} catch (Exception e) {
-			log.error(e);
-			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
 		}
 	}
 	

@@ -1590,7 +1590,12 @@ public class BatchJob {
 					if (isDownload) return reportService.downloadCitiCorePhDailyReport(objReport);
 					reportService.sentMailCitiCorePhDailyReport(objReport);
 					return null;
-			          
+					
+				case METER_INVERTER_PRODUCTION_REPORT:
+					if (isDownload) return reportService.downloadMeterInverterProductionReport(objReport);
+					reportService.sentMailMeterInverterProductionReport(objReport);
+					return null;
+					
 				default:
 					return null;
 			}

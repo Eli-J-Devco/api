@@ -8,17 +8,19 @@ package com.nwm.api.entities;
 import java.util.List;
 import java.util.Map;
 
+import com.nwm.api.entities.report.ReportDetail;
+
 public class AssetManagementAndOperationPerformanceReportEntity {
-	private ViewReportEntity reportDetail;
+	private ReportDetail reportDetail;
 	private List<AssetManagementAndOperationPerformanceDataEntity> operationPerformanceData;
 	private Map<String, Object> monthlyPerformanceData;
 	private List<AssetManagementAndOperationPerformanceDataEntity> monthlyAssetManagementData;
 	private List<AssetManagementAndOperationPerformanceDataEntity> estimatedLossByEventData;
 	
-	public ViewReportEntity getReportDetail() {
+	public ReportDetail getReportDetail() {
 		return reportDetail;
 	}
-	public void setReportDetail(ViewReportEntity reportDetail) {
+	public void setReportDetail(ReportDetail reportDetail) {
 		this.reportDetail = reportDetail;
 	}
 	public List<AssetManagementAndOperationPerformanceDataEntity> getOperationPerformanceData() {

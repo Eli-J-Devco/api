@@ -56,6 +56,14 @@ public class DeviceService extends DB {
 		}
 	}
 	
+	@Cacheable(value = "devices", key = "#siteId")
+	public <T> DevicesByTypeEntity getDevicesBySite(int siteId, String domain) {
+		Map<String, Object> params = new HashMap<>();
+		params.put("id_site", siteId);
+		params.put("domain", domain);
+		return getDevicesBySite(params);
+	}
+	
 	@Cacheable(value = "devices", key = "#obj.hash_id != null ? #obj.hash_id : #obj.id_site")
 	public <T> DevicesByTypeEntity getDevicesBySite(T obj) {
 		try {

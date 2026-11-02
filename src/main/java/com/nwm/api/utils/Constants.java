@@ -147,6 +147,9 @@ public class Constants {
 	
 	public static final String mailTrackerSummaryReportBody = "mailTrackerSummaryReportBody";
 	
+	public static final String mailMeterInverterProductionReportTitle = "mailMeterInverterProductionReportTitle";
+	public static final String mailMeterInverterProductionReportBody = "mailMeterInverterProductionReportBody";
+	
 	public static final String mailExpiredSiteTitle = "mailExpiredSiteTitle";
 	public static final String mailExpiredSiteBody = "mailExpiredSiteBody";
 	
@@ -478,7 +481,8 @@ public class Constants {
     	SANITY_CHECK_REPORT(5),
     	METER_LEVEL_PRODUCTION_IRRADIANCE_TEMP_REPORT(6),
     	PERFORMANCE_REPORT(7),
-    	CITI_CORE_PH_DAILY(8);
+    	CITI_CORE_PH_DAILY(8),
+    	METER_INVERTER_PRODUCTION_REPORT(9);
     	
     	private final int value;
     	
@@ -961,6 +965,9 @@ public class Constants {
         case 31:
         	// tracker summary report
         	return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailTrackerSummaryReportBody);
+        case 32:
+        	// meter inverter production report
+        	return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailMeterInverterProductionReportBody);
 		default:
 			return null;
 		}
@@ -1054,7 +1061,10 @@ public class Constants {
         	return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailCitiCoreDailyReportTitle);
         case 31:
         	// tracker summary report
-        	return null;
+			return null;
+        case 32:
+        	// meter inverter production report
+        	return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailMeterInverterProductionReportTitle);
 		default:
 			return null;
 		}

@@ -35,6 +35,7 @@ import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.EnumSet;
@@ -50,6 +51,7 @@ import java.util.TreeMap;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
@@ -207,6 +209,9 @@ import com.nwm.api.entities.ReportsEntity;
 import com.nwm.api.entities.SanityCheckReportEntity;
 import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.entities.ViewReportEntity;
+import com.nwm.api.entities.report.ReportDetail;
+import com.nwm.api.entities.report.SiteByReport;
+import com.nwm.api.entities.report.invertermeterproductionreport.ValueDTO;
 import com.nwm.api.utils.Constants;
 import com.nwm.api.utils.Constants.ChartingFilter;
 import com.nwm.api.utils.Constants.ChartingGranularity;
@@ -228,6 +233,11 @@ public class ReportsService extends DB {
 	private static final Color LIGHT_BLUE_COLOR = new Color(109, 189, 246);
 	private static final Color ORANGE_COLOR = new Color(255, 129, 39);
 	
+	private static final DateTimeFormatter inputDTF = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+	private static final DateTimeFormatter reportDateRangeDTF = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+	private static final SimpleDateFormat inputSDF = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	private static final SimpleDateFormat reportDateRangeSDF = new SimpleDateFormat("MM/dd/yyyy");
+	
 	@Autowired
 	CustomerViewService customerViewService;
 	@Autowired
@@ -242,7 +252,6 @@ public class ReportsService extends DB {
 	@Qualifier("deviceDataExecutor")
 	Executor executor;
 	
-	private DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 	
 	private String getReportFolderPath() {
 		String uploadRootPath = Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadRootPathConfigKey);
@@ -419,7 +428,8 @@ public class ReportsService extends DB {
 		switch (granularity) {
 			case _1_MINUTE: 
 			case _15_MINUTES:
-			case _30_MINUTES: return LocalDateTime.parse(source, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")).format(target);
+			case _30_MINUTES:
+			case _1_HOUR: return LocalDateTime.parse(source, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")).format(target);
 			case _1_DAY: return LocalDate.parse(source, DateTimeFormatter.ofPattern("yyyy-MM-dd")).format(target);
 			case _1_MONTH:
 				return YearMonth.parse(source, DateTimeFormatter.ofPattern("MM/yyyy")).format(target);
@@ -433,17 +443,16 @@ public class ReportsService extends DB {
 	 * @description Summarize data by interval for whole sites
 	 * @author Hung.Bui
 	 * @since 2024-11-12
-	 * @param dataList
+	 * @param reportDetail
 	 * @return data list
 	 */
-	private List<ViewReportEntity> dataSummarize(List<ViewReportEntity> dataList) {
+	private ReportDetail dataSummarize(ReportDetail reportDetail) {
 		try {
-			ViewReportEntity sumObj = new ViewReportEntity();
-			sumObj.setSite_name("Total");
+			List<SiteByReport> sites = Optional.ofNullable(reportDetail.getSites()).orElse(new ArrayList<>());
 			
-			List<CustomReportDataEntity> sumReport = dataList
+			List<CustomReportDataEntity> sumReport = sites
 					.stream()
-					.map(item -> (List<CustomReportDataEntity>) item.getDataReports())
+					.map(site -> (List<CustomReportDataEntity>) site.getDataReports())
 					.reduce(new ArrayList<CustomReportDataEntity>(), (acc, item) -> {
 						for (int i = 0; i < item.size(); i++) {
 							if (acc.size() < item.size()) acc.add(new CustomReportDataEntity());
@@ -454,35 +463,33 @@ public class ReportsService extends DB {
 						return acc;
 					});
 			
+			SiteByReport sumObj = new SiteByReport();
+			sumObj.setName("Total");
 			sumObj.setDataReports(sumReport);
-			dataList.add(sumObj);
-		} catch (Exception e) {
-			// TODO: handle exception
-		}
+			
+			sites.add(sumObj);
+		} catch (Exception e) {}
 		
-		return dataList;
+		return reportDetail;
 	}
 	
 	/**
 	 * @description Sort data
 	 * @author Hung.Bui
 	 * @since 2024-11-13
-	 * @param dataList
+	 * @param reportDetail
 	 * @return data list
 	 */
-	private List<ViewReportEntity> dataSort(List<ViewReportEntity> dataList, ViewReportEntity reportObj) {
+	private ReportDetail dataSort(ReportDetail reportDetail, ViewReportEntity req) {
 		try {
-			List<ViewReportEntity> sortedDataList = new ArrayList<ViewReportEntity>();
-			if 		(reportObj.getSort_by() == 1) sortedDataList = dataList.stream().sorted((a, b) -> a.getSite_name().compareTo(b.getSite_name())).collect(Collectors.toList());
-			else if (reportObj.getSort_by() == 2) sortedDataList = dataList.stream().sorted((a, b) -> b.getSite_name().compareTo(a.getSite_name())).collect(Collectors.toList());
-			else if (reportObj.getSort_by() == 3) sortedDataList = dataList.stream().sorted((a, b) -> Double.compare(((List<CustomReportDataEntity>) b.getDataReports()).get(b.getDataReports().size() - 1).getActual(), ((List<CustomReportDataEntity>) a.getDataReports()).get(a.getDataReports().size() - 1).getActual())).collect(Collectors.toList());
-			else if (reportObj.getSort_by() == 4) sortedDataList = dataList.stream().sorted((a, b) -> Double.compare(((List<CustomReportDataEntity>) a.getDataReports()).get(a.getDataReports().size() - 1).getActual(), ((List<CustomReportDataEntity>) b.getDataReports()).get(b.getDataReports().size() - 1).getActual())).collect(Collectors.toList());
-			else 								  sortedDataList = dataList;
-			
-			return sortedDataList;
-		} catch (Exception ex) {
-			return dataList;
-		}
+			List<SiteByReport> sites = Optional.ofNullable(reportDetail.getSites()).orElse(new ArrayList<>());
+			if 		(req.getSort_by() == 1) sites.sort((a, b) -> a.getName().compareTo(b.getName()));
+			else if (req.getSort_by() == 2) sites.sort((a, b) -> b.getName().compareTo(a.getName()));
+			else if (req.getSort_by() == 3) sites.sort((a, b) -> Double.compare(((List<CustomReportDataEntity>) b.getDataReports()).get(b.getDataReports().size() - 1).getActual(), ((List<CustomReportDataEntity>) a.getDataReports()).get(a.getDataReports().size() - 1).getActual()));
+			else if (req.getSort_by() == 4) sites.sort((a, b) -> Double.compare(((List<CustomReportDataEntity>) a.getDataReports()).get(a.getDataReports().size() - 1).getActual(), ((List<CustomReportDataEntity>) b.getDataReports()).get(b.getDataReports().size() - 1).getActual()));
+		} catch (Exception ex) {}
+		
+		return reportDetail;
 	}
 	
 	/**
@@ -492,101 +499,30 @@ public class ReportsService extends DB {
 	 * @param ids, id, data_intervals, start_date, end_date
 	 * @return data list
 	 */
-	public List<ViewReportEntity> getReportDataList(ViewReportEntity reportObj) {
-		try {
-			List<CompletableFuture<ViewReportEntity>> list = new ArrayList<CompletableFuture<ViewReportEntity>>();
-			
-			if (reportObj.getIds() != null && reportObj.getIds().size() > 0) {
-				for (int i = 0; i < reportObj.getIds().size(); i++) {
-					ViewReportEntity siteObj = new ViewReportEntity();
-					siteObj.setId_site((int) reportObj.getIds().get(i));
-					siteObj.setId(reportObj.getId());
-					siteObj.setData_intervals(reportObj.getData_intervals());
-					siteObj.setCadence_range(reportObj.getCadence_range());
-					siteObj.setStart_date(reportObj.getStart_date());
-					siteObj.setEnd_date(reportObj.getEnd_date());
-					siteObj.setDomain(reportObj.getDomain());
-					siteObj.setDomain_role(reportObj.getDomain_role());
-					siteObj.setId_employee(reportObj.getId_employee());
-					siteObj.setIs_supper_admin(reportObj.getIs_supper_admin());
-					
-					CompletableFuture<ViewReportEntity> future = CompletableFuture.supplyAsync(() -> {
-						try {
-							switch (ReportRange.fromValue(reportObj.getCadence_range())) {
-								case DAILY:
-									return this.getDailyReport(siteObj);
-								case LAST_MONTH:
-								case MONTHLY:
-									return this.getMonthlyReport(siteObj);
-								case LAST_QUARTER:
-									return this.getQuarterlyReport(siteObj);
-								case ANNUALLY:
-									return this.getAnnuallyReport(siteObj);
-								case CUSTOM:
-									return this.getCustomReport(siteObj);
-								default:
-									return null;
-							}
-						} catch (Exception ex) {
-							log.error(ex);
-							return null;
-						}
-					});
-					
-					list.add(future);
-				}
-			}
-			
-			List<ViewReportEntity> dataList = list.stream().map(future -> future.join()).filter(item -> item != null).collect(Collectors.toList());
-			
-			return reportObj.getCadence_range() == ReportRange.CUSTOM.getValue() ? this.dataSummarize(this.dataSort(dataList, reportObj)) : dataList;
-		} catch (Exception e) {
-			return new ArrayList<>();
+	public ReportDetail getReportDataList(ViewReportEntity req) throws Exception {
+		switch (ReportRange.fromValue(req.getCadence_range())) {
+			case DAILY:
+				return this.getDailyReport(req);
+			case LAST_MONTH:
+			case MONTHLY:
+				return this.getMonthlyReport(req);
+			case LAST_QUARTER:
+				return this.getQuarterlyReport(req);
+			case ANNUALLY:
+				return this.getAnnuallyReport(req);
+			case CUSTOM:
+				return this.getCustomReport(req);
+			default:
+				return null;
 		}
 	}
 	
-	public ViewReportEntity getReportDetail(ViewReportEntity obj) {
+	public ReportDetail getReportDetail(ViewReportEntity obj) {
 		try {
-			ViewReportEntity report = (ViewReportEntity) queryForObject("Reports.getDetailReport", obj);
-			if (report == null || report.getId_site() == 0) return null;
-			return report;
-		} catch (Exception e) {
+			return (ReportDetail) queryForObject("Reports.getDetailReport", obj);
+		} catch (Exception ex) {
+			log.error("Reports.getReportDetail", ex);
 			return null;
-		}
-	}
-	
-	private List<DailyDateEntity> getEnergyByMeter(ViewReportEntity obj) {
-		try {
-			List<DailyDateEntity> data = obj.getGroupDevices().isEmpty() ? new ArrayList<>() : queryForList("Reports.getDataEnergyMeter", obj);
-			return Lib.fulfillData(getDateTimeList(obj, DailyDateEntity.class), data, "categories_time");
-		} catch (Exception e) {
-			return new ArrayList<>();
-		}
-	}
-	
-	
-	private List<List<DailyDateEntity>> getEnergyByInvertersOn1Min(ViewReportEntity obj, List<DeviceEntity> devices) {
-		try {
-			if (devices.size() == 0) return new ArrayList<>();
-			
-			List<CompletableFuture<List<DailyDateEntity>>> futures = devices.stream().map(device -> CompletableFuture.supplyAsync(() -> {
-				try {
-					device.setStart_date(obj.getStart_date());
-					device.setEnd_date(obj.getEnd_date());
-					device.setData_send_time(8);
-					
-					List<DailyDateEntity> data = queryForList("Reports.getDataEnergyOneMinuteInverter", device);
-					if (Objects.isNull(data)) return new ArrayList<DailyDateEntity>();
-					
-					return Lib.fulfillData(getDateTimeList(obj, DailyDateEntity.class), data, "categories_time");
-				} catch (Exception e) {
-					return new ArrayList<DailyDateEntity>();
-				}
-			})).collect(Collectors.toList());
-			
-			return futures.stream().map(future -> future.join()).filter(item -> !item.isEmpty()).collect(Collectors.toList());
-		} catch (Exception e) {
-			return new ArrayList<>();
 		}
 	}
 	
@@ -683,8 +619,8 @@ public class ReportsService extends DB {
 	private Map<String, QuarterlyDateEntity> getInverterAvailability(List<DeviceEntity> devices, LocalDateTime startDate, LocalDateTime endDate, ReportIntervals interval, String tableDataReport) {
 		try {
 			ViewReportEntity obj = new ViewReportEntity();
-			obj.setStart_date(startDate.format(dateTimeFormatter));
-			obj.setEnd_date(endDate.format(dateTimeFormatter));
+			obj.setStart_date(startDate.format(inputDTF));
+			obj.setEnd_date(endDate.format(inputDTF));
 			obj.setGroupDevices(devices);
 			obj.setTable_data_report(tableDataReport);
 			obj.setData_intervals(interval.getValue());
@@ -698,7 +634,7 @@ public class ReportsService extends DB {
 	public Map<String, Double> getEnergyExpectation(LocalDateTime startDate, int siteId) {
 		try {
 			ViewReportEntity obj = new ViewReportEntity();
-			obj.setStart_date(startDate.format(dateTimeFormatter));
+			obj.setStart_date(startDate.format(inputDTF));
 			obj.setId_site(siteId);
 			
 			return Optional.ofNullable((Map<String, Double>) queryForObject("Reports.getEnergyExpectation", obj)).orElse(new HashMap<>());
@@ -714,62 +650,74 @@ public class ReportsService extends DB {
 	 * @param id_site, date_from, data_to
 	 */
 	
-	public ViewReportEntity getDailyReport(ViewReportEntity obj) {
+	public ReportDetail getDailyReport(ViewReportEntity req) throws Exception {
 		try {
-			ViewReportEntity dataObj = getReportDetail(obj);
-			if (dataObj == null) return null;
+			ReportDetail reportDetail = getReportDetail(req);
+			if (Objects.isNull(reportDetail)) throw new Exception("Report not found");
 			
-			LocalDateTime startDate = LocalDateTime.parse(obj.getStart_date(), dateTimeFormatter);
-			LocalDateTime endDate = LocalDateTime.parse(obj.getEnd_date(), dateTimeFormatter);
-			ChartingGranularity granularity = ChartingGranularity.fromValue(dataObj.getData_intervals());
+			LocalDateTime startDate = LocalDateTime.parse(req.getStart_date(), inputDTF);
+			LocalDateTime endDate = LocalDateTime.parse(req.getEnd_date(), inputDTF);
+			ChartingGranularity granularity = ChartingGranularity.fromValue(reportDetail.getData_intervals());
 			ChartingFilter filter = ChartingFilter._3_DAYS;
-			DevicesByTypeEntity devices = deviceService.getDevicesBySite(obj);
-			List<DeviceEntity> powerDevices = !devices.getMeter().isEmpty() ? devices.getMeter() : devices.getInverter();
-			List<DeviceEntity> irradianceDevices = devices.getIrradiance();
-			dataObj.setHave_poa(!irradianceDevices.isEmpty());
 			
-			List<DailyDateEntity> powerData = getActualBySiteDevices(powerDevices, startDate, endDate, granularity, filter)
-					.stream()
-					.map(item -> {
-						DailyDateEntity entity = new DailyDateEntity();
-						entity.setCategories_time(dateTimeFormatConverter(granularity, item.getCategories_time(), DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm")));
-						entity.setPower(Optional.ofNullable(item.getPower()).map(value -> BigDecimal.valueOf(value).setScale(0, RoundingMode.HALF_UP).doubleValue()).orElse(null));
-						entity.setEnergy(Optional.ofNullable(item.getEnergy()).map(value -> BigDecimal.valueOf(value).setScale(0, RoundingMode.HALF_UP).doubleValue()).orElse(null));
-						
-						return entity;
-					})
+			List<CompletableFuture<Void>> futures = Optional.ofNullable(reportDetail.getSites()).orElse(new ArrayList<>()).stream()
+					.filter(site -> req.getId_site() > 0 ? site.getId() == req.getId_site() : true)
+					.map(site -> CompletableFuture.runAsync(() -> {
+						try {
+							DevicesByTypeEntity devices = deviceService.getDevicesBySite(site.getId(), req.getDomain());
+							List<DeviceEntity> powerDevices = !devices.getMeter().isEmpty() ? devices.getMeter() : devices.getInverter();
+							List<DeviceEntity> irradianceDevices = devices.getIrradiance();
+							
+							List<DailyDateEntity> powerData = getActualBySiteDevices(powerDevices, startDate, endDate, granularity, filter)
+									.stream()
+									.map(item -> {
+										DailyDateEntity entity = new DailyDateEntity();
+										entity.setCategories_time(dateTimeFormatConverter(granularity, item.getCategories_time(), DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm")));
+										entity.setPower(Optional.ofNullable(item.getPower()).map(value -> BigDecimal.valueOf(value).setScale(0, RoundingMode.HALF_UP).doubleValue()).orElse(null));
+										entity.setEnergy(Optional.ofNullable(item.getEnergy()).map(value -> BigDecimal.valueOf(value).setScale(0, RoundingMode.HALF_UP).doubleValue()).orElse(null));
+										
+										return entity;
+									})
+									.collect(Collectors.toList());
+							
+							List<DailyDateEntity> irradianceData = getIrradianceBySiteDevices(irradianceDevices, startDate, endDate, granularity, filter)
+									.stream()
+									.map(item -> {
+										DailyDateEntity entity = new DailyDateEntity();
+										entity.setCategories_time(dateTimeFormatConverter(granularity, item.getCategories_time(), DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm")));
+										entity.setIrradiance(Optional.ofNullable(item.getIrradiance()).map(value -> BigDecimal.valueOf(value).setScale(0, RoundingMode.HALF_UP).doubleValue()).orElse(null));
+										
+										return entity;
+									})
+									.collect(Collectors.toList());
+							
+							List<DailyDateEntity> mergedData = Stream.concat(powerData.stream(), irradianceData.stream())
+									.collect(Collectors.toMap(
+											DailyDateEntity::getCategories_time,
+											item -> item,
+											(s1, s2) -> {
+												s1.setIrradiance(s2.getIrradiance());
+												return s1;
+											},
+											LinkedHashMap::new
+											))
+									.values()
+									.stream()
+									.collect(Collectors.toList());
+							
+							site.setDataReports(mergedData);
+						} catch (Exception ex) {
+							log.error(ex);
+						}
+					}))
 					.collect(Collectors.toList());
 			
-			List<DailyDateEntity> irradianceData = getIrradianceBySiteDevices(irradianceDevices, startDate, endDate, granularity, filter)
-					.stream()
-					.map(item -> {
-						DailyDateEntity entity = new DailyDateEntity();
-						entity.setCategories_time(dateTimeFormatConverter(granularity, item.getCategories_time(), DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm")));
-						entity.setIrradiance(Optional.ofNullable(item.getIrradiance()).map(value -> BigDecimal.valueOf(value).setScale(0, RoundingMode.HALF_UP).doubleValue()).orElse(null));
-						
-						return entity;
-					})
-					.collect(Collectors.toList());
+			futures.forEach(CompletableFuture::join);
 			
-			List<DailyDateEntity> mergedData = Stream.concat(powerData.stream(), irradianceData.stream())
-					.collect(Collectors.toMap(
-							DailyDateEntity::getCategories_time,
-							item -> item,
-							(s1, s2) -> {
-								s1.setIrradiance(s2.getIrradiance());
-								return s1;
-							},
-							LinkedHashMap::new
-					))
-					.values()
-					.stream()
-					.collect(Collectors.toList());
-			
-			dataObj.setDataReports(mergedData);
-			
-			return dataObj;
+			return reportDetail;
 		} catch (Exception ex) {
-			return null;
+			log.error("Reports.getDailyReport", ex);
+			throw ex;
 		}
 	}
 	
@@ -780,80 +728,94 @@ public class ReportsService extends DB {
 	 * @param id_site, date_from, data_to
 	 */
 	
-	public ViewReportEntity getAnnuallyReport(ViewReportEntity obj) {
+	public ReportDetail getAnnuallyReport(ViewReportEntity req) throws Exception {
 		try {
-			ViewReportEntity dataObj = getReportDetail(obj);
-			if (dataObj == null) return null;
+			ReportDetail reportDetail = getReportDetail(req);
+			if (Objects.isNull(reportDetail)) throw new Exception("Report not found");
 			
-			LocalDateTime startDate = LocalDateTime.parse(obj.getStart_date(), dateTimeFormatter);
-			LocalDateTime endDate = LocalDateTime.parse(obj.getEnd_date(), dateTimeFormatter);
-			ReportRange range = ReportRange.fromValue(dataObj.getCadence_range());
+			LocalDateTime startDate = LocalDateTime.parse(req.getStart_date(), inputDTF);
+			LocalDateTime endDate = LocalDateTime.parse(req.getEnd_date(), inputDTF);
+			ReportRange range = ReportRange.fromValue(reportDetail.getCadence_range());
 			ChartingGranularity granularity = ChartingGranularity._1_MONTH;
 			ChartingFilter filter = ChartingFilter.YEAR_TO_DATE;
-			UploadingDataIntervals siteUploadingInterval = UploadingDataIntervals.fromValue(dataObj.getData_send_time());
-			DevicesByTypeEntity devices = deviceService.getDevicesBySite(obj);
-			List<DeviceEntity> powerDevices = !devices.getMeter().isEmpty() ? devices.getMeter() : devices.getInverter();
-			List<DeviceEntity> irradianceDevices = devices.getIrradiance();
 			
-			List<QuarterlyDateEntity> actualData = getActualBySiteDevices(powerDevices, startDate, endDate, granularity, filter)
-				.stream()
-				.map(item -> {
-					QuarterlyDateEntity entity = new QuarterlyDateEntity();
-					entity.setCategories_time(dateTimeFormatConverter(granularity, item.getCategories_time(), DateTimeFormatter.ofPattern(range == ReportRange.LAST_QUARTER ? "MMM-yyyy" : "MMM")));
-					entity.setActual(item.getEnergy());
-					
-					return entity;
-				})
-				.collect(Collectors.toList());
+			List<CompletableFuture<Void>> futures = Optional.ofNullable(reportDetail.getSites()).orElse(new ArrayList<>()).stream()
+					.filter(site -> req.getId_site() > 0 ? site.getId() == req.getId_site() : true)
+					.map(site -> CompletableFuture.runAsync(() -> {
+						try {
+							UploadingDataIntervals siteUploadingInterval = UploadingDataIntervals.fromValue(site.getData_send_time());
+							DevicesByTypeEntity devices = deviceService.getDevicesBySite(site.getId(), req.getDomain());
+							List<DeviceEntity> powerDevices = !devices.getMeter().isEmpty() ? devices.getMeter() : devices.getInverter();
+							List<DeviceEntity> irradianceDevices = devices.getIrradiance();
+							
+							List<QuarterlyDateEntity> actualData = getActualBySiteDevices(powerDevices, startDate, endDate, granularity, filter)
+									.stream()
+									.map(item -> {
+										QuarterlyDateEntity entity = new QuarterlyDateEntity();
+										entity.setCategories_time(dateTimeFormatConverter(granularity, item.getCategories_time(), DateTimeFormatter.ofPattern(range == ReportRange.LAST_QUARTER ? "MMM-yyyy" : "MMM")));
+										entity.setActual(item.getEnergy());
+										
+										return entity;
+									})
+									.collect(Collectors.toList());
+							
+							Map<String, Double> estimatedData = irradianceDevices.isEmpty() ? getEnergyExpectation(startDate, site.getId()) : new HashMap<>();
+							List<ClientMonthlyDateEntity> expectedData = irradianceDevices.isEmpty() ?
+									new ArrayList<>()
+									:
+										irradianceDevices.size() == 1 ?
+												customerViewService.getIrradianceByDevice(startDate, endDate, irradianceDevices.get(0), granularity, filter, false, siteUploadingInterval)
+												:
+													customerViewService.getExpectedBySelectedPOA(startDate, endDate, site.getId(), granularity, filter, irradianceDevices);
+							
+							Map<String, QuarterlyDateEntity> inverterAvailability = getInverterAvailability(!devices.getInverter().isEmpty() ? devices.getInverter() : devices.getMeter(), startDate, endDate, ReportIntervals.MONTHLY, site.getTable_data_report());
+							
+							Double actualCumulative = null;
+							Double estimatedCumulative = null;
+							
+							for (int i = 0; i < actualData.size(); i++) {
+								QuarterlyDateEntity actualItem = actualData.get(i);
+								Double actual = actualItem.getActual();
+								Double estimated = irradianceDevices.isEmpty() ?
+										estimatedData.get(range == ReportRange.LAST_QUARTER ? YearMonth.parse(actualItem.getCategories_time(), DateTimeFormatter.ofPattern("MMM-yyyy")).getMonth().getDisplayName(TextStyle.SHORT, Locale.ENGLISH).toLowerCase() : actualItem.getCategories_time().toLowerCase())
+										:
+											!expectedData.isEmpty() ? expectedData.get(i).getExpected_energy() : null;
+								
+								if (Objects.nonNull(actual)) {
+									actualCumulative = actual + Optional.ofNullable(actualCumulative).orElse(0.0);
+									actualItem.setActual(BigDecimal.valueOf(actual).setScale(0, RoundingMode.HALF_UP).doubleValue());
+									actualItem.setActualCumulative(BigDecimal.valueOf(actualCumulative).setScale(0, RoundingMode.HALF_UP).doubleValue());
+								}
+								
+								if (Objects.nonNull(actual) && Objects.nonNull(estimated) && estimated > 0) {
+									estimatedCumulative = estimated + Optional.ofNullable(estimatedCumulative).orElse(0.0);
+									actualItem.setEstimated(BigDecimal.valueOf(estimated).setScale(0, RoundingMode.HALF_UP).doubleValue());
+									actualItem.setEstimatedCumulative(BigDecimal.valueOf(estimatedCumulative).setScale(0, RoundingMode.HALF_UP).doubleValue());
+									actualItem.setDifference(BigDecimal.valueOf(actual - estimated).setScale(0, RoundingMode.HALF_UP).doubleValue());
+									actualItem.setDifferencePercentage(BigDecimal.valueOf((actual - (range == ReportRange.LAST_QUARTER ? estimated : 0)) / estimated * 100).setScale(1, RoundingMode.HALF_UP).doubleValue());
+								}
+								
+								if (Objects.nonNull(actualItem.getActualCumulative()) && Objects.nonNull(actualItem.getEstimatedCumulative()) && estimatedCumulative > 0) {
+									actualItem.setCumulativeDifference(BigDecimal.valueOf(actualCumulative - estimatedCumulative).setScale(0, RoundingMode.HALF_UP).doubleValue());
+									actualItem.setCumulativeDifferencePercentage(BigDecimal.valueOf((actualCumulative - (range == ReportRange.LAST_QUARTER ? estimatedCumulative : 0)) / estimatedCumulative * 100).setScale(1, RoundingMode.HALF_UP).doubleValue());
+								}
+								
+								actualItem.setInverterAvailability(Optional.ofNullable(inverterAvailability.get(actualItem.getCategories_time())).map(item -> item.getInverterAvailability()).orElse(null));
+							}
+							
+							site.setDataReports(actualData);
+						} catch (Exception ex) {
+							log.error(ex);
+						}
+					}))
+					.collect(Collectors.toList());
 			
-			Map<String, Double> estimatedData = irradianceDevices.isEmpty() ? getEnergyExpectation(startDate, dataObj.getId_site()) : new HashMap<>();
-			List<ClientMonthlyDateEntity> expectedData = irradianceDevices.isEmpty() ?
-				new ArrayList<>()
-				:
-				irradianceDevices.size() == 1 ?
-					customerViewService.getIrradianceByDevice(startDate, endDate, irradianceDevices.get(0), granularity, filter, false, siteUploadingInterval)
-					:
-					customerViewService.getExpectedBySelectedPOA(startDate, endDate, dataObj.getId_site(), granularity, filter, irradianceDevices);
+			futures.forEach(CompletableFuture::join);
 			
-			Map<String, QuarterlyDateEntity> inverterAvailability = getInverterAvailability(!devices.getInverter().isEmpty() ? devices.getInverter() : devices.getMeter(), startDate, endDate, ReportIntervals.MONTHLY, dataObj.getTable_data_report());
-			
-			Double actualCumulative = null;
-			Double estimatedCumulative = null;
-			
-			for (int i = 0; i < actualData.size(); i++) {
-				QuarterlyDateEntity actualItem = actualData.get(i);
-				Double actual = actualItem.getActual();
-				Double estimated = irradianceDevices.isEmpty() ?
-					estimatedData.get(range == ReportRange.LAST_QUARTER ? YearMonth.parse(actualItem.getCategories_time(), DateTimeFormatter.ofPattern("MMM-yyyy")).getMonth().getDisplayName(TextStyle.SHORT, Locale.ENGLISH).toLowerCase() : actualItem.getCategories_time().toLowerCase())
-					:
-					!expectedData.isEmpty() ? expectedData.get(i).getExpected_energy() : null;
-				
-				if (Objects.nonNull(actual)) {
-					actualCumulative = actual + Optional.ofNullable(actualCumulative).orElse(0.0);
-					actualItem.setActual(BigDecimal.valueOf(actual).setScale(0, RoundingMode.HALF_UP).doubleValue());
-					actualItem.setActualCumulative(BigDecimal.valueOf(actualCumulative).setScale(0, RoundingMode.HALF_UP).doubleValue());
-				}
-				
-				if (Objects.nonNull(actual) && Objects.nonNull(estimated) && estimated > 0) {
-					estimatedCumulative = estimated + Optional.ofNullable(estimatedCumulative).orElse(0.0);
-					actualItem.setEstimated(BigDecimal.valueOf(estimated).setScale(0, RoundingMode.HALF_UP).doubleValue());
-					actualItem.setEstimatedCumulative(BigDecimal.valueOf(estimatedCumulative).setScale(0, RoundingMode.HALF_UP).doubleValue());
-					actualItem.setDifference(BigDecimal.valueOf(actual - estimated).setScale(0, RoundingMode.HALF_UP).doubleValue());
-					actualItem.setDifferencePercentage(BigDecimal.valueOf((actual - (range == ReportRange.LAST_QUARTER ? estimated : 0)) / estimated * 100).setScale(1, RoundingMode.HALF_UP).doubleValue());
-				}
-				
-				if (Objects.nonNull(actualItem.getActualCumulative()) && Objects.nonNull(actualItem.getEstimatedCumulative()) && estimatedCumulative > 0) {
-					actualItem.setCumulativeDifference(BigDecimal.valueOf(actualCumulative - estimatedCumulative).setScale(0, RoundingMode.HALF_UP).doubleValue());
-					actualItem.setCumulativeDifferencePercentage(BigDecimal.valueOf((actualCumulative - (range == ReportRange.LAST_QUARTER ? estimatedCumulative : 0)) / estimatedCumulative * 100).setScale(1, RoundingMode.HALF_UP).doubleValue());
-				}
-				
-				actualItem.setInverterAvailability(Optional.ofNullable(inverterAvailability.get(actualItem.getCategories_time())).map(item -> item.getInverterAvailability()).orElse(null));
-			}
-			
-			dataObj.setDataReports(actualData);
-			return dataObj;
+			return reportDetail;
 		} catch (Exception ex) {
-			return null;
+			log.error("Reports.getAnnuallyReport", ex);
+			throw ex;
 		}
 	}
 	
@@ -865,86 +827,100 @@ public class ReportsService extends DB {
 	 * @param id_site, date_from, data_to
 	 */
 	
-	public ViewReportEntity getQuarterlyReport(ViewReportEntity obj) {
+	public ReportDetail getQuarterlyReport(ViewReportEntity req) throws Exception {
 		try {
-			ViewReportEntity dataObj = getReportDetail(obj);
-			if (dataObj == null) return null;
+			ReportDetail reportDetail = getReportDetail(req);
+			if (Objects.isNull(reportDetail)) throw new Exception("Report not found");
 			
-			ReportIntervals interval = ReportIntervals.fromValue(dataObj.getData_intervals());
+			ReportIntervals interval = ReportIntervals.fromValue(reportDetail.getData_intervals());
 			// quarterly report by month
-			if (interval == ReportIntervals.MONTHLY) return getAnnuallyReport(obj);
+			if (interval == ReportIntervals.MONTHLY) return getAnnuallyReport(req);
 			
 			// quarterly report by day
-			LocalDateTime startDate = LocalDateTime.parse(obj.getStart_date(), dateTimeFormatter);
-			LocalDateTime endDate = LocalDateTime.parse(obj.getEnd_date(), dateTimeFormatter);
+			LocalDateTime startDate = LocalDateTime.parse(req.getStart_date(), inputDTF);
+			LocalDateTime endDate = LocalDateTime.parse(req.getEnd_date(), inputDTF);
 			ChartingGranularity granularity = ChartingGranularity._1_DAY;
 			ChartingFilter filter = ChartingFilter.YEAR_TO_DATE;
-			DevicesByTypeEntity devices = deviceService.getDevicesBySite(obj);
-			List<DeviceEntity> powerDevices = !devices.getMeter().isEmpty() ? devices.getMeter() : devices.getInverter();
-			List<DeviceEntity> irradianceDevices = devices.getIrradiance();
 			
-			List<QuarterlyDateEntity> actualData = getActualBySiteDevices(powerDevices, startDate, endDate, granularity, filter)
-					.stream()
-					.map(item -> {
-						QuarterlyDateEntity entity = new QuarterlyDateEntity();
-						entity.setCategories_time(dateTimeFormatConverter(granularity, item.getCategories_time(), DateTimeFormatter.ofPattern("MM/dd/yyyy")));
-						entity.setActual(item.getEnergy());
-						
-						return entity;
-					})
+			List<CompletableFuture<Void>> futures = Optional.ofNullable(reportDetail.getSites()).orElse(new ArrayList<>()).stream()
+					.filter(site -> req.getId_site() > 0 ? site.getId() == req.getId_site() : true)
+					.map(site -> CompletableFuture.runAsync(() -> {
+						try {
+							DevicesByTypeEntity devices = deviceService.getDevicesBySite(site.getId(), req.getDomain());
+							List<DeviceEntity> powerDevices = !devices.getMeter().isEmpty() ? devices.getMeter() : devices.getInverter();
+							List<DeviceEntity> irradianceDevices = devices.getIrradiance();
+							
+							List<QuarterlyDateEntity> actualData = getActualBySiteDevices(powerDevices, startDate, endDate, granularity, filter)
+									.stream()
+									.map(item -> {
+										QuarterlyDateEntity entity = new QuarterlyDateEntity();
+										entity.setCategories_time(dateTimeFormatConverter(granularity, item.getCategories_time(), DateTimeFormatter.ofPattern("MM/dd/yyyy")));
+										entity.setActual(item.getEnergy());
+										
+										return entity;
+									})
+									.collect(Collectors.toList());
+							
+							List<QuarterlyDateEntity> irradianceData = getIrradianceBySiteDevices(irradianceDevices, startDate, endDate, granularity, filter)
+									.stream()
+									.map(item -> {
+										QuarterlyDateEntity entity = new QuarterlyDateEntity();
+										entity.setCategories_time(dateTimeFormatConverter(granularity, item.getCategories_time(), DateTimeFormatter.ofPattern("MM/dd/yyyy")));
+										entity.setPOAInsolation(item.getIrradiance());
+										entity.setTCellAVG(item.getTemperature());
+										
+										return entity;
+									})
+									.collect(Collectors.toList());;
+									
+									Map<String, QuarterlyDateEntity> inverterAvailability = getInverterAvailability(!devices.getInverter().isEmpty() ? devices.getInverter() : devices.getMeter(), startDate, endDate, ReportIntervals.DAILY, site.getTable_data_report());
+									
+									List<QuarterlyDateEntity> mergedData = Stream.concat(actualData.stream(), irradianceData.stream())
+											.collect(Collectors.toMap(
+													QuarterlyDateEntity::getCategories_time,
+													item -> item,
+													(s1, s2) -> {
+														s1.setPOAInsolation(s2.getPOAInsolation());
+														s1.setTCellAVG(s2.getTCellAVG());
+														
+														return s1;
+													},
+													LinkedHashMap::new
+													))
+											.values()
+											.stream()
+											.map(item -> {
+												Double actual = item.getActual();
+												Double irradiance = item.getPOAInsolation();
+												Double temperature = item.getTCellAVG();
+												Double temperatureCorrected = Objects.nonNull(actual) && Objects.nonNull(irradiance) && Objects.nonNull(temperature) && irradiance > 0 ?
+														actual / ((site.getDc_capacity() * irradiance * 24 / 1000) * (1 - (-0.47 / 100) * (25 - temperature))) * 100
+														:
+															null;
+												
+												item.setActual(Optional.ofNullable(actual).map(value -> BigDecimal.valueOf(value).setScale(0, RoundingMode.HALF_UP).doubleValue()).orElse(null));
+												item.setPOAInsolation(Optional.ofNullable(irradiance).map(value -> BigDecimal.valueOf(value * 24 / 1000).setScale(4, RoundingMode.HALF_UP).doubleValue()).orElse(null));
+												item.setTCellAVG(Optional.ofNullable(temperature).map(value -> BigDecimal.valueOf(value).setScale(1, RoundingMode.HALF_UP).doubleValue()).orElse(null));
+												item.setTemperatureCorrected(Optional.ofNullable(temperatureCorrected).map(value -> BigDecimal.valueOf(value).setScale(1, RoundingMode.HALF_UP).doubleValue()).orElse(null));
+												item.setInverterAvailability(Optional.ofNullable(inverterAvailability.get(item.getCategories_time())).map(entity -> entity.getInverterAvailability()).orElse(null));
+												
+												return item;
+											})
+											.collect(Collectors.toList());
+									
+									site.setDataReports(mergedData);
+						} catch (Exception ex) {
+							log.error(ex);
+						}
+					}))
 					.collect(Collectors.toList());
 			
-			List<QuarterlyDateEntity> irradianceData = getIrradianceBySiteDevices(irradianceDevices, startDate, endDate, granularity, filter)
-					.stream()
-					.map(item -> {
-						QuarterlyDateEntity entity = new QuarterlyDateEntity();
-						entity.setCategories_time(dateTimeFormatConverter(granularity, item.getCategories_time(), DateTimeFormatter.ofPattern("MM/dd/yyyy")));
-						entity.setPOAInsolation(item.getIrradiance());
-						entity.setTCellAVG(item.getTemperature());
-						
-						return entity;
-					})
-					.collect(Collectors.toList());;
+			futures.forEach(CompletableFuture::join);
 			
-			Map<String, QuarterlyDateEntity> inverterAvailability = getInverterAvailability(!devices.getInverter().isEmpty() ? devices.getInverter() : devices.getMeter(), startDate, endDate, ReportIntervals.DAILY, dataObj.getTable_data_report());
-			
-			List<QuarterlyDateEntity> mergedData = Stream.concat(actualData.stream(), irradianceData.stream())
-					.collect(Collectors.toMap(
-							QuarterlyDateEntity::getCategories_time,
-							item -> item,
-							(s1, s2) -> {
-								s1.setPOAInsolation(s2.getPOAInsolation());
-								s1.setTCellAVG(s2.getTCellAVG());
-								
-								return s1;
-							},
-							LinkedHashMap::new
-					))
-					.values()
-					.stream()
-					.map(item -> {
-						Double actual = item.getActual();
-						Double irradiance = item.getPOAInsolation();
-						Double temperature = item.getTCellAVG();
-						Double temperatureCorrected = Objects.nonNull(actual) && Objects.nonNull(irradiance) && Objects.nonNull(temperature) && irradiance > 0 ?
-								actual / ((dataObj.getDc_capacity() * irradiance * 24 / 1000) * (1 - (-0.47 / 100) * (25 - temperature))) * 100
-								:
-								null;
-						
-						item.setActual(Optional.ofNullable(actual).map(value -> BigDecimal.valueOf(value).setScale(0, RoundingMode.HALF_UP).doubleValue()).orElse(null));
-						item.setPOAInsolation(Optional.ofNullable(irradiance).map(value -> BigDecimal.valueOf(value * 24 / 1000).setScale(4, RoundingMode.HALF_UP).doubleValue()).orElse(null));
-						item.setTCellAVG(Optional.ofNullable(temperature).map(value -> BigDecimal.valueOf(value).setScale(1, RoundingMode.HALF_UP).doubleValue()).orElse(null));
-						item.setTemperatureCorrected(Optional.ofNullable(temperatureCorrected).map(value -> BigDecimal.valueOf(value).setScale(1, RoundingMode.HALF_UP).doubleValue()).orElse(null));
-						item.setInverterAvailability(Optional.ofNullable(inverterAvailability.get(item.getCategories_time())).map(entity -> entity.getInverterAvailability()).orElse(null));
-						
-						return item;
-					})
-					.collect(Collectors.toList());
-			
-			dataObj.setDataReports(mergedData);
-			return dataObj;
+			return reportDetail;
 		} catch (Exception ex) {
-			return null;
+			log.error("Reports.getQuarterlyReport", ex);
+			throw ex;
 		}
 	}
 	
@@ -955,30 +931,45 @@ public class ReportsService extends DB {
 	 * @param id_site, date_from, data_to
 	 */
 	
-	public AssetManagementAndOperationPerformanceReportEntity getAssetManagementAndOperationPerformanceReport(ViewReportEntity obj) {
+	public AssetManagementAndOperationPerformanceReportEntity getAssetManagementAndOperationPerformanceReport(ViewReportEntity req) throws Exception {
 		try {
-			String id_sites = obj.getId_sites() != null ? obj.getId_sites() : (obj.getIds_site() != null ? obj.getIds_site() : null);
-			String[] idSiteArr = id_sites != null ? id_sites.split(",") : new String[0];
-			if (idSiteArr.length == 0) return null;
-			obj.setId_site(Integer.parseInt(idSiteArr[0]));
-			
-			ViewReportEntity reportObj = getReportDetail(obj);
-			if (reportObj == null) return null;
-			reportObj.setReport_name(obj.getReport_name());
+			ReportDetail reportDetail = getReportDetail(req);
+			if (Objects.isNull(reportDetail)) throw new Exception("Report not found");
 			
 			DateTimeFormatter inputDateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 			DateTimeFormatter mmm_yyFormat = DateTimeFormatter.ofPattern("MMM-yy");
 			DateTimeFormatter mm_dd_yyyyFormat = DateTimeFormatter.ofPattern("MM/dd/yyyy");
-			LocalDateTime startDate = LocalDateTime.parse(obj.getStart_date(), inputDateFormat).withHour(0).withMinute(0).withSecond(0);
-			LocalDateTime endDate = LocalDateTime.parse(obj.getEnd_date(), inputDateFormat).withHour(23).withMinute(59).withSecond(59);
+			LocalDateTime startDate = LocalDateTime.parse(req.getStart_date(), inputDateFormat).withHour(0).withMinute(0).withSecond(0);
+			LocalDateTime endDate = LocalDateTime.parse(req.getEnd_date(), inputDateFormat).withHour(23).withMinute(59).withSecond(59);
 			AssetManagementAndOperationPerformanceReportEntity dataObj = new AssetManagementAndOperationPerformanceReportEntity();
-			dataObj.setReportDetail(reportObj);
+			dataObj.setReportDetail(reportDetail);
+			
+			String id_sites = req.getId_sites() != null ? req.getId_sites() : (req.getIds_site() != null ? req.getIds_site() : null);
+			String[] idSiteArr = id_sites != null ? id_sites.split(",") : new String[0];
+			if (idSiteArr.length == 0) return dataObj;
+			req.setId_site(Integer.parseInt(idSiteArr[0]));
+			
+			SiteByReport site = Optional.ofNullable(reportDetail.getSites())
+					.orElse(new ArrayList<>())
+					.stream()
+					.filter(item -> item.getId() == req.getId_site())
+					.findFirst()
+					.orElse(null);
+			if (Objects.isNull(site)) return dataObj;
+			
+			Map<String, Object> params = new HashMap<String, Object>();
+			params.put("end_date", endDate.format(inputDateFormat));
+			params.put("id_site", site.getId());
+			params.put("enable_virtual_device", site.isEnable_virtual_device());
+			params.put("datatablename_weather", site.getDatatablename_weather());
+			params.put("have_meter", site.isHave_meter());
+			params.put("table_data_report", site.getTable_data_report());
+			params.put("table_data_virtual", site.getTable_data_virtual());
 			
 			/* operation performance report */
-			reportObj.setStart_date(startDate.format(inputDateFormat));
-			reportObj.setEnd_date(endDate.format(inputDateFormat));
-			reportObj.setData_intervals(ReportIntervals.MONTHLY.getValue());
-			List<AssetManagementAndOperationPerformanceDataEntity> operationPerformanceData = queryForList("Reports.getOperationPerformanceReport", reportObj);
+			params.put("start_date", startDate.format(inputDateFormat));
+			params.put("data_intervals", ReportIntervals.MONTHLY.getValue());
+			List<AssetManagementAndOperationPerformanceDataEntity> operationPerformanceData = queryForList("Reports.getOperationPerformanceReport", params);
 			
 			if (operationPerformanceData != null && operationPerformanceData.size() > 0) {
 				// fulfill data
@@ -1019,9 +1010,9 @@ public class ReportsService extends DB {
 			
 			/* monthly performance report */
 			LocalDateTime startDateOfCurrentMonth = endDate.withDayOfMonth(1).withHour(0).withMinute(0).withSecond(0);
-			reportObj.setStart_date(startDateOfCurrentMonth.format(inputDateFormat));
-			reportObj.setData_intervals(ReportIntervals.DAILY.getValue());
-			List<AssetManagementAndOperationPerformanceDataEntity> monthlyPerformanceData = queryForList("Reports.getMonthlyPerformanceReport", reportObj);
+			params.put("start_date", startDateOfCurrentMonth.format(inputDateFormat));
+			params.put("data_intervals", ReportIntervals.DAILY.getValue());
+			List<AssetManagementAndOperationPerformanceDataEntity> monthlyPerformanceData = queryForList("Reports.getMonthlyPerformanceReport", params);
 			
 			if (monthlyPerformanceData != null && monthlyPerformanceData.size() > 0) {
 				// fulfill data
@@ -1124,14 +1115,15 @@ public class ReportsService extends DB {
 			}
 			
 			/* estimated loss by event report */
-			List<AssetManagementAndOperationPerformanceDataEntity> estimatedLossByEventData = queryForList("Reports.getEstimatedLossByEventReport", reportObj);
+			List<AssetManagementAndOperationPerformanceDataEntity> estimatedLossByEventData = queryForList("Reports.getEstimatedLossByEventReport", params);
 			if (estimatedLossByEventData != null && estimatedLossByEventData.size() > 0) {
 				dataObj.setEstimatedLossByEventData(estimatedLossByEventData);
 			}
 			
 			return dataObj;
 		} catch (Exception ex) {
-			return null;
+			log.error("Reports.getAssetManagementAndOperationPerformanceReport", ex);
+			throw ex;
 		}
 	}
 	
@@ -1141,13 +1133,17 @@ public class ReportsService extends DB {
 	 * @since 2025-06-25
 	 * @return ViewReportEntity
 	 */
-	public ViewReportEntity getSanityCheckReport(ViewReportEntity obj) {
+	public ReportDetail getSanityCheckReport(ViewReportEntity req) throws Exception {
 		try {
+			ReportDetail reportDetail = getReportDetail(req);
+			if (Objects.isNull(reportDetail)) throw new Exception("Report not found");
+			if (Optional.ofNullable(reportDetail.getSites()).orElse(new ArrayList<>()).isEmpty()) return reportDetail;
+			
 			AlertEntity alertObj = new AlertEntity();
-			alertObj.setId_sites(obj.getIds());
-			alertObj.setDomain(obj.getDomain());
-			alertObj.setStart_date(obj.getStart_date());
-			alertObj.setEnd_date(obj.getEnd_date());
+			alertObj.setId_sites(reportDetail.getSites().stream().map(SiteByReport::getId).collect(Collectors.toList()));
+			alertObj.setDomain(req.getDomain());
+			alertObj.setStart_date(req.getStart_date());
+			alertObj.setEnd_date(req.getEnd_date());
 			AlertService alertService = new AlertService();
 			List<AlertEntity> alertCountList = alertService.getSiteAlertCountListInDuration(alertObj);
 			
@@ -1155,42 +1151,28 @@ public class ReportsService extends DB {
 			Map<Integer, Integer> alertCountMap = new HashMap<Integer, Integer>();
 			for (AlertEntity alert : alertCountList) alertCountMap.put(alert.getId(), alert.getTotalError());
 			
-			List<CompletableFuture<SanityCheckReportEntity>> list = new ArrayList<CompletableFuture<SanityCheckReportEntity>>();
-			
-			if (obj.getIds() != null && obj.getIds().size() > 0) {
-				for (int i = 0; i < obj.getIds().size(); i++) {
-					int k = i;
-					
-					CompletableFuture<SanityCheckReportEntity> future = CompletableFuture.supplyAsync(() -> {
+			List<CompletableFuture<Void>> futures = Optional.ofNullable(reportDetail.getSites()).orElse(new ArrayList<>()).stream()
+					.sorted((a,b) -> a.getName().compareTo(b.getName()))
+					.map(site -> CompletableFuture.runAsync(() -> {
 						try {
-							ViewReportEntity siteObj = new ViewReportEntity();
-							siteObj.setId_site((int) obj.getIds().get(k));
-							siteObj.setId(obj.getId());
-							siteObj.setStart_date(obj.getStart_date());
-							siteObj.setDomain(obj.getDomain());
-							siteObj.setDomain_role(obj.getDomain_role());
-							
-							ViewReportEntity dataObj = getReportDetail(siteObj);
-							if (dataObj == null) return null;
-							
-							obj.setReport_date(dataObj.getReport_date());
-							obj.setSubscribers(dataObj.getSubscribers());
-							
 							SanityCheckReportEntity sanityCheckReport = new SanityCheckReportEntity();
-							sanityCheckReport.setSiteName(dataObj.getSite_name());
 							
 							// alert
-							sanityCheckReport.setAlert(alertCountMap.get(siteObj.getId_site()));
+							sanityCheckReport.setAlert(alertCountMap.get(site.getId()));
+							
+							site.setDataReports(new ArrayList<>(Arrays.asList(sanityCheckReport)));
 							
 							// meter and inverter
-							DevicesByTypeEntity devicesByType = deviceService.getDevicesBySite(siteObj);
+							DevicesByTypeEntity devicesByType = deviceService.getDevicesBySite(site.getId(), req.getDomain());;
 							
 							List<DeviceEntity> powerDevices = new ArrayList<>(devicesByType.getMeter());
 							powerDevices.addAll(devicesByType.getInverter());
-							if (powerDevices.size() == 0) return sanityCheckReport;
+							if (powerDevices.size() == 0) return;
 							
-							siteObj.setGroupDevices(powerDevices);
-							List<AccumulatedEnergyByMonthEntity> energyList = queryForList("Reports.getEnergySanityCheckReport", siteObj);
+							Map<String, Object> energyParams = new HashMap<>();
+							energyParams.put("groupDevices", powerDevices);
+							energyParams.put("start_date", req.getStart_date());
+							List<AccumulatedEnergyByMonthEntity> energyList = queryForList("Reports.getEnergySanityCheckReport", energyParams);
 							Double totalCurrEnergy = null;
 							Double totalLastEnergy = null;
 							
@@ -1207,8 +1189,8 @@ public class ReportsService extends DB {
 									sanityCheckReport.addAccumulatedEnergyEOMByMeter(item.getCurrentEOM());
 									sanityCheckReport.addAccumulatedEnergyDifferenceByMeter(currEnergy);
 									
-									if (dataObj.isIs_rec_report() && Objects.nonNull(currEnergy) && Objects.nonNull(lastEnergy) && currEnergy > 0) sanityCheckReport.addRecDifference1(BigDecimal.valueOf((currEnergy - lastEnergy) / currEnergy).setScale(3, RoundingMode.HALF_UP).doubleValue());
-									if (dataObj.isIs_rec_report() && Objects.nonNull(currEnergy) && Objects.nonNull(lastEnergy) && lastEnergy > 0) sanityCheckReport.addRecDifference2(BigDecimal.valueOf((currEnergy - lastEnergy) / lastEnergy).setScale(3, RoundingMode.HALF_UP).doubleValue());
+									if (site.isIs_rec_report() && Objects.nonNull(currEnergy) && Objects.nonNull(lastEnergy) && currEnergy > 0) sanityCheckReport.addRecDifference1(BigDecimal.valueOf((currEnergy - lastEnergy) / currEnergy).setScale(3, RoundingMode.HALF_UP).doubleValue());
+									if (site.isIs_rec_report() && Objects.nonNull(currEnergy) && Objects.nonNull(lastEnergy) && lastEnergy > 0) sanityCheckReport.addRecDifference2(BigDecimal.valueOf((currEnergy - lastEnergy) / lastEnergy).setScale(3, RoundingMode.HALF_UP).doubleValue());
 								}
 								
 								if ((devicesByType.getMeter().size() > 0 && item.getDeviceTypeId() == 3) || (devicesByType.getMeter().size() == 0 && item.getDeviceTypeId() == 1)) {
@@ -1231,12 +1213,14 @@ public class ReportsService extends DB {
 							
 							// irradiance
 							if (devicesByType.getIrradiance().size() > 0) {
-								siteObj.setGroupDevices(devicesByType.getIrradiance());
-								List<Map<String, Double>> irradianceList = queryForList("Reports.getIrradianceSanityCheckReport", siteObj);
+								Map<String, Object> irradianceParams = new HashMap<>();
+								irradianceParams.put("groupDevices", powerDevices);
+								irradianceParams.put("start_date", req.getStart_date());
+								List<Map<String, Double>> irradianceList = queryForList("Reports.getIrradianceSanityCheckReport", irradianceParams);
 								
 								if (irradianceList.size() > 0) {
 									Map<String, Double> irradianceDevice = irradianceList.get(0);
-									if (Objects.isNull(irradianceDevice)) return sanityCheckReport;
+									if (Objects.isNull(irradianceDevice)) return;
 									
 									Double current = irradianceDevice.get("current");
 									Double last = irradianceDevice.get("last");
@@ -1244,25 +1228,18 @@ public class ReportsService extends DB {
 									if(Objects.nonNull(current) && Objects.nonNull(last) && last > 0) sanityCheckReport.setIrradianceDifference2(BigDecimal.valueOf((current - last) / last).setScale(3, RoundingMode.HALF_UP).doubleValue());
 								}
 							}
-							
-							return sanityCheckReport;
 						} catch (Exception ex) {
 							log.error(ex);
-							return null;
 						}
-					});
-					
-					list.add(future);
-				}
-			}
+					}))
+					.collect(Collectors.toList());
 			
-			List<SanityCheckReportEntity> dataList = list.stream().map(future -> future.join()).filter(item -> item != null).collect(Collectors.toList());
-			dataList.sort((a,b) -> a.getSiteName().compareTo(b.getSiteName()));
-			obj.setDataReports(dataList);
+			futures.forEach(CompletableFuture::join);
 			
-			return obj;
+			return reportDetail;
 		} catch (Exception ex) {
-			return null;
+			log.error("Reports.getSanityCheckReport", ex);
+			throw ex;
 		}
 	}
 	
@@ -1542,63 +1519,77 @@ public class ReportsService extends DB {
 	 * @param id_site
 	 */
 	
-	public ViewReportEntity getMonthlyReport(ViewReportEntity obj) {
+	public ReportDetail getMonthlyReport(ViewReportEntity req) throws Exception {
 		try {
-			ViewReportEntity dataObj = getReportDetail(obj);
-			if (dataObj == null) return null;
+			ReportDetail reportDetail = getReportDetail(req);
+			if (Objects.isNull(reportDetail)) throw new Exception("Report not found");
 			
-			LocalDateTime startDate = LocalDateTime.parse(obj.getStart_date(), dateTimeFormatter);
-			LocalDateTime endDate = LocalDateTime.parse(obj.getEnd_date(), dateTimeFormatter);
+			LocalDateTime startDate = LocalDateTime.parse(req.getStart_date(), inputDTF);
+			LocalDateTime endDate = LocalDateTime.parse(req.getEnd_date(), inputDTF);
 			ChartingGranularity granularity = ChartingGranularity._1_DAY;
 			ChartingFilter filter = ChartingFilter.THIS_MONTH;
-			UploadingDataIntervals siteUploadingInterval = UploadingDataIntervals.fromValue(dataObj.getData_send_time());
-			DevicesByTypeEntity devices = deviceService.getDevicesBySite(obj);
-			List<DeviceEntity> powerDevices = !devices.getMeter().isEmpty() ? devices.getMeter() : devices.getInverter();
-			List<DeviceEntity> irradianceDevices = devices.getIrradiance();
 			
-			List<MonthlyDateEntity> actualData = getActualBySiteDevices(powerDevices, startDate, endDate, granularity, filter)
-				.stream()
-				.map(item -> {
-					MonthlyDateEntity entity = new MonthlyDateEntity();
-					entity.setCategories_time(dateTimeFormatConverter(granularity, item.getCategories_time(), DateTimeFormatter.ofPattern("MM/dd/yyyy")));
-					entity.setActual(item.getEnergy());
-					
-					return entity;
-				})
-				.collect(Collectors.toList());
+			List<CompletableFuture<Void>> futures = Optional.ofNullable(reportDetail.getSites()).orElse(new ArrayList<>()).stream()
+					.filter(site -> req.getId_site() > 0 ? site.getId() == req.getId_site() : true)
+					.map(site -> CompletableFuture.runAsync(() -> {
+						try {
+							UploadingDataIntervals siteUploadingInterval = UploadingDataIntervals.fromValue(site.getData_send_time());
+							DevicesByTypeEntity devices = deviceService.getDevicesBySite(site.getId(), req.getDomain());
+							List<DeviceEntity> powerDevices = !devices.getMeter().isEmpty() ? devices.getMeter() : devices.getInverter();
+							List<DeviceEntity> irradianceDevices = devices.getIrradiance();
+							
+							List<MonthlyDateEntity> actualData = getActualBySiteDevices(powerDevices, startDate, endDate, granularity, filter)
+									.stream()
+									.map(item -> {
+										MonthlyDateEntity entity = new MonthlyDateEntity();
+										entity.setCategories_time(dateTimeFormatConverter(granularity, item.getCategories_time(), DateTimeFormatter.ofPattern("MM/dd/yyyy")));
+										entity.setActual(item.getEnergy());
+										
+										return entity;
+									})
+									.collect(Collectors.toList());
+							
+							Map<String, Double> estimatedData = irradianceDevices.isEmpty() ? getEnergyExpectation(startDate, site.getId()) : new HashMap<>();
+							List<ClientMonthlyDateEntity> expectedData = irradianceDevices.isEmpty() ?
+									new ArrayList<>()
+									:
+										irradianceDevices.size() == 1 ?
+												customerViewService.getIrradianceByDevice(startDate, endDate, irradianceDevices.get(0), granularity, filter, false, siteUploadingInterval)
+												:
+													customerViewService.getExpectedBySelectedPOA(startDate, endDate, site.getId(), granularity, filter, irradianceDevices);
+							
+							for (int i = 0; i < actualData.size(); i++) {
+								MonthlyDateEntity actualItem = actualData.get(i);
+								LocalDate date = LocalDate.parse(actualItem.getCategories_time(), DateTimeFormatter.ofPattern("MM/dd/yyyy"));
+								Double actual = actualItem.getActual();
+								Double estimated = irradianceDevices.isEmpty() ?
+										Optional.ofNullable(estimatedData.get(date.getMonth().getDisplayName(TextStyle.SHORT, Locale.ENGLISH).toLowerCase())).map(value ->  value / date.lengthOfMonth()).orElse(null)
+										:
+											!expectedData.isEmpty() ? expectedData.get(i).getExpected_energy() : null;
+								
+								if (Objects.nonNull(actual)) {
+									actualItem.setActual(BigDecimal.valueOf(actual).setScale(0, RoundingMode.HALF_UP).doubleValue());
+								}
+								
+								if (Objects.nonNull(actual) && Objects.nonNull(estimated)) {
+									actualItem.setEstimated(BigDecimal.valueOf(estimated).setScale(0, RoundingMode.HALF_UP).doubleValue());
+									actualItem.setPercent(BigDecimal.valueOf(actual / estimated * 100).setScale(1, RoundingMode.HALF_UP).doubleValue());
+								}
+							}
+							
+							site.setDataReports(actualData);
+						} catch (Exception ex) {
+							log.error(ex);
+						}
+					}))
+					.collect(Collectors.toList());
 			
-			Map<String, Double> estimatedData = irradianceDevices.isEmpty() ? getEnergyExpectation(startDate, dataObj.getId_site()) : new HashMap<>();
-			List<ClientMonthlyDateEntity> expectedData = irradianceDevices.isEmpty() ?
-				new ArrayList<>()
-				:
-				irradianceDevices.size() == 1 ?
-					customerViewService.getIrradianceByDevice(startDate, endDate, irradianceDevices.get(0), granularity, filter, false, siteUploadingInterval)
-					:
-					customerViewService.getExpectedBySelectedPOA(startDate, endDate, dataObj.getId_site(), granularity, filter, irradianceDevices);
+			futures.forEach(CompletableFuture::join);
 			
-			for (int i = 0; i < actualData.size(); i++) {
-				MonthlyDateEntity actualItem = actualData.get(i);
-				LocalDate date = LocalDate.parse(actualItem.getCategories_time(), DateTimeFormatter.ofPattern("MM/dd/yyyy"));
-				Double actual = actualItem.getActual();
-				Double estimated = irradianceDevices.isEmpty() ?
-					Optional.ofNullable(estimatedData.get(date.getMonth().getDisplayName(TextStyle.SHORT, Locale.ENGLISH).toLowerCase())).map(value ->  value / date.lengthOfMonth()).orElse(null)
-					:
-					!expectedData.isEmpty() ? expectedData.get(i).getExpected_energy() : null;
-				
-				if (Objects.nonNull(actual)) {
-					actualItem.setActual(BigDecimal.valueOf(actual).setScale(0, RoundingMode.HALF_UP).doubleValue());
-				}
-				
-				if (Objects.nonNull(actual) && Objects.nonNull(estimated)) {
-					actualItem.setEstimated(BigDecimal.valueOf(estimated).setScale(0, RoundingMode.HALF_UP).doubleValue());
-					actualItem.setPercent(BigDecimal.valueOf(actual / estimated * 100).setScale(1, RoundingMode.HALF_UP).doubleValue());
-				}
-			}
-			
-			dataObj.setDataReports(actualData);
-			return dataObj;
+			return reportDetail;
 		} catch (Exception ex) {
-			return null;
+			log.error("Reports.getMonthlyReport", ex);
+			throw ex;
 		}
 	}
 	
@@ -1610,64 +1601,77 @@ public class ReportsService extends DB {
 	 * @param id_site, date_from, date_to
 	 */
 	
-	public ViewReportEntity getCustomReport(ViewReportEntity obj) {
+	public ReportDetail getCustomReport(ViewReportEntity req) throws Exception {
 		try {
-			ViewReportEntity dataObj = getReportDetail(obj);
-			if (dataObj == null) return null;
+			ReportDetail reportDetail = getReportDetail(req);
+			if (Objects.isNull(reportDetail)) throw new Exception("Report not found");
 			
-			LocalDateTime startDate = LocalDateTime.parse(obj.getStart_date(), dateTimeFormatter);
-			LocalDateTime endDate = LocalDateTime.parse(obj.getEnd_date(), dateTimeFormatter);
-			ReportIntervals intervals = ReportIntervals.fromValue(obj.getData_intervals());
+			LocalDateTime startDate = LocalDateTime.parse(req.getStart_date(), inputDTF);
+			LocalDateTime endDate = LocalDateTime.parse(req.getEnd_date(), inputDTF);
+			ReportIntervals intervals = ReportIntervals.fromValue(req.getData_intervals());
 			ChartingGranularity granularity = ReportIntervals.toChartingGranularity(intervals);
 			ChartingFilter filter = ChartingFilter.CUSTOM;
-			DevicesByTypeEntity devices = deviceService.getDevicesBySite(obj);
-			List<DeviceEntity> powerDevices = !devices.getMeter().isEmpty() ? devices.getMeter() : devices.getInverter();
 			
-			List<CustomReportDataEntity> fulfillData = getActualBySiteDevices(powerDevices, startDate, endDate, granularity, filter)
-				.stream()
-				.map(item -> {
-					String formatString = "MM/dd/yyyy HH:mm";
-					
-					switch (intervals) {
-						default:
-						case _15_MINUTES:
-						case _30_MINUTES:
-							formatString = "MM/dd/yyyy HH:mm";
-							break;
-						case DAILY:
-							formatString = "MM/dd/yyyy";
-							break;
-						case MONTHLY:
-							formatString = "MM/yyyy";
-							break;
-						case ANNUAL:
-							formatString = "yyyy";
-							break;
-					}
-					
-					CustomReportDataEntity entity = new CustomReportDataEntity();
-					entity.setActual(Optional.ofNullable(item.getEnergy()).map(value -> BigDecimal.valueOf(value).setScale(0, RoundingMode.HALF_UP).doubleValue()).orElse(null));
-					entity.setCategories_time(dateTimeFormatConverter(granularity, item.getCategories_time(), DateTimeFormatter.ofPattern(formatString)));
-					
-					return entity;
-				})
-				.collect(Collectors.toList());
+			List<CompletableFuture<Void>> futures = Optional.ofNullable(reportDetail.getSites()).orElse(new ArrayList<>()).stream()
+					.filter(site -> req.getId_site() > 0 ? site.getId() == req.getId_site() : true)
+					.map(site -> CompletableFuture.runAsync(() -> {
+						try {
+							DevicesByTypeEntity devices = deviceService.getDevicesBySite(site.getId(), req.getDomain());
+							List<DeviceEntity> powerDevices = !devices.getMeter().isEmpty() ? devices.getMeter() : devices.getInverter();
+							
+							List<CustomReportDataEntity> fulfillData = getActualBySiteDevices(powerDevices, startDate, endDate, granularity, filter)
+									.stream()
+									.map(item -> {
+										String formatString = "MM/dd/yyyy HH:mm";
+										
+										switch (intervals) {
+										default:
+										case _15_MINUTES:
+										case _30_MINUTES:
+											formatString = "MM/dd/yyyy HH:mm";
+											break;
+										case DAILY:
+											formatString = "MM/dd/yyyy";
+											break;
+										case MONTHLY:
+											formatString = "MM/yyyy";
+											break;
+										case ANNUAL:
+											formatString = "yyyy";
+											break;
+										}
+										
+										CustomReportDataEntity entity = new CustomReportDataEntity();
+										entity.setActual(Optional.ofNullable(item.getEnergy()).map(value -> BigDecimal.valueOf(value).setScale(0, RoundingMode.HALF_UP).doubleValue()).orElse(null));
+										entity.setCategories_time(dateTimeFormatConverter(granularity, item.getCategories_time(), DateTimeFormatter.ofPattern(formatString)));
+										
+										return entity;
+									})
+									.collect(Collectors.toList());
+							
+							if (!fulfillData.isEmpty()) {
+								Supplier<DoubleStream> dataStream = () -> fulfillData.stream().filter(item -> Objects.nonNull(item.getActual())).mapToDouble(item -> item.getActual());
+								
+								CustomReportDataEntity totalRow = new CustomReportDataEntity();
+								totalRow.setCategories_time("Total");
+								totalRow.setActual(dataStream.get().findAny().isPresent() ? dataStream.get().sum() : null);
+								
+								fulfillData.add(totalRow);
+							}
+							
+							site.setDataReports(fulfillData);
+						} catch (Exception ex) {
+							log.error(ex);
+						}
+					}))
+					.collect(Collectors.toList());
 			
-			if (!fulfillData.isEmpty()) {
-				Supplier<DoubleStream> dataStream = () -> fulfillData.stream().filter(item -> Objects.nonNull(item.getActual())).mapToDouble(item -> item.getActual());
-				
-				CustomReportDataEntity totalRow = new CustomReportDataEntity();
-				totalRow.setCategories_time("Total");
-				totalRow.setActual(dataStream.get().findAny().isPresent() ? dataStream.get().sum() : null);
-				
-				fulfillData.add(totalRow);
-			}
+			futures.forEach(CompletableFuture::join);
 			
-			dataObj.setDataReports(fulfillData);
-			
-			return dataObj;
+			return this.dataSummarize(this.dataSort(reportDetail, req));
 		} catch (Exception ex) {
-			return null;
+			log.error("Reports.getCustomReport", ex);
+			throw ex;
 		}
 	}
 	
@@ -1678,203 +1682,351 @@ public class ReportsService extends DB {
 	 * @param id_site, date_from, date_to
 	 */
 	
-	public ViewReportEntity getPerformanceReport(ViewReportEntity obj) {
+	public ReportDetail getPerformanceReport(ViewReportEntity req) throws Exception {
 		try {
-			obj.setId_site(Integer.parseInt(Optional.ofNullable(obj.getId_sites()).orElse(Optional.ofNullable(obj.getIds_site()).orElse("0"))));
+			req.setId_site(Integer.parseInt(Optional.ofNullable(req.getId_sites()).orElse(Optional.ofNullable(req.getIds_site()).orElse("0"))));
 			
-			ViewReportEntity dataObj = getReportDetail(obj);
-			if (dataObj == null) return null;
-			dataObj.setReport_name(obj.getReport_name());
+			ReportDetail reportDetail = getReportDetail(req);
+			if (Objects.isNull(reportDetail)) throw new Exception("Report not found");
+			
 			int totalMonths = 12;
-			LocalDateTime commissioningDate = LocalDateTime.parse(dataObj.getCommissioning(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-			LocalDateTime startDate = LocalDateTime.parse(obj.getStart_date(), dateTimeFormatter);
-			LocalDateTime endDate = LocalDateTime.parse(obj.getEnd_date(), dateTimeFormatter);
+			LocalDateTime startDate = LocalDateTime.parse(req.getStart_date(), inputDTF);
+			LocalDateTime endDate = LocalDateTime.parse(req.getEnd_date(), inputDTF);
 			ChartingGranularity granularity = ChartingGranularity._1_MONTH;
 			ChartingFilter filter = ChartingFilter.LAST_12_MONTHS;
-			UploadingDataIntervals siteUploadingInterval = UploadingDataIntervals.fromValue(dataObj.getData_send_time());
 			
-			DevicesByTypeEntity devices = deviceService.getDevicesBySite(obj);
-			List<DeviceEntity> inverters = devices.getInverter();
-			List<DeviceEntity> meters = devices.getMeter();
-			List<DeviceEntity> irradiances = devices.getIrradiance();
-			
-			// actual & expected energy
-			List<ActualDTO> actualEnergy = getActualBySiteDevices(!meters.isEmpty() ? meters : inverters, startDate, endDate, granularity, filter);
-			List<ClientMonthlyDateEntity> estimatedEnergy = irradiances.isEmpty() ?
-					new ArrayList<>()
-					:
-					irradiances.size() == 1 ?
-							customerViewService.getIrradianceByDevice(startDate, endDate, irradiances.get(0), granularity, filter, false, siteUploadingInterval)
-							:
-							customerViewService.getExpectedBySelectedPOA(startDate, endDate, dataObj.getId_site(), granularity, filter, irradiances);
-			
-			// predicted energy & predicted insolation
-			List<PredictedPerformanceEntity> predicted = Optional.ofNullable(queryForList("Reports.getPredictedPerformance", dataObj)).orElse(new ArrayList<>());
-			
-			// insolation
-			List<ReportValueByDatetimeDTO> insolation = devices.getAll().stream()
-					.filter(device -> DeviceType.fromValue(device.getId_device_type()) == DeviceType.WEATHER_STATION && device.getReverse_poa() == 0)
-					.findFirst()
-					.map(device -> device.getParameters().stream()
-							.filter(parameter -> parameter.getSlug().equals("SolarInsolation"))
-							.findFirst()
-							.map(parameter -> {
-								device.setParameters(Arrays.asList(parameter));
-								
-								return sitesAnalyticsService.getDeviceData(device, startDate, endDate, granularity, filter).stream()
-										.map(item -> {
-											ReportValueByDatetimeDTO entity = new ReportValueByDatetimeDTO();
-											entity.setCategories_time(item.get("time_full").toString());
-											entity.setValue((Double) item.get(parameter.getSlug()));
-											
-											return entity;
-										})
-										.collect(Collectors.toList());
-							})
-							.orElse(new ArrayList<>())
-						
-					)
-					.orElse(new ArrayList<>());
-			
-			// inverter availability
-			obj.setData_intervals(ReportIntervals._1_HOUR.getValue());
-			
-			List<CompletableFuture<List<ReportValueByDatetimeDTO>>> futures = inverters.stream()
-					.map(inverter -> CompletableFuture.supplyAsync(() -> {
+			List<CompletableFuture<Void>> futures = Optional.ofNullable(reportDetail.getSites()).orElse(new ArrayList<>()).stream()
+					.filter(site -> req.getId_site() > 0 ? site.getId() == req.getId_site() : true)
+					.map(site -> CompletableFuture.runAsync(() -> {
 						try {
-							inverter.setStart_date(obj.getStart_date());
-							inverter.setEnd_date(obj.getEnd_date());
-							List<ReportValueByDatetimeDTO> data = Optional.ofNullable(queryForList("Reports.getHourlyInverterAvailability", inverter)).orElse(new ArrayList<>());
-							return Lib.fulfillData(getDateTimeList(obj, ReportValueByDatetimeDTO.class), data, "categories_time");
-						} catch (Exception e) {
-							return new ArrayList<ReportValueByDatetimeDTO>();
+							LocalDateTime commissioningDate = LocalDateTime.parse(site.getCommissioning(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+							UploadingDataIntervals siteUploadingInterval = UploadingDataIntervals.fromValue(site.getData_send_time());
+							
+							DevicesByTypeEntity devices = deviceService.getDevicesBySite(site.getId(), req.getDomain());
+							List<DeviceEntity> inverters = devices.getInverter();
+							List<DeviceEntity> meters = devices.getMeter();
+							List<DeviceEntity> irradiances = devices.getIrradiance();
+							
+							// actual & expected energy
+							List<ActualDTO> actualEnergy = getActualBySiteDevices(!meters.isEmpty() ? meters : inverters, startDate, endDate, granularity, filter);
+							List<ClientMonthlyDateEntity> estimatedEnergy = irradiances.isEmpty() ?
+									new ArrayList<>()
+									:
+										irradiances.size() == 1 ?
+												customerViewService.getIrradianceByDevice(startDate, endDate, irradiances.get(0), granularity, filter, false, siteUploadingInterval)
+												:
+													customerViewService.getExpectedBySelectedPOA(startDate, endDate, site.getId(), granularity, filter, irradiances);
+							
+							// predicted energy & predicted insolation
+							List<PredictedPerformanceEntity> predicted = Optional.ofNullable(queryForList("Reports.getPredictedPerformance", site.getId())).orElse(new ArrayList<>());
+							
+							// insolation
+							List<ReportValueByDatetimeDTO> insolation = devices.getAll().stream()
+									.filter(device -> DeviceType.fromValue(device.getId_device_type()) == DeviceType.WEATHER_STATION && device.getReverse_poa() == 0)
+									.findFirst()
+									.map(device -> device.getParameters().stream()
+											.filter(parameter -> parameter.getSlug().equals("SolarInsolation"))
+											.findFirst()
+											.map(parameter -> {
+												device.setParameters(Arrays.asList(parameter));
+												
+												return sitesAnalyticsService.getDeviceData(device, startDate, endDate, granularity, filter).stream()
+														.map(item -> {
+															ReportValueByDatetimeDTO entity = new ReportValueByDatetimeDTO();
+															entity.setCategories_time(item.get("time_full").toString());
+															entity.setValue((Double) item.get(parameter.getSlug()));
+															
+															return entity;
+														})
+														.collect(Collectors.toList());
+											})
+											.orElse(new ArrayList<>())
+											
+											)
+									.orElse(new ArrayList<>());
+							
+							// inverter availability
+							req.setData_intervals(ReportIntervals._1_HOUR.getValue());
+							
+							List<CompletableFuture<List<ReportValueByDatetimeDTO>>> inverterFutures = inverters.stream()
+									.map(inverter -> CompletableFuture.supplyAsync(() -> {
+										try {
+											inverter.setStart_date(req.getStart_date());
+											inverter.setEnd_date(req.getEnd_date());
+											List<ReportValueByDatetimeDTO> data = Optional.ofNullable(queryForList("Reports.getHourlyInverterAvailability", inverter)).orElse(new ArrayList<>());
+											return Lib.fulfillData(getDateTimeList(req, ReportValueByDatetimeDTO.class), data, "categories_time");
+										} catch (Exception e) {
+											return new ArrayList<ReportValueByDatetimeDTO>();
+										}
+									}))
+									.collect(Collectors.toList());
+							
+							List<ReportValueByDatetimeDTO> inverterAvailability = inverterFutures.stream()
+									.map(CompletableFuture::join)
+									.filter(item -> item.size() > 0)
+									// sum all inverter availability hourly
+									.reduce(new ArrayList<>(), (total, curr) -> {
+										if (total.size() == 0) {
+											total.addAll(curr);
+										} else {
+											for (int i = 0; i < total.size(); i++) {
+												if (Objects.isNull(total.get(i).getValue()) && Objects.isNull(curr.get(i).getValue())) continue;
+												total.get(i).setValue(Optional.ofNullable(total.get(i).getValue()).orElse(0.0) + Optional.ofNullable(curr.get(i).getValue()).orElse(0.0));
+											}
+										}
+										
+										return total;
+									})
+									.stream()
+									// average inverter availability hourly
+									.map(item -> {
+										if (Objects.nonNull(item.getValue())) item.setValue(item.getValue() / inverters.size());
+										return item;
+									})
+									.collect(Collectors.groupingBy(
+											item -> YearMonth.from(LocalDateTime.parse(item.getCategories_time(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))),
+											TreeMap::new,
+											Collectors.toList()
+											))
+									.entrySet()
+									.stream()
+									.map(entry -> {
+										YearMonth key = entry.getKey();
+										List<ReportValueByDatetimeDTO> val = entry.getValue();
+										
+										// average inverter availability monthly
+										OptionalDouble avg = val.stream().filter(el -> Objects.nonNull(el.getValue())).mapToDouble(ReportValueByDatetimeDTO::getValue).average();
+										ReportValueByDatetimeDTO item = new ReportValueByDatetimeDTO();
+										item.setCategories_time(key.format(DateTimeFormatter.ofPattern("MM/yyyy")));
+										item.setValue(avg.isPresent() ? BigDecimal.valueOf(avg.getAsDouble()).setScale(2, RoundingMode.HALF_UP).doubleValue() : null);
+										return item;
+									})
+									.collect(Collectors.toList());
+							
+							List<PerformanceReportResponse> reportData = new ArrayList<>();
+							Double actualCumulative = null;
+							Double predictedCumulative = null;
+							Double expectedCumulative = null;
+							Double insolationCumulative = null;
+							boolean isDataExist = false;
+							
+							for (int i = 0; i < totalMonths; i++) {
+								PerformanceReportResponse item = new PerformanceReportResponse();
+								ActualDTO actualItem = actualEnergy.size() == totalMonths ? actualEnergy.get(i) : new ActualDTO();
+								if (!isDataExist && Objects.isNull(actualItem.getEnergy())) continue;
+								else isDataExist = true;
+								
+								String categoryTime = actualItem.getCategories_time();
+								YearMonth yearMonth = YearMonth.parse(categoryTime, DateTimeFormatter.ofPattern("MM/yyyy"));
+								ClientMonthlyDateEntity estimatedItem = estimatedEnergy.size() == totalMonths ? estimatedEnergy.get(i) : new ClientMonthlyDateEntity();
+								PredictedPerformanceEntity predictedItem = predicted.size() == totalMonths ? predicted.get(yearMonth.getMonthValue() - 1) : new PredictedPerformanceEntity();
+								ReportValueByDatetimeDTO insolationItem = insolation.size() == totalMonths ? insolation.get(i) : new ReportValueByDatetimeDTO();
+								ReportValueByDatetimeDTO inverterAvailabilityItem = inverterAvailability.size() == totalMonths ? inverterAvailability.get(i) : new ReportValueByDatetimeDTO();
+								
+								// date time
+								item.setCategories_time(yearMonth.format(DateTimeFormatter.ofPattern("MMM-yy")));
+								
+								// monthly
+								item.setActual(Optional.ofNullable(actualItem.getEnergy()).map(t -> BigDecimal.valueOf(t / 1000).setScale(2, RoundingMode.HALF_UP).doubleValue()).orElse(null));
+								item.setPredicted(Optional.ofNullable(predictedItem.getEnergy()).map(t -> BigDecimal.valueOf(t * Math.pow(0.995, yearMonth.getYear() - commissioningDate.getYear())).setScale(2, RoundingMode.HALF_UP).doubleValue()).orElse(null));
+								if (Objects.nonNull(item.getActual()) && Objects.nonNull(item.getPredicted()) && item.getPredicted() > 0) {
+									item.setPredictedIndex(BigDecimal.valueOf(item.getActual() / item.getPredicted()).setScale(2, RoundingMode.HALF_UP).doubleValue());
+								}
+								item.setExpected(Optional.ofNullable(estimatedItem.getExpected_energy()).map(t -> BigDecimal.valueOf(t / 1000).setScale(2, RoundingMode.HALF_UP).doubleValue()).orElse(null));
+								if (Objects.nonNull(item.getActual()) && Objects.nonNull(item.getExpected()) && item.getExpected() > 0) {
+									item.setExpectedIndex(BigDecimal.valueOf(item.getActual() / item.getExpected()).setScale(2, RoundingMode.HALF_UP).doubleValue());
+								}
+								item.setInsolation(insolationItem.getValue());
+								item.setPredictedInsolation(predictedItem.getInsolation());
+								if (Objects.nonNull(item.getInsolation()) && Objects.nonNull(item.getPredictedInsolation()) && item.getPredictedInsolation() > 0) {
+									item.setPredictedInsolationIndex(BigDecimal.valueOf(item.getInsolation() / item.getPredictedInsolation()).setScale(2, RoundingMode.HALF_UP).doubleValue());
+								}
+								item.setInverterAvailability(inverterAvailabilityItem.getValue());
+								
+								// cumulative
+								if (Objects.nonNull(item.getActual())) {
+									actualCumulative = BigDecimal.valueOf(item.getActual() + Optional.ofNullable(actualCumulative).orElse(0.0)).setScale(2, RoundingMode.HALF_UP).doubleValue();
+									item.setActualCumulative(actualCumulative);
+								}
+								if (Objects.nonNull(item.getPredicted())) {
+									predictedCumulative = BigDecimal.valueOf(item.getPredicted() + Optional.ofNullable(predictedCumulative).orElse(0.0)).setScale(2, RoundingMode.HALF_UP).doubleValue();
+									item.setPredictedCumulative(predictedCumulative);
+								}
+								if (Objects.nonNull(item.getActualCumulative()) && Objects.nonNull(item.getPredictedCumulative()) && item.getPredictedCumulative() > 0) {
+									item.setPredictedCumulativeIndex(BigDecimal.valueOf(item.getActualCumulative() / item.getPredictedCumulative()).setScale(2, RoundingMode.HALF_UP).doubleValue());
+								}
+								if (Objects.nonNull(item.getExpected())) {
+									expectedCumulative = BigDecimal.valueOf(item.getExpected() + Optional.ofNullable(expectedCumulative).orElse(0.0)).setScale(2, RoundingMode.HALF_UP).doubleValue();
+									item.setExpectedCumulative(expectedCumulative);
+								}
+								if (Objects.nonNull(item.getActualCumulative()) && Objects.nonNull(item.getExpectedCumulative()) && item.getExpectedCumulative() > 0) {
+									item.setExpectedCumulativeIndex(BigDecimal.valueOf(item.getActualCumulative() / item.getExpectedCumulative()).setScale(2, RoundingMode.HALF_UP).doubleValue());
+								}
+								if (Objects.nonNull(item.getInsolation())) {
+									insolationCumulative = BigDecimal.valueOf(item.getInsolation() + Optional.ofNullable(insolationCumulative).orElse(0.0)).setScale(2, RoundingMode.HALF_UP).doubleValue();
+									item.setInsolationCumulative(insolationCumulative);
+								}
+								
+								reportData.add(item);
+							}
+							
+							site.setDataReports(reportData);
+						} catch (Exception ex) {
+							log.error(ex);
 						}
 					}))
 					.collect(Collectors.toList());
 			
-			List<ReportValueByDatetimeDTO> inverterAvailability = futures.stream()
-					.map(CompletableFuture::join)
-					.filter(item -> item.size() > 0)
-					// sum all inverter availability hourly
-					.reduce(new ArrayList<>(), (total, curr) -> {
-						if (total.size() == 0) {
-							total.addAll(curr);
-						} else {
-							for (int i = 0; i < total.size(); i++) {
-								if (Objects.isNull(total.get(i).getValue()) && Objects.isNull(curr.get(i).getValue())) continue;
-								total.get(i).setValue(Optional.ofNullable(total.get(i).getValue()).orElse(0.0) + Optional.ofNullable(curr.get(i).getValue()).orElse(0.0));
-							}
-						}
-						
-						return total;
-					})
-					.stream()
-					// average inverter availability hourly
-					.map(item -> {
-						if (Objects.nonNull(item.getValue())) item.setValue(item.getValue() / inverters.size());
-						return item;
-					})
-					.collect(Collectors.groupingBy(
-						item -> YearMonth.from(LocalDateTime.parse(item.getCategories_time(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))),
-						TreeMap::new,
-						Collectors.toList()
-					))
-					.entrySet()
-					.stream()
-					.map(entry -> {
-						YearMonth key = entry.getKey();
-						List<ReportValueByDatetimeDTO> val = entry.getValue();
-						
-						// average inverter availability monthly
-						OptionalDouble avg = val.stream().filter(el -> Objects.nonNull(el.getValue())).mapToDouble(ReportValueByDatetimeDTO::getValue).average();
-						ReportValueByDatetimeDTO item = new ReportValueByDatetimeDTO();
-						item.setCategories_time(key.format(DateTimeFormatter.ofPattern("MM/yyyy")));
-						item.setValue(avg.isPresent() ? BigDecimal.valueOf(avg.getAsDouble()).setScale(2, RoundingMode.HALF_UP).doubleValue() : null);
-						return item;
-					})
-					.collect(Collectors.toList());
+			futures.forEach(CompletableFuture::join);
 			
-			List<PerformanceReportResponse> reportData = new ArrayList<>();
-			Double actualCumulative = null;
-			Double predictedCumulative = null;
-			Double expectedCumulative = null;
-			Double insolationCumulative = null;
-			boolean isDataExist = false;
-			
-			for (int i = 0; i < totalMonths; i++) {
-				PerformanceReportResponse item = new PerformanceReportResponse();
-				ActualDTO actualItem = actualEnergy.size() == totalMonths ? actualEnergy.get(i) : new ActualDTO();
-				if (!isDataExist && Objects.isNull(actualItem.getEnergy())) continue;
-				else isDataExist = true;
-				
-				String categoryTime = actualItem.getCategories_time();
-				YearMonth yearMonth = YearMonth.parse(categoryTime, DateTimeFormatter.ofPattern("MM/yyyy"));
-				ClientMonthlyDateEntity estimatedItem = estimatedEnergy.size() == totalMonths ? estimatedEnergy.get(i) : new ClientMonthlyDateEntity();
-				PredictedPerformanceEntity predictedItem = predicted.size() == totalMonths ? predicted.get(yearMonth.getMonthValue() - 1) : new PredictedPerformanceEntity();
-				ReportValueByDatetimeDTO insolationItem = insolation.size() == totalMonths ? insolation.get(i) : new ReportValueByDatetimeDTO();
-				ReportValueByDatetimeDTO inverterAvailabilityItem = inverterAvailability.size() == totalMonths ? inverterAvailability.get(i) : new ReportValueByDatetimeDTO();
-				
-				// date time
-				item.setCategories_time(yearMonth.format(DateTimeFormatter.ofPattern("MMM-yy")));
-				
-				// monthly
-				item.setActual(Optional.ofNullable(actualItem.getEnergy()).map(t -> BigDecimal.valueOf(t / 1000).setScale(2, RoundingMode.HALF_UP).doubleValue()).orElse(null));
-				item.setPredicted(Optional.ofNullable(predictedItem.getEnergy()).map(t -> BigDecimal.valueOf(t * Math.pow(0.995, yearMonth.getYear() - commissioningDate.getYear())).setScale(2, RoundingMode.HALF_UP).doubleValue()).orElse(null));
-				if (Objects.nonNull(item.getActual()) && Objects.nonNull(item.getPredicted()) && item.getPredicted() > 0) {
-					item.setPredictedIndex(BigDecimal.valueOf(item.getActual() / item.getPredicted()).setScale(2, RoundingMode.HALF_UP).doubleValue());
-				}
-				item.setExpected(Optional.ofNullable(estimatedItem.getExpected_energy()).map(t -> BigDecimal.valueOf(t / 1000).setScale(2, RoundingMode.HALF_UP).doubleValue()).orElse(null));
-				if (Objects.nonNull(item.getActual()) && Objects.nonNull(item.getExpected()) && item.getExpected() > 0) {
-					item.setExpectedIndex(BigDecimal.valueOf(item.getActual() / item.getExpected()).setScale(2, RoundingMode.HALF_UP).doubleValue());
-				}
-				item.setInsolation(insolationItem.getValue());
-				item.setPredictedInsolation(predictedItem.getInsolation());
-				if (Objects.nonNull(item.getInsolation()) && Objects.nonNull(item.getPredictedInsolation()) && item.getPredictedInsolation() > 0) {
-					item.setPredictedInsolationIndex(BigDecimal.valueOf(item.getInsolation() / item.getPredictedInsolation()).setScale(2, RoundingMode.HALF_UP).doubleValue());
-				}
-				item.setInverterAvailability(inverterAvailabilityItem.getValue());
-				
-				// cumulative
-				if (Objects.nonNull(item.getActual())) {
-					actualCumulative = BigDecimal.valueOf(item.getActual() + Optional.ofNullable(actualCumulative).orElse(0.0)).setScale(2, RoundingMode.HALF_UP).doubleValue();
-					item.setActualCumulative(actualCumulative);
-				}
-				if (Objects.nonNull(item.getPredicted())) {
-					predictedCumulative = BigDecimal.valueOf(item.getPredicted() + Optional.ofNullable(predictedCumulative).orElse(0.0)).setScale(2, RoundingMode.HALF_UP).doubleValue();
-					item.setPredictedCumulative(predictedCumulative);
-				}
-				if (Objects.nonNull(item.getActualCumulative()) && Objects.nonNull(item.getPredictedCumulative()) && item.getPredictedCumulative() > 0) {
-					item.setPredictedCumulativeIndex(BigDecimal.valueOf(item.getActualCumulative() / item.getPredictedCumulative()).setScale(2, RoundingMode.HALF_UP).doubleValue());
-				}
-				if (Objects.nonNull(item.getExpected())) {
-					expectedCumulative = BigDecimal.valueOf(item.getExpected() + Optional.ofNullable(expectedCumulative).orElse(0.0)).setScale(2, RoundingMode.HALF_UP).doubleValue();
-					item.setExpectedCumulative(expectedCumulative);
-				}
-				if (Objects.nonNull(item.getActualCumulative()) && Objects.nonNull(item.getExpectedCumulative()) && item.getExpectedCumulative() > 0) {
-					item.setExpectedCumulativeIndex(BigDecimal.valueOf(item.getActualCumulative() / item.getExpectedCumulative()).setScale(2, RoundingMode.HALF_UP).doubleValue());
-				}
-				if (Objects.nonNull(item.getInsolation())) {
-					insolationCumulative = BigDecimal.valueOf(item.getInsolation() + Optional.ofNullable(insolationCumulative).orElse(0.0)).setScale(2, RoundingMode.HALF_UP).doubleValue();
-					item.setInsolationCumulative(insolationCumulative);
-				}
-				
-				reportData.add(item);
-			}
-			
-			dataObj.setDataReports(reportData);
-			
-			return dataObj;
+			return reportDetail;
 		} catch (Exception ex) {
-			return null;
+			log.error("Reports.getPerformanceReport", ex);
+			throw ex;
 		}
 	}
 	
-	
-	
-	
-	
-	
-	
+	/**
+	 * Get meter inverter production report
+	 * @author Hung.Bui
+	 * @since 2026-10-15
+	 * @param req
+	 * @return meter inverter production report
+	 */
+	public ReportDetail getMeterInverterProductionReport(ViewReportEntity req) throws Exception {
+		try {
+			ReportDetail reportDetail = getReportDetail(req);
+			if (Objects.isNull(reportDetail)) throw new Exception("Report not found");
+			
+			LocalDateTime startDate = LocalDateTime.parse(req.getStart_date(), inputDTF);
+			LocalDateTime endDate = LocalDateTime.parse(req.getEnd_date(), inputDTF);
+			ReportIntervals intervals = ReportIntervals.fromValue(reportDetail.getData_intervals());
+			ChartingGranularity granularity = ReportIntervals.toChartingGranularity(intervals);
+			ChartingFilter filter = ChartingFilter.CUSTOM;
+			
+			List<CompletableFuture<Void>> futures = Optional.ofNullable(reportDetail.getSites()).orElse(new ArrayList<>()).stream()
+					.filter(site -> req.getId_site() > 0 ? site.getId() == req.getId_site() : true)
+					.map(site -> CompletableFuture.runAsync(() -> {
+						try {
+							UploadingDataIntervals siteUploadingInterval = UploadingDataIntervals.fromValue(site.getData_send_time());
+							DevicesByTypeEntity devices = deviceService.getDevicesBySite(site.getId(), req.getDomain());
+							
+							List<ValueDTO> summingDataByMeters = getActualBySiteDevices(devices.getMeter(), startDate, endDate, granularity, filter).stream()
+									.map(item -> {
+										ValueDTO valueDTO = new ValueDTO();
+										valueDTO.setTimestamp(item.getCategories_time());
+										valueDTO.setProductionMeterActivePower(Optional.ofNullable(item.getPower()).map(value -> BigDecimal.valueOf(value).setScale(2, RoundingMode.HALF_UP).doubleValue()).orElse(null));
+										valueDTO.setProductionMeterNetEnergy(Optional.ofNullable(item.getEnergy()).map(value -> BigDecimal.valueOf(value).setScale(2, RoundingMode.HALF_UP).doubleValue()).orElse(null));
+										
+										return valueDTO;
+									})
+									.collect(Collectors.toList());
+							
+							List<ValueDTO> summingDataByInverters = getActualBySiteDevices(devices.getInverter(), startDate, endDate, granularity, filter).stream()
+									.map(item -> {
+										ValueDTO valueDTO = new ValueDTO();
+										valueDTO.setTimestamp(item.getCategories_time());
+										valueDTO.setInverterActivePower(Optional.ofNullable(item.getPower()).map(value -> BigDecimal.valueOf(value).setScale(2, RoundingMode.HALF_UP).doubleValue()).orElse(null));
+										valueDTO.setInverterNetEnergy(Optional.ofNullable(item.getEnergy()).map(value -> BigDecimal.valueOf(value).setScale(2, RoundingMode.HALF_UP).doubleValue()).orElse(null));
+										
+										return valueDTO;
+									})
+									.collect(Collectors.toList());
+							
+							List<ValueDTO> irradianceData = getIrradianceBySiteDevices(devices.getIrradiance(), startDate, endDate, granularity, filter)
+									.stream()
+									.map(item -> {
+										ValueDTO valueDTO = new ValueDTO();
+										valueDTO.setTimestamp(item.getCategories_time());
+										valueDTO.setPoa(Optional.ofNullable(item.getIrradiance()).map(value -> BigDecimal.valueOf(value).setScale(1, RoundingMode.HALF_UP).doubleValue()).orElse(null));
+										
+										return valueDTO;
+									})
+									.collect(Collectors.toList());
+									
+							List<ValueDTO> expectedData = (devices.getIrradiance().isEmpty() ?
+									new ArrayList<ClientMonthlyDateEntity>()
+									: devices.getIrradiance().size() == 1 ?
+											customerViewService.getIrradianceByDevice(startDate, endDate, devices.getIrradiance().get(0), granularity, filter, false, siteUploadingInterval)
+											: customerViewService.getExpectedBySelectedPOA(startDate, endDate, site.getId(), granularity, filter, devices.getIrradiance()))
+									.stream()
+									.map(item -> {
+										ValueDTO valueDTO = new ValueDTO();
+										valueDTO.setTimestamp(item.getTime_full());
+										valueDTO.setExpectedPower(Optional.ofNullable(item.getExpected_power()).map(value -> BigDecimal.valueOf(value).setScale(2, RoundingMode.HALF_UP).doubleValue()).orElse(null));
+										valueDTO.setExpectedEnergy(Optional.ofNullable(item.getExpected_energy()).map(value -> BigDecimal.valueOf(value).setScale(2, RoundingMode.HALF_UP).doubleValue()).orElse(null));
+										
+										return valueDTO;
+									})
+									.collect(Collectors.toList());
+									
+							Collection<ValueDTO> mergedData = Stream.of(summingDataByMeters, summingDataByInverters, irradianceData, expectedData)
+									.flatMap(Collection::stream)
+									.collect(Collectors.toMap(
+											ValueDTO::getTimestamp,
+											item -> item,
+											(s1, s2) -> {
+												ValueDTO valueDTO = new ValueDTO();
+												valueDTO.setTimestamp(s1.getTimestamp());
+												valueDTO.setProductionMeterActivePower(Optional.ofNullable(s1.getProductionMeterActivePower()).orElse(s2.getProductionMeterActivePower()));
+												valueDTO.setInverterActivePower(Optional.ofNullable(s1.getInverterActivePower()).orElse(s2.getInverterActivePower()));
+												valueDTO.setProductionMeterNetEnergy(Optional.ofNullable(s1.getProductionMeterNetEnergy()).orElse(s2.getProductionMeterNetEnergy()));
+												valueDTO.setInverterNetEnergy(Optional.ofNullable(s1.getInverterNetEnergy()).orElse(s2.getInverterNetEnergy()));
+												valueDTO.setPoa(Optional.ofNullable(s1.getPoa()).orElse(s2.getPoa()));
+												valueDTO.setExpectedPower(Optional.ofNullable(s1.getExpectedPower()).orElse(s2.getExpectedPower()));
+												valueDTO.setExpectedEnergy(Optional.ofNullable(s1.getExpectedEnergy()).orElse(s2.getExpectedEnergy()));
+												
+												return valueDTO;
+											},
+											LinkedHashMap::new
+									))
+									.values()
+									.stream()
+									.map(item -> {
+										DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+										
+										switch (intervals) {
+										case _15_MINUTES:
+											formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy hh:mm a");
+											break;
+											
+										case _1_HOUR:
+											formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy hh:00 a");
+											break;
+											
+										case DAILY:
+											formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+											break;
+											
+										case MONTHLY:
+											formatter = DateTimeFormatter.ofPattern("MM/yyyy");
+											break;
+
+										default:
+											break;
+										}
+										
+										item.setTimestamp(dateTimeFormatConverter(granularity, item.getTimestamp(), formatter));
+										
+										return item;
+									})
+									.collect(Collectors.toList());
+							
+							site.setDataReports(new ArrayList<>(mergedData));
+						} catch (Exception ex) {
+							log.error(ex);
+						}
+					}))
+					.collect(Collectors.toList());
+			
+			futures.forEach(CompletableFuture::join);
+			
+			return reportDetail;
+		} catch (Exception ex) {
+			log.error("Reports.getMeterInverterProductionReport", ex);
+			throw ex;
+		}
+	}
 
 	public Object getSiteDetail(ViewReportEntity obj) {
 		ViewReportEntity dataObj = new ViewReportEntity();
@@ -1977,8 +2129,8 @@ public class ReportsService extends DB {
 			
 			ChartingGranularity chartingGranularity = ChartingGranularity._1_MONTH;
 			ChartingFilter chartingFilter = ChartingFilter.THIS_MONTH;
-			LocalDateTime startDate = LocalDateTime.parse(obj.getStart_date(), dateTimeFormatter);
-			LocalDateTime endDate = LocalDateTime.parse(obj.getEnd_date(), dateTimeFormatter);
+			LocalDateTime startDate = LocalDateTime.parse(obj.getStart_date(), inputDTF);
+			LocalDateTime endDate = LocalDateTime.parse(obj.getEnd_date(), inputDTF);
 			
 			List<CompletableFuture<RECReportResponse>> futures = Optional.ofNullable((List<RECReportResponse>) queryForList("Reports.getDataEnergyRECReport", obj)).orElse(new ArrayList<>())
 					.stream()
@@ -2014,30 +2166,30 @@ public class ReportsService extends DB {
 	 */
 	public boolean sentMailReport(ViewReportEntity obj) {
 		try {
-			List<ViewReportEntity> dataObjList = getReportDataList(obj);
-			if (dataObjList == null || dataObjList.size() == 0) return false;
+			ReportDetail reportDetail = getReportDataList(obj);
+			if (Objects.isNull(reportDetail)) return false;
 			String filePath = null;
 			
 			switch (ReportRange.fromValue(obj.getCadence_range())) {
 				case DAILY: 
-					filePath = obj.getFile_type() == ReportFileType.PDF.getValue() ? createDailyReportPdfFile(obj, dataObjList) : createDailyReportSheetFile(obj, dataObjList);
+					filePath = obj.getFile_type() == ReportFileType.PDF.getValue() ? createDailyReportPdfFile(obj, reportDetail) : createDailyReportSheetFile(obj, reportDetail);
 					break;
 					
 				case LAST_MONTH:
 				case MONTHLY:
-					filePath = obj.getFile_type() == ReportFileType.PDF.getValue() ? createMonthlyReportPdfFile(obj, dataObjList) : createMonthlyReportSheetFile(obj, dataObjList);
+					filePath = obj.getFile_type() == ReportFileType.PDF.getValue() ? createMonthlyReportPdfFile(obj, reportDetail) : createMonthlyReportSheetFile(obj, reportDetail);
 					break;
 					
 				case LAST_QUARTER:
-					filePath = obj.getFile_type() == ReportFileType.PDF.getValue() ? createQuarterlyReportPdfFile(obj, dataObjList) : createQuarterlyReportSheetFile(obj, dataObjList);
+					filePath = obj.getFile_type() == ReportFileType.PDF.getValue() ? createQuarterlyReportPdfFile(obj, reportDetail) : createQuarterlyReportSheetFile(obj, reportDetail);
 					break;
 					
 				case ANNUALLY:
-					filePath = obj.getFile_type() == ReportFileType.PDF.getValue() ? createAnnuallyReportPdfFile(obj, dataObjList) : createAnnuallyReportSheetFile(obj, dataObjList);
+					filePath = obj.getFile_type() == ReportFileType.PDF.getValue() ? createAnnuallyReportPdfFile(obj, reportDetail) : createAnnuallyReportSheetFile(obj, reportDetail);
 					break;
 					
 				case CUSTOM:
-					filePath = obj.getFile_type() == ReportFileType.PDF.getValue() ? createCustomReportPdfFile(obj, dataObjList) : createCustomReportSheetFile(obj, dataObjList);
+					filePath = obj.getFile_type() == ReportFileType.PDF.getValue() ? createCustomReportPdfFile(obj, reportDetail) : createCustomReportSheetFile(obj, reportDetail);
 					break;
 					
 				default:
@@ -2046,7 +2198,7 @@ public class ReportsService extends DB {
 			
 			if (filePath == null) return false;
 			
-			sentReportByMail(filePath, dataObjList.get(0).getSubscribers(), obj.getCadence_range_name(), 16, "Customer", obj.getCadence_range_name());
+			sentReportByMail(filePath, reportDetail.getSubscribers(), obj.getCadence_range_name(), 16, "Customer", obj.getCadence_range_name());
 			return true;
 		} catch (Exception e) {
 			return false;
@@ -2061,20 +2213,20 @@ public class ReportsService extends DB {
 	 */
 	public String downloadReport(ViewReportEntity obj) {
 		try {
-			List<ViewReportEntity> dataObjList = getReportDataList(obj);
-			if (dataObjList == null || dataObjList.size() == 0) return null;
+			ReportDetail reportDetail = getReportDataList(obj);
+			if (Objects.isNull(reportDetail)) return null;
 			
 			switch (ReportRange.fromValue(obj.getCadence_range())) {
-				case DAILY: return obj.getFile_type() == ReportFileType.PDF.getValue() ? createDailyReportPdfFile(obj, dataObjList) : createDailyReportSheetFile(obj, dataObjList);
+				case DAILY: return obj.getFile_type() == ReportFileType.PDF.getValue() ? createDailyReportPdfFile(obj, reportDetail) : createDailyReportSheetFile(obj, reportDetail);
 				
 				case LAST_MONTH:
-				case MONTHLY: return obj.getFile_type() == ReportFileType.PDF.getValue() ? createMonthlyReportPdfFile(obj, dataObjList) : createMonthlyReportSheetFile(obj, dataObjList);
+				case MONTHLY: return obj.getFile_type() == ReportFileType.PDF.getValue() ? createMonthlyReportPdfFile(obj, reportDetail) : createMonthlyReportSheetFile(obj, reportDetail);
 				
-				case LAST_QUARTER: return obj.getFile_type() == ReportFileType.PDF.getValue() ? createQuarterlyReportPdfFile(obj, dataObjList) : createQuarterlyReportSheetFile(obj, dataObjList);
+				case LAST_QUARTER: return obj.getFile_type() == ReportFileType.PDF.getValue() ? createQuarterlyReportPdfFile(obj, reportDetail) : createQuarterlyReportSheetFile(obj, reportDetail);
 				
-				case ANNUALLY: return obj.getFile_type() == ReportFileType.PDF.getValue() ? createAnnuallyReportPdfFile(obj, dataObjList) : createAnnuallyReportSheetFile(obj, dataObjList);
+				case ANNUALLY: return obj.getFile_type() == ReportFileType.PDF.getValue() ? createAnnuallyReportPdfFile(obj, reportDetail) : createAnnuallyReportSheetFile(obj, reportDetail);
 				
-				case CUSTOM: return obj.getFile_type() == ReportFileType.PDF.getValue() ? createCustomReportPdfFile(obj, dataObjList) : createCustomReportSheetFile(obj, dataObjList);
+				case CUSTOM: return obj.getFile_type() == ReportFileType.PDF.getValue() ? createCustomReportPdfFile(obj, reportDetail) : createCustomReportSheetFile(obj, reportDetail);
 				
 				default: return null;
 			}
@@ -2092,11 +2244,12 @@ public class ReportsService extends DB {
 	public boolean sentMailAssetManagementAndOperationPerformanceReport(ViewReportEntity obj) {
 		try {
 			AssetManagementAndOperationPerformanceReportEntity dataObj = getAssetManagementAndOperationPerformanceReport(obj);
-			if (dataObj == null) return false;
-			String filePath = createAssetManagementAndOperationPerformanceReportSheetFile(dataObj);
+			String filePath = createAssetManagementAndOperationPerformanceReportSheetFile(obj, dataObj);
 			if (filePath == null) return false;
 			
-			sentReportByMail(filePath, dataObj.getReportDetail().getSubscribers(), "asset-management-and-operation-performance", 21, dataObj.getReportDetail().getSite_name(), dataObj.getReportDetail().getId_site(), "Customer");
+			ReportDetail reportDetail = dataObj.getReportDetail();
+			int siteId = reportDetail.getSites().get(0).getId();
+			sentReportByMail(filePath, reportDetail.getSubscribers(), "asset-management-and-operation-performance", 21, reportDetail.getName(), siteId, "Customer");
 			return true;
 		} catch (Exception e) {
 			return false;
@@ -2112,8 +2265,7 @@ public class ReportsService extends DB {
 	public String downloadAssetManagementAndOperationPerformanceReport(ViewReportEntity obj) {
 		try {
 			AssetManagementAndOperationPerformanceReportEntity dataObj = getAssetManagementAndOperationPerformanceReport(obj);
-			if (dataObj == null) return null;
-			return createAssetManagementAndOperationPerformanceReportSheetFile(dataObj);
+			return createAssetManagementAndOperationPerformanceReportSheetFile(obj, dataObj);
 		} catch (Exception e) {
 			return null;
 		}
@@ -2123,18 +2275,15 @@ public class ReportsService extends DB {
 	 * send mail sanity check report sheet file
 	 * @author Hung.Bui
 	 * @since 2025-08-08
-	 * @param obj
+	 * @param req
 	 */
-	public boolean sentMailSanityCheckReport(ViewReportEntity obj) {
+	public boolean sentMailSanityCheckReport(ViewReportEntity req) {
 		try {
-			ViewReportEntity dataObj = getSanityCheckReport(obj);
-			if (dataObj == null) return false;
-			dataObj.setStart_date(obj.getStart_date());
-			dataObj.setEnd_date(obj.getEnd_date());
-			String filePath = createSanityCheckReportSheetFile(dataObj);
+			ReportDetail reportDetail = getSanityCheckReport(req);
+			String filePath = createSanityCheckReportSheetFile(reportDetail, req.getStart_date(), req.getEnd_date());
 			if (filePath == null) return false;
 			
-			sentReportByMail(filePath, dataObj.getSubscribers(), "sanity-check", 25);
+			sentReportByMail(filePath, reportDetail.getSubscribers(), "sanity-check", 25);
 			return true;
 		} catch (Exception e) {
 			return false;
@@ -2145,15 +2294,12 @@ public class ReportsService extends DB {
 	 * @description download anity check report sheet file
 	 * @author Hung.Bui
 	 * @since 2025-08-08
-	 * @param obj
+	 * @param req
 	 */
-	public String downloadSanityCheckReport(ViewReportEntity obj) {
+	public String downloadSanityCheckReport(ViewReportEntity req) {
 		try {
-			ViewReportEntity dataObj = getSanityCheckReport(obj);
-			if (dataObj == null) return null;
-			dataObj.setStart_date(obj.getStart_date());
-			dataObj.setEnd_date(obj.getEnd_date());
-			return createSanityCheckReportSheetFile(dataObj);
+			ReportDetail reportDetail = getSanityCheckReport(req);
+			return createSanityCheckReportSheetFile(reportDetail, req.getStart_date(), req.getEnd_date());
 		} catch (Exception e) {
 			return null;
 		}
@@ -2167,8 +2313,7 @@ public class ReportsService extends DB {
 	 */
 	public boolean sentMailPerformanceReport(ViewReportEntity obj) {
 		try {
-			ViewReportEntity dataObj = getPerformanceReport(obj);
-			if (dataObj == null) return false;
+			ReportDetail dataObj = getPerformanceReport(obj);
 			String filePath = createPerformanceReportSheetFile(dataObj);
 			if (filePath == null) return false;
 			
@@ -2187,9 +2332,42 @@ public class ReportsService extends DB {
 	 */
 	public String downloadPerformanceReport(ViewReportEntity obj) {
 		try {
-			ViewReportEntity dataObj = getPerformanceReport(obj);
-			if (dataObj == null) return null;
+			ReportDetail dataObj = getPerformanceReport(obj);
 			return createPerformanceReportSheetFile(dataObj);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	
+	/**
+	 * Sent mail meter inverter production report
+	 * @author Hung.Bui
+	 * @since 2026-10-22
+	 * @param req
+	 */
+	public boolean sentMailMeterInverterProductionReport(ViewReportEntity req) {
+		try {
+			ReportDetail reportDetail = getMeterInverterProductionReport(req);
+			String filePath = createMeterInverterProductionReportSheetFile(reportDetail, req.getStart_date(), req.getEnd_date());
+			if (filePath == null) return false;
+			
+			sentReportByMail(filePath, reportDetail.getSubscribers(), "meter-inverter-production-report", 32);
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
+	}
+	
+	/**
+	 * download meter inverter production report
+	 * @author Hung.Bui
+	 * @since 2026-10-22
+	 * @param req
+	 */
+	public String downloadMeterInverterProductionReport(ViewReportEntity req) {
+		try {
+			ReportDetail reportDetail = getMeterInverterProductionReport(req);
+			return createMeterInverterProductionReportSheetFile(reportDetail, req.getStart_date(), req.getEnd_date());
 		} catch (Exception e) {
 			return null;
 		}
@@ -2269,46 +2447,45 @@ public class ReportsService extends DB {
 	 * @description create daily report sheet file
 	 * @author Hung.Bui
 	 * @since 2025-08-08
-	 * @param obj
+	 * @param req
 	 * @return file path
 	 */
-	public String createDailyReportSheetFile(ViewReportEntity obj, List<ViewReportEntity> dataObjList) {
+	public String createDailyReportSheetFile(ViewReportEntity req, ReportDetail reportDetail) {
 		try (XSSFWorkbook document = new XSSFWorkbook()) {
 			int pictureIdx = DocumentHelper.readLogoImageFile(document);
 			
-			for (int i = 0; i < dataObjList.size(); i++) {
-			try {
-				ViewReportEntity dataObj = dataObjList.get(i);
-				
-				if (dataObj != null) {
-					List<DailyDateEntity> dataExports = dataObj.getDataReports();
-					int numOfPoints = dataExports != null ? dataExports.size() : 0;
-					
-					XSSFSheet sheet = document.createSheet(WorkbookUtil.createSafeSheetName((i + 1) + "_" + dataObj.getSite_name()));
-					
-					// insert logo image
-					ClientAnchor logoAnchor = new XSSFClientAnchor(-20 * Units.EMU_PER_PIXEL, 10 * Units.EMU_PER_PIXEL, 0, -10 * Units.EMU_PER_PIXEL, 11, 0, 12, 4);
-					DocumentHelper.insertLogo(sheet, logoAnchor, pictureIdx);
-					
-					// report information and table
-					writeHeaderDailyReport(sheet, obj, dataObj);
-					
-					// chart
-					if (numOfPoints > 0) {
-						ClientAnchor chartAnchor = new XSSFClientAnchor(5 * Units.EMU_PER_PIXEL, 0, 0, 0, 0, 6, 12, 22);
-						XDDFChart chart = DocumentHelper.insertChart(sheet, chartAnchor, null);
+			Optional.ofNullable(reportDetail.getSites()).ifPresent(sites -> {
+				for (int i = 0; i < sites.size(); i++) {
+					try {
+						SiteByReport site = sites.get(i);
+						List<DailyDateEntity> dataExports = Optional.ofNullable((List<DailyDateEntity>) site.getDataReports()).orElse(new ArrayList<>());
+						int numOfPoints = dataExports.size();
 						
-						// data sources
-						XDDFDataSource<String> categoriesData = XDDFDataSourcesFactory.fromStringCellRange(sheet, new CellRangeAddress(25, 25 + numOfPoints - 1, 0, 0));
-						XDDFNumericalDataSource<Double> valuesData1 = XDDFDataSourcesFactory.fromNumericCellRange(sheet, new CellRangeAddress(25, 25 + numOfPoints - 1, 3, 3));
-						XDDFNumericalDataSource<Double> valuesData2 = XDDFDataSourcesFactory.fromNumericCellRange(sheet, new CellRangeAddress(25, 25 + numOfPoints - 1, 6, 6));
-						XDDFNumericalDataSource<Double> valuesData3 = XDDFDataSourcesFactory.fromNumericCellRange(sheet, new CellRangeAddress(25, 25 + numOfPoints - 1, 9, 9));
+						XSSFSheet sheet = document.createSheet(WorkbookUtil.createSafeSheetName((i + 1) + "_" + site.getName()));
 						
-						// category axis
-						XDDFCategoryAxis bottomAxis = DocumentHelper.createCategoryAxis(chart);
-						// adjust tick mark position based on data intervals
-						int dataIntervals = 1;
-						switch (ReportIntervals.fromValue(dataObj.getData_intervals())) {
+						// insert logo image
+						ClientAnchor logoAnchor = new XSSFClientAnchor(-20 * Units.EMU_PER_PIXEL, 10 * Units.EMU_PER_PIXEL, 0, -10 * Units.EMU_PER_PIXEL, 11, 0, 12, 4);
+						DocumentHelper.insertLogo(sheet, logoAnchor, pictureIdx);
+						
+						// report information and table
+						writeHeaderDailyReport(sheet, reportDetail, site, req.getStart_date(), req.getEnd_date());
+						
+						// chart
+						if (numOfPoints > 0) {
+							ClientAnchor chartAnchor = new XSSFClientAnchor(5 * Units.EMU_PER_PIXEL, 0, 0, 0, 0, 6, 12, 22);
+							XDDFChart chart = DocumentHelper.insertChart(sheet, chartAnchor, null);
+							
+							// data sources
+							XDDFDataSource<String> categoriesData = XDDFDataSourcesFactory.fromStringCellRange(sheet, new CellRangeAddress(25, 25 + numOfPoints - 1, 0, 0));
+							XDDFNumericalDataSource<Double> valuesData1 = XDDFDataSourcesFactory.fromNumericCellRange(sheet, new CellRangeAddress(25, 25 + numOfPoints - 1, 3, 3));
+							XDDFNumericalDataSource<Double> valuesData2 = XDDFDataSourcesFactory.fromNumericCellRange(sheet, new CellRangeAddress(25, 25 + numOfPoints - 1, 6, 6));
+							XDDFNumericalDataSource<Double> valuesData3 = XDDFDataSourcesFactory.fromNumericCellRange(sheet, new CellRangeAddress(25, 25 + numOfPoints - 1, 9, 9));
+							
+							// category axis
+							XDDFCategoryAxis bottomAxis = DocumentHelper.createCategoryAxis(chart);
+							// adjust tick mark position based on data intervals
+							int dataIntervals = 1;
+							switch (ReportIntervals.fromValue(reportDetail.getData_intervals())) {
 							case _5_MINUTE:
 								dataIntervals = 288;
 								break;
@@ -2320,47 +2497,47 @@ public class ReportsService extends DB {
 								break;
 							default:
 								break;
-						}
-                        chart.getCTChart().getPlotArea().getCatAxArray(0).addNewTickLblSkip().setVal(dataIntervals);
-                        chart.getCTChart().getPlotArea().getCatAxArray(0).addNewTickMarkSkip().setVal(dataIntervals);
-						
-						// left value axis
-						XDDFValueAxis leftAxis = DocumentHelper.createLeftValueAxis(chart, "kW");
-						
-						XDDFChartData data = DocumentHelper.createChartData(chart, ChartTypes.LINE, bottomAxis, leftAxis);
-						DocumentHelper.addSeries(dataExports.stream().allMatch(item -> item.getPower() == null), data, categoriesData, valuesData1, "Actual Power (kW)", XDDFColor.from(PresetColor.STEEL_BLUE), null);
-						
-						chart.plot(data);
-						
-						// right value axis
-						XDDFValueAxis rightAxis = DocumentHelper.createRightValueAxis(chart, bottomAxis, "kWh");
-						
-						data = DocumentHelper.createChartData(chart, ChartTypes.LINE, bottomAxis, rightAxis);
-						DocumentHelper.addSeries(dataExports.stream().allMatch(item -> item.getEnergy() == null), data, categoriesData, valuesData2, "Actual Energy (kWh)", XDDFColor.from(PresetColor.LIGHT_SKY_BLUE), null);
-						
-						chart.plot(data);
-						
-						if (dataObj.isHave_poa()) {
-							// 2nd right value axis
-							rightAxis = DocumentHelper.createRightValueAxis(chart, bottomAxis, "W/m2");
+							}
+							chart.getCTChart().getPlotArea().getCatAxArray(0).addNewTickLblSkip().setVal(dataIntervals);
+							chart.getCTChart().getPlotArea().getCatAxArray(0).addNewTickMarkSkip().setVal(dataIntervals);
 							
-							data = DocumentHelper.createChartData(chart, ChartTypes.LINE, bottomAxis, rightAxis);
-							DocumentHelper.addSeries(dataExports.stream().allMatch(item -> item.getIrradiance() == null), data, categoriesData, valuesData3, "Irradiance (W/m2)", XDDFColor.from(PresetColor.DARK_ORANGE), null);
+							// left value axis
+							XDDFValueAxis leftAxis = DocumentHelper.createLeftValueAxis(chart, "kW");
+							
+							XDDFChartData data = DocumentHelper.createChartData(chart, ChartTypes.LINE, bottomAxis, leftAxis);
+							DocumentHelper.addSeries(dataExports.stream().allMatch(item -> item.getPower() == null), data, categoriesData, valuesData1, "Actual Power (kW)", XDDFColor.from(PresetColor.STEEL_BLUE), null);
 							
 							chart.plot(data);
+							
+							// right value axis
+							XDDFValueAxis rightAxis = DocumentHelper.createRightValueAxis(chart, bottomAxis, "kWh");
+							
+							data = DocumentHelper.createChartData(chart, ChartTypes.LINE, bottomAxis, rightAxis);
+							DocumentHelper.addSeries(dataExports.stream().allMatch(item -> item.getEnergy() == null), data, categoriesData, valuesData2, "Actual Energy (kWh)", XDDFColor.from(PresetColor.LIGHT_SKY_BLUE), null);
+							
+							chart.plot(data);
+							
+							if (site.isHave_poa()) {
+								// 2nd right value axis
+								rightAxis = DocumentHelper.createRightValueAxis(chart, bottomAxis, "W/m2");
+								
+								data = DocumentHelper.createChartData(chart, ChartTypes.LINE, bottomAxis, rightAxis);
+								DocumentHelper.addSeries(dataExports.stream().allMatch(item -> item.getIrradiance() == null), data, categoriesData, valuesData3, "Irradiance (W/m2)", XDDFColor.from(PresetColor.DARK_ORANGE), null);
+								
+								chart.plot(data);
+							}
 						}
-					}
+					} catch (Exception e) {}
 				}
-			} catch (Exception e) {}
-			}
+			});
 			
-			return writeToSheetFile(document, obj.getReport_name());
+			return writeToSheetFile(document, reportDetail.getName());
 		} catch (Exception e) {
 			return null;
 		}
 	}
 	
-	private static void writeHeaderDailyReport(Sheet sheet, ViewReportEntity report, ViewReportEntity dataObj) {
+	private static void writeHeaderDailyReport(Sheet sheet, ReportDetail reportDetail, SiteByReport site, String startDate, String endDate) {
 		try {
 			sheet.setDefaultColumnWidth(16);
 			sheet.setColumnWidth(0, 15 * 256);
@@ -2398,7 +2575,7 @@ public class ReportsService extends DB {
 			cell = row.createCell(2);
 			row.setHeight((short) 600);
 			cell.setCellStyle(reportInfoBoldCellStyle);
-			cell.setCellValue(dataObj.getSite_name());
+			cell.setCellValue(site.getName());
 			cell = row.createCell(3);
 			cell.setCellStyle(reportInfoBoldCellStyle);
 			cell = row.createCell(4);
@@ -2416,7 +2593,7 @@ public class ReportsService extends DB {
 			
 			cell = row.createCell(2);
 			cell.setCellStyle(reportInfoCellStyle);
-			cell.setCellValue(dataObj.getReport_date());
+			cell.setCellValue(reportDetail.getReport_date());
 			cell = row.createCell(3);
 			cell.setCellStyle(reportInfoCellStyle);
 			cell = row.createCell(4);
@@ -2432,11 +2609,9 @@ public class ReportsService extends DB {
 			cell.setCellStyle(reportInfoBoldCellStyle);
 			sheet.addMergedRegion(new CellRangeAddress(2, 2, 0, 1));
 			
-			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-			SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
 			cell = row.createCell(2);
 			cell.setCellStyle(reportInfoCellStyle);
-			cell.setCellValue(format.format(dateFormat.parse(report.getStart_date())) + " - " + format.format(dateFormat.parse(report.getEnd_date())));
+			cell.setCellValue(reportDateRangeDTF.format(inputDTF.parse(startDate)) + " - " + reportDateRangeDTF.format(inputDTF.parse(endDate)));
 			cell = row.createCell(3);
 			cell.setCellStyle(reportInfoCellStyle);
 			cell = row.createCell(4);
@@ -2454,7 +2629,7 @@ public class ReportsService extends DB {
 			
 			cell = row.createCell(2);
 			cell.setCellStyle(reportInfoCellStyle);
-			cell.setCellValue(dataObj.getDc_capacity());
+			cell.setCellValue(site.getDc_capacity());
 			cell = row.createCell(3);
 			cell.setCellStyle(reportInfoCellStyle);
 			cell = row.createCell(4);
@@ -2508,7 +2683,7 @@ public class ReportsService extends DB {
 			cell.setCellStyle(tableHeaderCellStyle);
 			sheet.addMergedRegion(new CellRangeAddress(24, 24, 9, 11));
 			
-			List<DailyDateEntity> dataExports = dataObj.getDataReports();
+			List<DailyDateEntity> dataExports = (List<DailyDateEntity>) site.getDataReports();
 			if(dataExports != null && dataExports.size() > 0) {
 				for(int i = 0 ;i < dataExports.size(); i++) {
 					DailyDateEntity item = (DailyDateEntity) dataExports.get(i); 
@@ -2560,12 +2735,12 @@ public class ReportsService extends DB {
 	 * @description create daily report pdf file
 	 * @author Hung.Bui
 	 * @since 2025-08-08
-	 * @param obj
+	 * @param req
 	 * @return file path
 	 */
-	public String createDailyReportPdfFile(ViewReportEntity obj, List<ViewReportEntity> dataObjList) {
+	public String createDailyReportPdfFile(ViewReportEntity req, ReportDetail reportDetail) {
 		try {
-			File file = writeToPdfFile(obj.getReport_name());
+			File file = writeToPdfFile(reportDetail.getName());
 			
 			try (
 				PdfDocument pdfDocument = new PdfDocument(new PdfWriter(file));
@@ -2573,111 +2748,107 @@ public class ReportsService extends DB {
 			) {
 				Image logoImage = DocumentHelper.readLogoImageFile();
 				
-				for (int l = 0; l < dataObjList.size(); l++) {
-				try {
-					ViewReportEntity dataObj = dataObjList.get(l);
-					
-					if (dataObj != null) {
-						SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-						SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
-						SimpleDateFormat categoryFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm");
-						Date startDate = dateFormat.parse(obj.getStart_date());
-						Date endDate = dateFormat.parse(obj.getEnd_date());
-						dataObj.setStart_date(format.format(startDate));
-						dataObj.setEnd_date(format.format(endDate));
-						List<DailyDateEntity> dataExports = dataObj.getDataReports() != null ? dataObj.getDataReports() : new ArrayList<>();
-						
-						// total column: 12
-						Table table = new Table(12).useAllAvailableWidth();
-						table.setFont(PdfFontFactory.createFont(StandardFonts.TIMES_ROMAN));
-						table.setFontSize(8);
-						table.setTextAlignment(TextAlignment.CENTER);
-						
-						//====== table ============================================================
-						// header and logo
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 4).setHeight(14).setBorder(Border.NO_BORDER));
-						table.addCell(new com.itextpdf.layout.element.Cell(6, 5).add(new Paragraph("DAILY PRODUCTION REPORT")).setTextAlignment(TextAlignment.CENTER).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBorder(Border.NO_BORDER).setFontSize(20).setBold());
-						table.addCell(new com.itextpdf.layout.element.Cell(6, 3).add(logoImage).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBorder(Border.NO_BORDER));
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 1).add(new Paragraph("Site Name").setBold().setTextAlignment(TextAlignment.LEFT)));
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph(dataObj.getSite_name()).setBold().setTextAlignment(TextAlignment.LEFT)));
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 1).add(new Paragraph("Report Date").setBold().setTextAlignment(TextAlignment.LEFT)));
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph(dataObj.getReport_date()).setTextAlignment(TextAlignment.LEFT)));
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 1).add(new Paragraph("Covered Period").setBold().setTextAlignment(TextAlignment.LEFT)));
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph(dataObj.getStart_date() + " - " + dataObj.getEnd_date()).setTextAlignment(TextAlignment.LEFT)));
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 1).add(new Paragraph("System Size (kW DC)").setBold().setTextAlignment(TextAlignment.LEFT)));
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph(String.valueOf(dataObj.getDc_capacity())).setTextAlignment(TextAlignment.LEFT)));
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 4).setHeight(14).setBorder(Border.NO_BORDER));
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 12).setHeight(14).setBorder(Border.NO_BORDER));
-						
-						// chart
-						com.itextpdf.layout.element.Cell chartCell = new com.itextpdf.layout.element.Cell(16, 12);
-						table.addCell(chartCell.setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE));
-						// empty row
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 12).setHeight(14).setBorder(Border.NO_BORDER));
-						
-						// header of data table
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph("Time").setBold()));
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph("Actual Power (kW)").setBold()));
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph("Actual Energy (kWh)").setBold()));
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph("Irradiance (W/m2)").setBold()));
-						
-						// data table
-						DecimalFormat dfs = new DecimalFormat(DocumentHelper.noDecimalDataFormat);
-						for (int i = 0; i < dataExports.size(); i++) {
-							DailyDateEntity item = (DailyDateEntity) dataExports.get(i);
+				SimpleDateFormat categoryFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm");
+				Date startDate = inputSDF.parse(req.getStart_date());
+				Date endDate = inputSDF.parse(req.getEnd_date());
+				
+				Optional.ofNullable(reportDetail.getSites()).ifPresent(sites -> {
+					for (int l = 0; l < sites.size(); l++) {
+						try {
+							SiteByReport site = sites.get(l);
+							List<DailyDateEntity> dataExports = Optional.ofNullable((List<DailyDateEntity>) site.getDataReports()).orElse(new ArrayList<>());
 							
-							table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph(item.getCategories_time())));
-							table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph(item.getPower() != null ? dfs.format(item.getPower()).replaceAll( "^-(?=0(\\.0*)?$)", "") : "")));
-							table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph(item.getEnergy() != null ? dfs.format(item.getEnergy()) : "")));
-							table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph(item.getIrradiance() != null ? dfs.format(item.getIrradiance()) : "")));						
-						}
-						
-						//====== chart ============================================================
-						JFreeChart chart = DocumentHelper.createJFreeChart(null);
-						XYPlot plot = chart.getXYPlot();
-						
-						// data source
-						TimeSeries powerSeries = new TimeSeries("Actual Power (kW)");
-						TimeSeries energySeries = new TimeSeries("Actual Energy (kWh)");
-						TimeSeries irradianceSeries = new TimeSeries("Irradiance (W/m2)");
-						
-						for (int i = 0; i < dataExports.size(); i++) {
-							DailyDateEntity item = dataExports.get(i);
-							RegularTimePeriod period = new Minute(categoryFormat.parse(item.getCategories_time()));
+							// total column: 12
+							Table table = new Table(12).useAllAvailableWidth();
+							table.setFont(PdfFontFactory.createFont(StandardFonts.TIMES_ROMAN));
+							table.setFontSize(8);
+							table.setTextAlignment(TextAlignment.CENTER);
 							
-							powerSeries.addOrUpdate(period, item.getPower());
-							energySeries.addOrUpdate(period, item.getEnergy());
-							irradianceSeries.addOrUpdate(period, item.getIrradiance());
-						}
-						
-						TimeSeriesCollection powerDataset = DocumentHelper.createJFreeChartLineDataset(0, plot, null);
-						powerDataset.addSeries(powerSeries);
-						plot.getRendererForDataset(powerDataset).setSeriesPaint(0, BLUE_COLOR);
-						
-						TimeSeriesCollection energyDataset = DocumentHelper.createJFreeChartLineDataset(1, plot, null);
-						energyDataset.addSeries(energySeries);
-						plot.getRendererForDataset(energyDataset).setSeriesPaint(0, LIGHT_BLUE_COLOR);
-						
-						TimeSeriesCollection irradianceDataset = DocumentHelper.createJFreeChartLineDataset(2, plot, null);
-						irradianceDataset.addSeries(irradianceSeries);
-						plot.getRendererForDataset(irradianceDataset).setSeriesPaint(0, ORANGE_COLOR);
-						plot.getRendererForDataset(irradianceDataset).setSeriesVisible(0, dataObj.isHave_poa());
-						
-						// category axis
-						DocumentHelper.createJFreeChartDomainAxis(plot, new DateTickUnit(DateTickUnitType.HOUR, 24, categoryFormat), startDate, endDate).setTickMarkPosition(DateTickMarkPosition.START);
-						// left axis
-						DocumentHelper.createJFreeChartNumberAxis("kW", AxisLocation.BOTTOM_OR_LEFT, 0, 0, plot);
-						// right axis
-						DocumentHelper.createJFreeChartNumberAxis("kWh", AxisLocation.BOTTOM_OR_RIGHT, 1, 1, plot);
-						// 2nd right axis
-						if (dataObj.isHave_poa()) DocumentHelper.createJFreeChartNumberAxis("W/m2", AxisLocation.BOTTOM_OR_RIGHT, 2, 2, plot);
-						
-						chartCell.add(new Image(ImageDataFactory.create(chart.createBufferedImage(1800, 700), null)).setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER).scaleToFit(1100, 700));
-						document.add(table);
-						if (l < dataObjList.size() - 1) document.add(new AreaBreak());
+							//====== table ============================================================
+							// header and logo
+							table.addCell(new com.itextpdf.layout.element.Cell(1, 4).setHeight(14).setBorder(Border.NO_BORDER));
+							table.addCell(new com.itextpdf.layout.element.Cell(6, 5).add(new Paragraph("DAILY PRODUCTION REPORT")).setTextAlignment(TextAlignment.CENTER).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBorder(Border.NO_BORDER).setFontSize(20).setBold());
+							table.addCell(new com.itextpdf.layout.element.Cell(6, 3).add(logoImage).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBorder(Border.NO_BORDER));
+							table.addCell(new com.itextpdf.layout.element.Cell(1, 1).add(new Paragraph("Site Name").setBold().setTextAlignment(TextAlignment.LEFT)));
+							table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph(site.getName()).setBold().setTextAlignment(TextAlignment.LEFT)));
+							table.addCell(new com.itextpdf.layout.element.Cell(1, 1).add(new Paragraph("Report Date").setBold().setTextAlignment(TextAlignment.LEFT)));
+							table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph(reportDetail.getReport_date()).setTextAlignment(TextAlignment.LEFT)));
+							table.addCell(new com.itextpdf.layout.element.Cell(1, 1).add(new Paragraph("Covered Period").setBold().setTextAlignment(TextAlignment.LEFT)));
+							table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph(reportDateRangeSDF.format(startDate) + " - " + reportDateRangeSDF.format(endDate)).setTextAlignment(TextAlignment.LEFT)));
+							table.addCell(new com.itextpdf.layout.element.Cell(1, 1).add(new Paragraph("System Size (kW DC)").setBold().setTextAlignment(TextAlignment.LEFT)));
+							table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph(String.valueOf(site.getDc_capacity())).setTextAlignment(TextAlignment.LEFT)));
+							table.addCell(new com.itextpdf.layout.element.Cell(1, 4).setHeight(14).setBorder(Border.NO_BORDER));
+							table.addCell(new com.itextpdf.layout.element.Cell(1, 12).setHeight(14).setBorder(Border.NO_BORDER));
+							
+							// chart
+							com.itextpdf.layout.element.Cell chartCell = new com.itextpdf.layout.element.Cell(16, 12);
+							table.addCell(chartCell.setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE));
+							// empty row
+							table.addCell(new com.itextpdf.layout.element.Cell(1, 12).setHeight(14).setBorder(Border.NO_BORDER));
+							
+							// header of data table
+							table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph("Time").setBold()));
+							table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph("Actual Power (kW)").setBold()));
+							table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph("Actual Energy (kWh)").setBold()));
+							table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph("Irradiance (W/m2)").setBold()));
+							
+							// data table
+							DecimalFormat dfs = new DecimalFormat(DocumentHelper.noDecimalDataFormat);
+							for (int i = 0; i < dataExports.size(); i++) {
+								DailyDateEntity item = (DailyDateEntity) dataExports.get(i);
+								
+								table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph(item.getCategories_time())));
+								table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph(item.getPower() != null ? dfs.format(item.getPower()).replaceAll( "^-(?=0(\\.0*)?$)", "") : "")));
+								table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph(item.getEnergy() != null ? dfs.format(item.getEnergy()) : "")));
+								table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph(item.getIrradiance() != null ? dfs.format(item.getIrradiance()) : "")));						
+							}
+							
+							//====== chart ============================================================
+							JFreeChart chart = DocumentHelper.createJFreeChart(null);
+							XYPlot plot = chart.getXYPlot();
+							
+							// data source
+							TimeSeries powerSeries = new TimeSeries("Actual Power (kW)");
+							TimeSeries energySeries = new TimeSeries("Actual Energy (kWh)");
+							TimeSeries irradianceSeries = new TimeSeries("Irradiance (W/m2)");
+							
+							for (int i = 0; i < dataExports.size(); i++) {
+								DailyDateEntity item = dataExports.get(i);
+								RegularTimePeriod period = new Minute(categoryFormat.parse(item.getCategories_time()));
+								
+								powerSeries.addOrUpdate(period, item.getPower());
+								energySeries.addOrUpdate(period, item.getEnergy());
+								irradianceSeries.addOrUpdate(period, item.getIrradiance());
+							}
+							
+							TimeSeriesCollection powerDataset = DocumentHelper.createJFreeChartLineDataset(0, plot, null);
+							powerDataset.addSeries(powerSeries);
+							plot.getRendererForDataset(powerDataset).setSeriesPaint(0, BLUE_COLOR);
+							
+							TimeSeriesCollection energyDataset = DocumentHelper.createJFreeChartLineDataset(1, plot, null);
+							energyDataset.addSeries(energySeries);
+							plot.getRendererForDataset(energyDataset).setSeriesPaint(0, LIGHT_BLUE_COLOR);
+							
+							TimeSeriesCollection irradianceDataset = DocumentHelper.createJFreeChartLineDataset(2, plot, null);
+							irradianceDataset.addSeries(irradianceSeries);
+							plot.getRendererForDataset(irradianceDataset).setSeriesPaint(0, ORANGE_COLOR);
+							plot.getRendererForDataset(irradianceDataset).setSeriesVisible(0, site.isHave_poa());
+							
+							// category axis
+							DocumentHelper.createJFreeChartDomainAxis(plot, new DateTickUnit(DateTickUnitType.HOUR, 24, categoryFormat), startDate, endDate).setTickMarkPosition(DateTickMarkPosition.START);
+							// left axis
+							DocumentHelper.createJFreeChartNumberAxis("kW", AxisLocation.BOTTOM_OR_LEFT, 0, 0, plot);
+							// right axis
+							DocumentHelper.createJFreeChartNumberAxis("kWh", AxisLocation.BOTTOM_OR_RIGHT, 1, 1, plot);
+							// 2nd right axis
+							if (site.isHave_poa()) DocumentHelper.createJFreeChartNumberAxis("W/m2", AxisLocation.BOTTOM_OR_RIGHT, 2, 2, plot);
+							
+							chartCell.add(new Image(ImageDataFactory.create(chart.createBufferedImage(1800, 700), null)).setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER).scaleToFit(1100, 700));
+							document.add(table);
+							if (l < sites.size() - 1) document.add(new AreaBreak());
+						} catch (Exception e) {}
 					}
-				} catch (Exception e) {}
-				}
+				});
 				
 				// It must be closed before attach to mail
 				document.close();
@@ -2693,99 +2864,98 @@ public class ReportsService extends DB {
 	 * @description create monthly report sheet file
 	 * @author Hung.Bui
 	 * @since 2025-08-08
-	 * @param obj
+	 * @param req
 	 * @return file path
 	 */
-	public String createMonthlyReportSheetFile(ViewReportEntity obj, List<ViewReportEntity> dataObjList) {
+	public String createMonthlyReportSheetFile(ViewReportEntity req, ReportDetail reportDetail) {
 		try (XSSFWorkbook document = new XSSFWorkbook()) {
 			int pictureIdx = DocumentHelper.readLogoImageFile(document);
 			
-			for (int i = 0; i < dataObjList.size(); i++) {
-			try {
-				ViewReportEntity dataObj = dataObjList.get(i);
-				
-				if (dataObj != null) {
-					List<MonthlyDateEntity> dataExports = dataObj.getDataReports();
-					int numOfPoints = dataExports != null ? dataExports.size() : 0;
-					
-					XSSFSheet sheet = document.createSheet(WorkbookUtil.createSafeSheetName((i + 1) + "_" + dataObj.getSite_name()));
-					sheet.setZoom(85);
-					
-					// insert logo image
-					ClientAnchor logoAnchor = new XSSFClientAnchor(0, 0, 20 * Units.EMU_PER_PIXEL, 20 * Units.EMU_PER_PIXEL, 12, 1, 13, 4);
-					DocumentHelper.insertLogo(sheet, logoAnchor, pictureIdx);
-					
-					// report information and table
-					writeHeaderMonthlyReport(sheet, obj, dataObj);
-					
-					if (numOfPoints > 0) {
-						// 1st chart
-						ClientAnchor chartAnchor = new XSSFClientAnchor(5, 5, 5, 5, 5, 8, 14, 23);
-						XDDFChart chart = DocumentHelper.insertChart(sheet, chartAnchor, "Monthly Performance");
+			Optional.ofNullable(reportDetail.getSites()).ifPresent(sites -> {
+				for (int i = 0; i < sites.size(); i++) {
+					try {
+						SiteByReport site = sites.get(i);
+						List<MonthlyDateEntity> dataExports = Optional.ofNullable((List<MonthlyDateEntity>) site.getDataReports()).orElse(new ArrayList<>());
+						int numOfPoints = dataExports.size();
 						
-						// data sources
-						XDDFDataSource<String> categoriesData = XDDFDataSourcesFactory.fromStringCellRange(sheet, new CellRangeAddress(9, 9 + numOfPoints - 1, 0, 0));
-						XDDFNumericalDataSource<Double> valuesData1 = XDDFDataSourcesFactory.fromNumericCellRange(sheet, new CellRangeAddress(9, 9 + numOfPoints - 1, 1, 1));
-						XDDFNumericalDataSource<Double> valuesData2 = XDDFDataSourcesFactory.fromNumericCellRange(sheet, new CellRangeAddress(9, 9 + numOfPoints - 1, 2, 2));
-						XDDFNumericalDataSource<Double> valuesData3 = XDDFDataSourcesFactory.fromNumericCellRange(sheet, new CellRangeAddress(9, 9 + numOfPoints - 1, 3, 3));
+						XSSFSheet sheet = document.createSheet(WorkbookUtil.createSafeSheetName((i + 1) + "_" + site.getName()));
+						sheet.setZoom(85);
 						
-						// category axis
-						XDDFCategoryAxis bottomAxis = DocumentHelper.createCategoryAxis(chart);
+						// insert logo image
+						ClientAnchor logoAnchor = new XSSFClientAnchor(0, 0, 20 * Units.EMU_PER_PIXEL, 20 * Units.EMU_PER_PIXEL, 12, 1, 13, 4);
+						DocumentHelper.insertLogo(sheet, logoAnchor, pictureIdx);
 						
-						// left value axis
-						XDDFValueAxis leftAxis = DocumentHelper.createLeftValueAxis(chart, "GENERATION (KWH)");
+						// report information and table
+						writeHeaderMonthlyReport(sheet, reportDetail, site, req.getStart_date(), req.getEnd_date());
 						
-						XDDFChartData data = DocumentHelper.createChartData(chart, ChartTypes.BAR, bottomAxis, leftAxis);
-						DocumentHelper.addSeries(dataExports.stream().allMatch(item -> item.getActual() == null), data, categoriesData, valuesData1, "Actual Generation (kWh)", XDDFColor.from(PresetColor.STEEL_BLUE), null);
-						DocumentHelper.addSeries(dataExports.stream().allMatch(item -> item.getEstimated() == null), data, categoriesData, valuesData2, "Estimated Generation (kWh)", XDDFColor.from(PresetColor.LIGHT_SKY_BLUE), null);
-						
-						chart.plot(data);
-						
-						// right value axis
-						XDDFValueAxis rightAxis = DocumentHelper.createRightValueAxis(chart, bottomAxis, "PERFORMANCE INDEX (%)");
-						
-						data = DocumentHelper.createChartData(chart, ChartTypes.LINE, bottomAxis, rightAxis);
-						DocumentHelper.addSeries(dataExports.stream().allMatch(item -> item.getActual() == null || item.getEstimated() == null), data, categoriesData, valuesData3, "Estimated Generation Index (%)", XDDFColor.from(PresetColor.GRAY), null);
-						
-						chart.plot(data);
-						
-						// 2nd chart
-						chartAnchor = new XSSFClientAnchor(5, 5, 5, 5, 5, 25, 14, 41);
-						SimpleDateFormat datetimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-						SimpleDateFormat monthYearFormat = new SimpleDateFormat("MMMM yyyy");
-						chart = DocumentHelper.insertChart(sheet, chartAnchor, monthYearFormat.format(datetimeFormat.parse(obj.getStart_date())));
-						
-						// data sources
-						XDDFDataSource<String> categoriesData2 = XDDFDataSourcesFactory.fromArray(new String[] {""});
-						XDDFNumericalDataSource<Double> valuesData12 = XDDFDataSourcesFactory.fromNumericCellRange(sheet, new CellRangeAddress(41, 41, 1, 1));
-						XDDFNumericalDataSource<Double> valuesData22 = XDDFDataSourcesFactory.fromNumericCellRange(sheet, new CellRangeAddress(41, 41, 2, 2));
-						
-						// category axis
-						bottomAxis = DocumentHelper.createCategoryAxis(chart);
-						
-						// left value axis
-						leftAxis = DocumentHelper.createLeftValueAxis(chart, "GENERATION (KWH)");
-						
-						data = DocumentHelper.createChartData(chart, ChartTypes.BAR, bottomAxis, leftAxis);
-						((XDDFBarChartData) data).setOverlap((byte) -24);
-						((XDDFBarChartData) data).setGapWidth(400);
-						
-						DocumentHelper.addSeries(dataExports.stream().allMatch(item -> item.getActual() == null), data, categoriesData2, valuesData12, "Actual Generation (kWh)", XDDFColor.from(PresetColor.STEEL_BLUE), null);
-						DocumentHelper.addSeries(dataExports.stream().allMatch(item -> item.getActual() == null || item.getEstimated() == null), data, categoriesData2, valuesData22, "Estimated Generation (kWh)", XDDFColor.from(PresetColor.LIGHT_SKY_BLUE), null);
-						
-						chart.plot(data);
-					}
+						if (numOfPoints > 0) {
+							// 1st chart
+							ClientAnchor chartAnchor = new XSSFClientAnchor(5, 5, 5, 5, 5, 8, 14, 23);
+							XDDFChart chart = DocumentHelper.insertChart(sheet, chartAnchor, "Monthly Performance");
+							
+							// data sources
+							XDDFDataSource<String> categoriesData = XDDFDataSourcesFactory.fromStringCellRange(sheet, new CellRangeAddress(9, 9 + numOfPoints - 1, 0, 0));
+							XDDFNumericalDataSource<Double> valuesData1 = XDDFDataSourcesFactory.fromNumericCellRange(sheet, new CellRangeAddress(9, 9 + numOfPoints - 1, 1, 1));
+							XDDFNumericalDataSource<Double> valuesData2 = XDDFDataSourcesFactory.fromNumericCellRange(sheet, new CellRangeAddress(9, 9 + numOfPoints - 1, 2, 2));
+							XDDFNumericalDataSource<Double> valuesData3 = XDDFDataSourcesFactory.fromNumericCellRange(sheet, new CellRangeAddress(9, 9 + numOfPoints - 1, 3, 3));
+							
+							// category axis
+							XDDFCategoryAxis bottomAxis = DocumentHelper.createCategoryAxis(chart);
+							
+							// left value axis
+							XDDFValueAxis leftAxis = DocumentHelper.createLeftValueAxis(chart, "GENERATION (KWH)");
+							
+							XDDFChartData data = DocumentHelper.createChartData(chart, ChartTypes.BAR, bottomAxis, leftAxis);
+							DocumentHelper.addSeries(dataExports.stream().allMatch(item -> item.getActual() == null), data, categoriesData, valuesData1, "Actual Generation (kWh)", XDDFColor.from(PresetColor.STEEL_BLUE), null);
+							DocumentHelper.addSeries(dataExports.stream().allMatch(item -> item.getEstimated() == null), data, categoriesData, valuesData2, "Estimated Generation (kWh)", XDDFColor.from(PresetColor.LIGHT_SKY_BLUE), null);
+							
+							chart.plot(data);
+							
+							// right value axis
+							XDDFValueAxis rightAxis = DocumentHelper.createRightValueAxis(chart, bottomAxis, "PERFORMANCE INDEX (%)");
+							
+							data = DocumentHelper.createChartData(chart, ChartTypes.LINE, bottomAxis, rightAxis);
+							DocumentHelper.addSeries(dataExports.stream().allMatch(item -> item.getActual() == null || item.getEstimated() == null), data, categoriesData, valuesData3, "Estimated Generation Index (%)", XDDFColor.from(PresetColor.GRAY), null);
+							
+							chart.plot(data);
+							
+							// 2nd chart
+							chartAnchor = new XSSFClientAnchor(5, 5, 5, 5, 5, 25, 14, 41);
+							SimpleDateFormat datetimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+							SimpleDateFormat monthYearFormat = new SimpleDateFormat("MMMM yyyy");
+							chart = DocumentHelper.insertChart(sheet, chartAnchor, monthYearFormat.format(datetimeFormat.parse(req.getStart_date())));
+							
+							// data sources
+							XDDFDataSource<String> categoriesData2 = XDDFDataSourcesFactory.fromArray(new String[] {""});
+							XDDFNumericalDataSource<Double> valuesData12 = XDDFDataSourcesFactory.fromNumericCellRange(sheet, new CellRangeAddress(41, 41, 1, 1));
+							XDDFNumericalDataSource<Double> valuesData22 = XDDFDataSourcesFactory.fromNumericCellRange(sheet, new CellRangeAddress(41, 41, 2, 2));
+							
+							// category axis
+							bottomAxis = DocumentHelper.createCategoryAxis(chart);
+							
+							// left value axis
+							leftAxis = DocumentHelper.createLeftValueAxis(chart, "GENERATION (KWH)");
+							
+							data = DocumentHelper.createChartData(chart, ChartTypes.BAR, bottomAxis, leftAxis);
+							((XDDFBarChartData) data).setOverlap((byte) -24);
+							((XDDFBarChartData) data).setGapWidth(400);
+							
+							DocumentHelper.addSeries(dataExports.stream().allMatch(item -> item.getActual() == null), data, categoriesData2, valuesData12, "Actual Generation (kWh)", XDDFColor.from(PresetColor.STEEL_BLUE), null);
+							DocumentHelper.addSeries(dataExports.stream().allMatch(item -> item.getActual() == null || item.getEstimated() == null), data, categoriesData2, valuesData22, "Estimated Generation (kWh)", XDDFColor.from(PresetColor.LIGHT_SKY_BLUE), null);
+							
+							chart.plot(data);
+						}
+					} catch (Exception e) {}
 				}
-			} catch (Exception e) {}
-			}
+			});
 				
-			return writeToSheetFile(document, obj.getReport_name());
+			return writeToSheetFile(document, reportDetail.getName());
 		} catch (Exception e) {
 			return null;
 		}
 	}
 	
-	private static void writeHeaderMonthlyReport(Sheet sheet, ViewReportEntity report, ViewReportEntity dataObj ) {
+	private static void writeHeaderMonthlyReport(Sheet sheet, ReportDetail reportDetail, SiteByReport site, String startDate, String endDate) {
 		try {
 			sheet.setDefaultColumnWidth(16);
 			sheet.setColumnWidth(0, 30 * 256);
@@ -2827,7 +2997,7 @@ public class ReportsService extends DB {
 
 			cell = row.createCell(1);
 			cell.setCellStyle(reportInfoBoldCellStyle);
-			cell.setCellValue(dataObj.getSite_name());
+			cell.setCellValue(site.getName());
 
 			row = sheet.createRow(1);
 			row.setHeight((short) 600);
@@ -2837,7 +3007,7 @@ public class ReportsService extends DB {
 
 			cell = row.createCell(1);
 			cell.setCellStyle(reportInfoCellStyle);
-			cell.setCellValue(dataObj.getReport_date());
+			cell.setCellValue(reportDetail.getReport_date());
 
 			row = sheet.createRow(2);
 			row.setHeight((short) 600);
@@ -2845,11 +3015,9 @@ public class ReportsService extends DB {
 			cell.setCellStyle(reportInfoBoldCellStyle);
 			cell.setCellValue("Covered Period");
 
-			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-			SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
 			cell = row.createCell(1);
 			cell.setCellStyle(reportInfoCellStyle);
-			cell.setCellValue(format.format(dateFormat.parse(report.getStart_date())) + " - " + format.format(dateFormat.parse(report.getEnd_date())));
+			cell.setCellValue(reportDateRangeDTF.format(inputDTF.parse(startDate)) + " - " + reportDateRangeDTF.format(inputDTF.parse(endDate)));
 
 			row = sheet.createRow(3);
 			row.setHeight((short) 600);
@@ -2859,7 +3027,7 @@ public class ReportsService extends DB {
 
 			cell = row.createCell(1);
 			cell.setCellStyle(reportInfoCellStyle);
-			cell.setCellValue(dataObj.getDc_capacity());
+			cell.setCellValue(site.getDc_capacity());
 			
 			for (int i = 0; i <= 5; i++) {
 				row = sheet.getRow(i) != null ? sheet.getRow(i) : sheet.createRow(i);
@@ -2897,7 +3065,7 @@ public class ReportsService extends DB {
 			cell.setCellStyle(tableHeaderCellStyle);
 			cell.setCellValue("Estimated Generation Index (%)");
 			
-			List<MonthlyDateEntity> dataExports = dataObj.getDataReports();
+			List<MonthlyDateEntity> dataExports = (List<MonthlyDateEntity>) site.getDataReports();
 			Double totalActual = null;
 			Double totalEstimated = null;
 			if(dataExports != null && dataExports.size() > 0) {
@@ -2952,12 +3120,12 @@ public class ReportsService extends DB {
 	 * @description create monthly report pdf file
 	 * @author Hung.Bui
 	 * @since 2025-08-08
-	 * @param obj
+	 * @param req
 	 * @return file path
 	 */
-	public String createMonthlyReportPdfFile(ViewReportEntity obj, List<ViewReportEntity> dataObjList) {
+	public String createMonthlyReportPdfFile(ViewReportEntity req, ReportDetail reportDetail) {
 		try {
-			File file = writeToPdfFile(obj.getReport_name());
+			File file = writeToPdfFile(reportDetail.getName());
 			
 			try (
 				PdfDocument pdfDocument = new PdfDocument(new PdfWriter(file));
@@ -2965,151 +3133,148 @@ public class ReportsService extends DB {
 			) {
 				Image logoImage = DocumentHelper.readLogoImageFile();
 				
-				for (int l = 0; l < dataObjList.size(); l++) {
-				try {
-					ViewReportEntity dataObj = dataObjList.get(l);
+				SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+				SimpleDateFormat monthYearFormat = new SimpleDateFormat("MMMM yyyy");
+				Date startDate = inputSDF.parse(req.getStart_date());
+				Date endDate = inputSDF.parse(req.getEnd_date());
 				
-					if (dataObj != null) {
-						SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-						SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
-						SimpleDateFormat monthYearFormat = new SimpleDateFormat("MMMM yyyy");
-						Date startDate = dateTimeFormat.parse(obj.getStart_date());
-						Date endDate = dateTimeFormat.parse(obj.getEnd_date());
-						dataObj.setStart_date(dateFormat.format(startDate));
-						dataObj.setEnd_date(dateFormat.format(endDate));
-						List<MonthlyDateEntity> dataExports = dataObj.getDataReports() != null ? dataObj.getDataReports() : new ArrayList<>();
-						
-						// total column: 14
-						final float[] columnWidths = {4, 4, 4, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
-						Table table = new Table(UnitValue.createPercentArray(columnWidths)).useAllAvailableWidth();
-						table.setFont(PdfFontFactory.createFont(StandardFonts.TIMES_ROMAN));
-						table.setFontSize(8);
-						table.setTextAlignment(TextAlignment.CENTER);
-					
-						//====== table ============================================================
-						// header and logo
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 2).setHeight(14).setBorder(Border.NO_BORDER));
-						table.addCell(new com.itextpdf.layout.element.Cell(6, 10).add(new Paragraph("MONTHLY PRODUCTION REPORT")).setTextAlignment(TextAlignment.CENTER).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBorder(Border.NO_BORDER).setFontSize(20).setBold());
-						table.addCell(new com.itextpdf.layout.element.Cell(6, 2).add(logoImage).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBorder(Border.NO_BORDER));
-						table.addCell(new Paragraph("Site Name").setBold().setTextAlignment(TextAlignment.LEFT));
-						table.addCell(new Paragraph(dataObj.getSite_name()).setBold().setTextAlignment(TextAlignment.LEFT));
-						table.addCell(new Paragraph("Report Date").setBold().setTextAlignment(TextAlignment.LEFT));
-						table.addCell(new Paragraph(dataObj.getReport_date()).setTextAlignment(TextAlignment.LEFT));
-						table.addCell(new Paragraph("Covered Period").setBold().setTextAlignment(TextAlignment.LEFT));
-						table.addCell(new Paragraph(dataObj.getStart_date() + " - " + dataObj.getEnd_date()).setTextAlignment(TextAlignment.LEFT));
-						table.addCell(new Paragraph("System Size (kW DC)").setBold().setTextAlignment(TextAlignment.LEFT));
-						table.addCell(new Paragraph(String.valueOf(dataObj.getDc_capacity())).setTextAlignment(TextAlignment.LEFT));
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 2).setHeight(14).setBorder(Border.NO_BORDER));
-						
-						table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Performance Reporting")).setBold().setBackgroundColor(new DeviceRgb(117, 117, 117)).setFontColor(DeviceGray.WHITE).setBorder(Border.NO_BORDER).setTextAlignment(TextAlignment.LEFT));
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 13).setBorder(Border.NO_BORDER));
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 14).setHeight(14).setBorder(Border.NO_BORDER));
-						
-						table.addCell(new Paragraph("Date").setBold());
-						table.addCell(new Paragraph("Actual Generation (kWh)").setBold());
-						table.addCell(new Paragraph("Estimated Generation (kWh)").setBold());
-						table.addCell(new Paragraph("Estimated Generation Index (%)").setBold());
-						
-						// empty column: gap between data table and chart
-						table.addCell(new com.itextpdf.layout.element.Cell(dataExports.size() + 3, 1).setBorder(Border.NO_BORDER));
-						
-						// chart
-						// add inner table into chart cell
-						Table innerTable = new Table(UnitValue.createPercentArray(1)).useAllAvailableWidth();
-						com.itextpdf.layout.element.Cell chartCell = new com.itextpdf.layout.element.Cell(dataExports.size() + 3, 9);
-						table.addCell(chartCell.add(innerTable).setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER).setBorder(Border.NO_BORDER).setPadding(0));
-						
-						// data table
-						Double totalActual = null;
-						Double totalEstimated = null;
-						DecimalFormat dfa = new DecimalFormat(DocumentHelper.noDecimalDataFormat);
-						DecimalFormat df = new DecimalFormat(DocumentHelper.oneDecimalPlaceDataFormat);
-						for (int i = 0; i < dataExports.size(); i++) {
-							MonthlyDateEntity item = (MonthlyDateEntity) dataExports.get(i);
+				Optional.ofNullable(reportDetail.getSites()).ifPresent(sites -> {
+					for (int l = 0; l < sites.size(); l++) {
+						try {
+							SiteByReport site = sites.get(l);
+							List<MonthlyDateEntity> dataExports = Optional.ofNullable((List<MonthlyDateEntity>) site.getDataReports()).orElse(new ArrayList<>());
 							
-							table.addCell(item.getCategories_time());
-							table.addCell(item.getActual() != null ? dfa.format(item.getActual()) : "");
-							table.addCell(item.getEstimated() != null ? dfa.format(item.getEstimated()) : "");
-							table.addCell(item.getPercent() != null ? df.format(item.getPercent()) : "");
+							// total column: 14
+							final float[] columnWidths = {4, 4, 4, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+							Table table = new Table(UnitValue.createPercentArray(columnWidths)).useAllAvailableWidth();
+							table.setFont(PdfFontFactory.createFont(StandardFonts.TIMES_ROMAN));
+							table.setFontSize(8);
+							table.setTextAlignment(TextAlignment.CENTER);
 							
-							if(item.getActual() != null) totalActual = (totalActual != null ? totalActual : 0) + item.getActual();
-							if(item.getEstimated() != null) totalEstimated = (totalEstimated != null ? totalEstimated : 0) + item.getEstimated();
-						}
-						
-						// total
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 4).setHeight(14).setBorder(Border.NO_BORDER).setBorderBottom(new SolidBorder(1)));
-						table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Total")).setBold().setBorder(Border.NO_BORDER));
-						table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph(totalActual != null ? dfa.format(totalActual) : "")).setBold().setBorder(Border.NO_BORDER));
-						table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph(totalEstimated != null ? dfa.format(totalEstimated) : "")).setBold().setBorder(Border.NO_BORDER));
-						table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph(totalActual != null && totalEstimated != null && totalEstimated > 0 ? dfa.format((totalActual / totalEstimated) * 100) : "")).setBold().setBorder(Border.NO_BORDER));
-						
-						//====== first chart ============================================================
-						JFreeChart chart = DocumentHelper.createJFreeChart("Monthly Performance");
-						XYPlot plot = chart.getXYPlot();
-						
-						// data source
-						TimeSeries actualSeries = new TimeSeries("Actual Generation (kWh)");
-						TimeSeries estimateSeries = new TimeSeries("Estimate Generation (kWh)");
-						TimeSeries estimateIndexSeries = new TimeSeries("Estimate Generation Index (%)");
-						
-						for (int i = 0; i < dataExports.size(); i++) {
-							MonthlyDateEntity item = (MonthlyDateEntity) dataExports.get(i);
-							RegularTimePeriod period = new Day(dateFormat.parse(item.getCategories_time()));
+							//====== table ============================================================
+							// header and logo
+							table.addCell(new com.itextpdf.layout.element.Cell(1, 2).setHeight(14).setBorder(Border.NO_BORDER));
+							table.addCell(new com.itextpdf.layout.element.Cell(6, 10).add(new Paragraph("MONTHLY PRODUCTION REPORT")).setTextAlignment(TextAlignment.CENTER).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBorder(Border.NO_BORDER).setFontSize(20).setBold());
+							table.addCell(new com.itextpdf.layout.element.Cell(6, 2).add(logoImage).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBorder(Border.NO_BORDER));
+							table.addCell(new Paragraph("Site Name").setBold().setTextAlignment(TextAlignment.LEFT));
+							table.addCell(new Paragraph(site.getName()).setBold().setTextAlignment(TextAlignment.LEFT));
+							table.addCell(new Paragraph("Report Date").setBold().setTextAlignment(TextAlignment.LEFT));
+							table.addCell(new Paragraph(reportDetail.getReport_date()).setTextAlignment(TextAlignment.LEFT));
+							table.addCell(new Paragraph("Covered Period").setBold().setTextAlignment(TextAlignment.LEFT));
+							table.addCell(new Paragraph(reportDateRangeSDF.format(startDate) + " - " + reportDateRangeSDF.format(endDate)).setTextAlignment(TextAlignment.LEFT));
+							table.addCell(new Paragraph("System Size (kW DC)").setBold().setTextAlignment(TextAlignment.LEFT));
+							table.addCell(new Paragraph(String.valueOf(site.getDc_capacity())).setTextAlignment(TextAlignment.LEFT));
+							table.addCell(new com.itextpdf.layout.element.Cell(1, 2).setHeight(14).setBorder(Border.NO_BORDER));
 							
-							actualSeries.addOrUpdate(period, item.getActual());
-							estimateSeries.addOrUpdate(period, item.getEstimated());
-							estimateIndexSeries.addOrUpdate(period, item.getPercent());
-						}
-						
-						TimeSeriesCollection barDataset = DocumentHelper.createJFreeChartBarDataset(0, plot);
-						barDataset.addSeries(actualSeries);
-						plot.getRendererForDataset(barDataset).setSeriesPaint(0, BLUE_COLOR);
-						barDataset.addSeries(estimateSeries);
-						plot.getRendererForDataset(barDataset).setSeriesPaint(1, LIGHT_BLUE_COLOR);
-						
-						TimeSeriesCollection lineDataset = DocumentHelper.createJFreeChartLineDataset(1, plot, null);
-						lineDataset.addSeries(estimateIndexSeries);
-						plot.getRendererForDataset(lineDataset).setSeriesPaint(0, Color.gray);
-						
-						// category axis
-						DocumentHelper.createJFreeChartDomainAxis(plot, new DateTickUnit(DateTickUnitType.DAY, 1, dateFormat), startDate, endDate).setVerticalTickLabels(true);
-						// left axis
-						DocumentHelper.createJFreeChartNumberAxis("GENERATION (KWH)", AxisLocation.BOTTOM_OR_LEFT, 0, 0, plot);
-						// right axis
-						DocumentHelper.createJFreeChartNumberAxis("PERFORMANCE INDEX (%)", AxisLocation.BOTTOM_OR_RIGHT, 1, 1, plot);
-						
-						innerTable.addCell(new Image(ImageDataFactory.create(chart.createBufferedImage(900, 400), null)).setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER).scaleToFit(600, 400));
-						// gap between charts
-						innerTable.addCell(new com.itextpdf.layout.element.Cell().setHeight(18 * (dataExports.size() + 1 - 30)).setBorder(Border.NO_BORDER));
-						
-						//====== second chart ============================================================
-						JFreeChart chart2 = DocumentHelper.createJFreeChart(monthYearFormat.format(startDate));
-						XYPlot plot2 = chart2.getXYPlot();
-						
-						// data source
-						TimeSeriesCollection barDataset2 = DocumentHelper.createJFreeChartBarDataset(0, plot2);
-						((ClusteredXYBarRenderer) plot2.getRendererForDataset(barDataset2)).setMargin(0.7);
-						TimeSeries totalActualSeries = new TimeSeries("Actual Generation (kWh)");
-						barDataset2.addSeries(totalActualSeries);
-						plot2.getRendererForDataset(barDataset2).setSeriesPaint(0, BLUE_COLOR);
-						TimeSeries totalEstimateSeries = new TimeSeries("Estimate Generation (kWh)");
-						barDataset2.addSeries(totalEstimateSeries);
-						plot2.getRendererForDataset(barDataset2).setSeriesPaint(1, LIGHT_BLUE_COLOR);
-						
-						totalActualSeries.add(new Month(startDate), totalActual);
-						totalEstimateSeries.add(new Month(startDate), totalEstimated);
-						
-						// category axis
-						DocumentHelper.createJFreeChartDomainAxis(plot2, new DateTickUnit(DateTickUnitType.MONTH, 1, monthYearFormat), startDate, endDate).setVisible(false);
-						// left axis
-						DocumentHelper.createJFreeChartNumberAxis("GENERATION (KWH)", AxisLocation.BOTTOM_OR_LEFT, 0, 0, plot2);
-						
-						innerTable.addCell(new Image(ImageDataFactory.create(chart2.createBufferedImage(900, 350), null)).setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER).scaleToFit(600, 350));
-						document.add(table);
-						if (l < dataObjList.size() - 1) document.add(new AreaBreak());
+							table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Performance Reporting")).setBold().setBackgroundColor(new DeviceRgb(117, 117, 117)).setFontColor(DeviceGray.WHITE).setBorder(Border.NO_BORDER).setTextAlignment(TextAlignment.LEFT));
+							table.addCell(new com.itextpdf.layout.element.Cell(1, 13).setBorder(Border.NO_BORDER));
+							table.addCell(new com.itextpdf.layout.element.Cell(1, 14).setHeight(14).setBorder(Border.NO_BORDER));
+							
+							table.addCell(new Paragraph("Date").setBold());
+							table.addCell(new Paragraph("Actual Generation (kWh)").setBold());
+							table.addCell(new Paragraph("Estimated Generation (kWh)").setBold());
+							table.addCell(new Paragraph("Estimated Generation Index (%)").setBold());
+							
+							// empty column: gap between data table and chart
+							table.addCell(new com.itextpdf.layout.element.Cell(dataExports.size() + 3, 1).setBorder(Border.NO_BORDER));
+							
+							// chart
+							// add inner table into chart cell
+							Table innerTable = new Table(UnitValue.createPercentArray(1)).useAllAvailableWidth();
+							com.itextpdf.layout.element.Cell chartCell = new com.itextpdf.layout.element.Cell(dataExports.size() + 3, 9);
+							table.addCell(chartCell.add(innerTable).setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER).setBorder(Border.NO_BORDER).setPadding(0));
+							
+							// data table
+							Double totalActual = null;
+							Double totalEstimated = null;
+							DecimalFormat dfa = new DecimalFormat(DocumentHelper.noDecimalDataFormat);
+							DecimalFormat df = new DecimalFormat(DocumentHelper.oneDecimalPlaceDataFormat);
+							for (int i = 0; i < dataExports.size(); i++) {
+								MonthlyDateEntity item = (MonthlyDateEntity) dataExports.get(i);
+								
+								table.addCell(item.getCategories_time());
+								table.addCell(item.getActual() != null ? dfa.format(item.getActual()) : "");
+								table.addCell(item.getEstimated() != null ? dfa.format(item.getEstimated()) : "");
+								table.addCell(item.getPercent() != null ? df.format(item.getPercent()) : "");
+								
+								if(item.getActual() != null) totalActual = (totalActual != null ? totalActual : 0) + item.getActual();
+								if(item.getEstimated() != null) totalEstimated = (totalEstimated != null ? totalEstimated : 0) + item.getEstimated();
+							}
+							
+							// total
+							table.addCell(new com.itextpdf.layout.element.Cell(1, 4).setHeight(14).setBorder(Border.NO_BORDER).setBorderBottom(new SolidBorder(1)));
+							table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Total")).setBold().setBorder(Border.NO_BORDER));
+							table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph(totalActual != null ? dfa.format(totalActual) : "")).setBold().setBorder(Border.NO_BORDER));
+							table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph(totalEstimated != null ? dfa.format(totalEstimated) : "")).setBold().setBorder(Border.NO_BORDER));
+							table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph(totalActual != null && totalEstimated != null && totalEstimated > 0 ? dfa.format((totalActual / totalEstimated) * 100) : "")).setBold().setBorder(Border.NO_BORDER));
+							
+							//====== first chart ============================================================
+							JFreeChart chart = DocumentHelper.createJFreeChart("Monthly Performance");
+							XYPlot plot = chart.getXYPlot();
+							
+							// data source
+							TimeSeries actualSeries = new TimeSeries("Actual Generation (kWh)");
+							TimeSeries estimateSeries = new TimeSeries("Estimate Generation (kWh)");
+							TimeSeries estimateIndexSeries = new TimeSeries("Estimate Generation Index (%)");
+							
+							for (int i = 0; i < dataExports.size(); i++) {
+								MonthlyDateEntity item = (MonthlyDateEntity) dataExports.get(i);
+								RegularTimePeriod period = new Day(dateFormat.parse(item.getCategories_time()));
+								
+								actualSeries.addOrUpdate(period, item.getActual());
+								estimateSeries.addOrUpdate(period, item.getEstimated());
+								estimateIndexSeries.addOrUpdate(period, item.getPercent());
+							}
+							
+							TimeSeriesCollection barDataset = DocumentHelper.createJFreeChartBarDataset(0, plot);
+							barDataset.addSeries(actualSeries);
+							plot.getRendererForDataset(barDataset).setSeriesPaint(0, BLUE_COLOR);
+							barDataset.addSeries(estimateSeries);
+							plot.getRendererForDataset(barDataset).setSeriesPaint(1, LIGHT_BLUE_COLOR);
+							
+							TimeSeriesCollection lineDataset = DocumentHelper.createJFreeChartLineDataset(1, plot, null);
+							lineDataset.addSeries(estimateIndexSeries);
+							plot.getRendererForDataset(lineDataset).setSeriesPaint(0, Color.gray);
+							
+							// category axis
+							DocumentHelper.createJFreeChartDomainAxis(plot, new DateTickUnit(DateTickUnitType.DAY, 1, dateFormat), startDate, endDate).setVerticalTickLabels(true);
+							// left axis
+							DocumentHelper.createJFreeChartNumberAxis("GENERATION (KWH)", AxisLocation.BOTTOM_OR_LEFT, 0, 0, plot);
+							// right axis
+							DocumentHelper.createJFreeChartNumberAxis("PERFORMANCE INDEX (%)", AxisLocation.BOTTOM_OR_RIGHT, 1, 1, plot);
+							
+							innerTable.addCell(new Image(ImageDataFactory.create(chart.createBufferedImage(900, 400), null)).setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER).scaleToFit(600, 400));
+							// gap between charts
+							innerTable.addCell(new com.itextpdf.layout.element.Cell().setHeight(18 * (dataExports.size() + 1 - 30)).setBorder(Border.NO_BORDER));
+							
+							//====== second chart ============================================================
+							JFreeChart chart2 = DocumentHelper.createJFreeChart(monthYearFormat.format(startDate));
+							XYPlot plot2 = chart2.getXYPlot();
+							
+							// data source
+							TimeSeriesCollection barDataset2 = DocumentHelper.createJFreeChartBarDataset(0, plot2);
+							((ClusteredXYBarRenderer) plot2.getRendererForDataset(barDataset2)).setMargin(0.7);
+							TimeSeries totalActualSeries = new TimeSeries("Actual Generation (kWh)");
+							barDataset2.addSeries(totalActualSeries);
+							plot2.getRendererForDataset(barDataset2).setSeriesPaint(0, BLUE_COLOR);
+							TimeSeries totalEstimateSeries = new TimeSeries("Estimate Generation (kWh)");
+							barDataset2.addSeries(totalEstimateSeries);
+							plot2.getRendererForDataset(barDataset2).setSeriesPaint(1, LIGHT_BLUE_COLOR);
+							
+							totalActualSeries.add(new Month(startDate), totalActual);
+							totalEstimateSeries.add(new Month(startDate), totalEstimated);
+							
+							// category axis
+							DocumentHelper.createJFreeChartDomainAxis(plot2, new DateTickUnit(DateTickUnitType.MONTH, 1, monthYearFormat), startDate, endDate).setVisible(false);
+							// left axis
+							DocumentHelper.createJFreeChartNumberAxis("GENERATION (KWH)", AxisLocation.BOTTOM_OR_LEFT, 0, 0, plot2);
+							
+							innerTable.addCell(new Image(ImageDataFactory.create(chart2.createBufferedImage(900, 350), null)).setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER).scaleToFit(600, 350));
+							document.add(table);
+							if (l < sites.size() - 1) document.add(new AreaBreak());
+						} catch (Exception e) {}
 					}
-				} catch (Exception e) {}
-				}
+				});
 					
 				// It must be closed before attach to mail
 				document.close();
@@ -3125,89 +3290,84 @@ public class ReportsService extends DB {
 	 * @description create quarterly report sheet file
 	 * @author Hung.Bui
 	 * @since 2025-08-08
-	 * @param obj
+	 * @param req
 	 * @return file path
 	 */
-	public String createQuarterlyReportSheetFile(ViewReportEntity obj, List<ViewReportEntity> dataObjList) {
+	public String createQuarterlyReportSheetFile(ViewReportEntity req, ReportDetail reportDetail) {
 		try (XSSFWorkbook document = new XSSFWorkbook()) {
 			int pictureIdx = DocumentHelper.readLogoImageFile(document);
-				
-			for (int i = 0; i < dataObjList.size(); i++) {
-			try {
-				ViewReportEntity dataObj = dataObjList.get(i);
-					
-				if (dataObj != null) {
-					boolean quarterlyReportByMonth = dataObj.getData_intervals() == ReportIntervals.MONTHLY.getValue();
-
-					SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-					SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
-					dataObj.setStart_date(dateFormat.format(dateTimeFormat.parse(obj.getStart_date())));
-					dataObj.setEnd_date(dateFormat.format(dateTimeFormat.parse(obj.getEnd_date())));
-					List<QuarterlyDateEntity> dataExports = dataObj.getDataReports();
-					int numOfPoints = dataExports != null ? dataExports.size() : 0;
-
-					XSSFSheet sheet = document.createSheet(WorkbookUtil.createSafeSheetName((i + 1) + "_" + dataObj.getSite_name()));
-					
-					// insert logo image
-					ClientAnchor logoAnchor = quarterlyReportByMonth ? new XSSFClientAnchor(0, -15 * Units.EMU_PER_PIXEL, 20 * Units.EMU_PER_PIXEL, 15 * Units.EMU_PER_PIXEL, 11, 1, 12, 4) : new XSSFClientAnchor(0, -15 * Units.EMU_PER_PIXEL, 0, 15 * Units.EMU_PER_PIXEL, 9, 1, 10, 4);
-					DocumentHelper.insertLogo(sheet, logoAnchor, pictureIdx);
-
-					// report information and table
-					writeHeaderQuarterlyReport(sheet, dataObj);
-					
-					if (quarterlyReportByMonth && numOfPoints > 0) {
-						// 1st chart
-						ClientAnchor chartAnchor = new XSSFClientAnchor(6, 6, 6, 6, 6, 9, 13, 23);
-						XDDFChart chart = DocumentHelper.insertChart(sheet, chartAnchor, null);
-						
-						// data source
-						XDDFDataSource<String> categoriesData = XDDFDataSourcesFactory.fromStringCellRange(sheet, new CellRangeAddress(11, 13, 0, 0));
-						XDDFNumericalDataSource<Double> valuesData1 = XDDFDataSourcesFactory.fromNumericCellRange(sheet, new CellRangeAddress(11, 13, 1, 1));
-						XDDFNumericalDataSource<Double> valuesData2 = XDDFDataSourcesFactory.fromNumericCellRange(sheet, new CellRangeAddress(11, 13, 2, 2));
-	
-						// category axis
-						XDDFCategoryAxis bottomAxis = DocumentHelper.createCategoryAxis(chart);
-						
-						// left value axis
-						XDDFValueAxis leftAxis = DocumentHelper.createLeftValueAxis(chart, null);
-						
-						XDDFChartData data = DocumentHelper.createChartData(chart, ChartTypes.BAR, bottomAxis, leftAxis);
-						DocumentHelper.addSeries(dataExports.stream().allMatch(item -> item.getEstimated() == null), data, categoriesData, valuesData1, "Estimated Generation (kWh)", XDDFColor.from(PresetColor.STEEL_BLUE), null);
-						DocumentHelper.addSeries(dataExports.stream().allMatch(item -> item.getActual() == null), data, categoriesData, valuesData2, "Actual Generation (kWh)", XDDFColor.from(PresetColor.LIGHT_SKY_BLUE), null);
-						
-						chart.plot(data);
-					
-						// 2nd chart
-						chartAnchor = new XSSFClientAnchor(6, 6, 6, 6, 6, 26, 13, 39);
-						chart = DocumentHelper.insertChart(sheet, chartAnchor, null);
-					    
-						XDDFDataSource<String> categoriesData2 = XDDFDataSourcesFactory.fromStringCellRange(sheet, new CellRangeAddress(28, 30, 0, 0));
-						XDDFNumericalDataSource<Double> valuesData12 = XDDFDataSourcesFactory.fromNumericCellRange(sheet, new CellRangeAddress(28, 30, 1, 1));
-						XDDFNumericalDataSource<Double> valuesData22 = XDDFDataSourcesFactory.fromNumericCellRange(sheet, new CellRangeAddress(28, 30, 2, 2));
-					    
-						// category axis
-						bottomAxis = DocumentHelper.createCategoryAxis(chart);
-						
-						// left value axis
-						leftAxis = DocumentHelper.createLeftValueAxis(chart, null);
-						
-						data = DocumentHelper.createChartData(chart, ChartTypes.BAR, bottomAxis, leftAxis);
-						DocumentHelper.addSeries(dataExports.stream().allMatch(item -> item.getEstimatedCumulative() == null), data, categoriesData2, valuesData12, "Estimated Generation (kWh)", XDDFColor.from(PresetColor.STEEL_BLUE), null);
-						DocumentHelper.addSeries(dataExports.stream().allMatch(item -> item.getActualCumulative() == null), data, categoriesData2, valuesData22, "Actual Generation (kWh)", XDDFColor.from(PresetColor.LIGHT_SKY_BLUE), null);
-	
-						chart.plot(data);
-					}
-				}
-			} catch (Exception e) {}
-			}
 			
-			return writeToSheetFile(document, obj.getReport_name());
+			Optional.ofNullable(reportDetail.getSites()).ifPresent(sites -> {
+				for (int i = 0; i < sites.size(); i++) {
+					try {
+						SiteByReport site = sites.get(i);
+						boolean quarterlyReportByMonth = reportDetail.getData_intervals() == ReportIntervals.MONTHLY.getValue();
+						
+						List<QuarterlyDateEntity> dataExports = Optional.ofNullable((List<QuarterlyDateEntity>) site.getDataReports()).orElse(new ArrayList<>());
+						int numOfPoints = dataExports.size();
+						
+						XSSFSheet sheet = document.createSheet(WorkbookUtil.createSafeSheetName((i + 1) + "_" + site.getName()));
+						
+						// insert logo image
+						ClientAnchor logoAnchor = quarterlyReportByMonth ? new XSSFClientAnchor(0, -15 * Units.EMU_PER_PIXEL, 20 * Units.EMU_PER_PIXEL, 15 * Units.EMU_PER_PIXEL, 11, 1, 12, 4) : new XSSFClientAnchor(0, -15 * Units.EMU_PER_PIXEL, 0, 15 * Units.EMU_PER_PIXEL, 9, 1, 10, 4);
+						DocumentHelper.insertLogo(sheet, logoAnchor, pictureIdx);
+						
+						// report information and table
+						writeHeaderQuarterlyReport(sheet, reportDetail, site, req.getStart_date(), req.getEnd_date());
+						
+						if (quarterlyReportByMonth && numOfPoints > 0) {
+							// 1st chart
+							ClientAnchor chartAnchor = new XSSFClientAnchor(6, 6, 6, 6, 6, 9, 13, 23);
+							XDDFChart chart = DocumentHelper.insertChart(sheet, chartAnchor, null);
+							
+							// data source
+							XDDFDataSource<String> categoriesData = XDDFDataSourcesFactory.fromStringCellRange(sheet, new CellRangeAddress(11, 13, 0, 0));
+							XDDFNumericalDataSource<Double> valuesData1 = XDDFDataSourcesFactory.fromNumericCellRange(sheet, new CellRangeAddress(11, 13, 1, 1));
+							XDDFNumericalDataSource<Double> valuesData2 = XDDFDataSourcesFactory.fromNumericCellRange(sheet, new CellRangeAddress(11, 13, 2, 2));
+							
+							// category axis
+							XDDFCategoryAxis bottomAxis = DocumentHelper.createCategoryAxis(chart);
+							
+							// left value axis
+							XDDFValueAxis leftAxis = DocumentHelper.createLeftValueAxis(chart, null);
+							
+							XDDFChartData data = DocumentHelper.createChartData(chart, ChartTypes.BAR, bottomAxis, leftAxis);
+							DocumentHelper.addSeries(dataExports.stream().allMatch(item -> item.getEstimated() == null), data, categoriesData, valuesData1, "Estimated Generation (kWh)", XDDFColor.from(PresetColor.STEEL_BLUE), null);
+							DocumentHelper.addSeries(dataExports.stream().allMatch(item -> item.getActual() == null), data, categoriesData, valuesData2, "Actual Generation (kWh)", XDDFColor.from(PresetColor.LIGHT_SKY_BLUE), null);
+							
+							chart.plot(data);
+							
+							// 2nd chart
+							chartAnchor = new XSSFClientAnchor(6, 6, 6, 6, 6, 26, 13, 39);
+							chart = DocumentHelper.insertChart(sheet, chartAnchor, null);
+							
+							XDDFDataSource<String> categoriesData2 = XDDFDataSourcesFactory.fromStringCellRange(sheet, new CellRangeAddress(28, 30, 0, 0));
+							XDDFNumericalDataSource<Double> valuesData12 = XDDFDataSourcesFactory.fromNumericCellRange(sheet, new CellRangeAddress(28, 30, 1, 1));
+							XDDFNumericalDataSource<Double> valuesData22 = XDDFDataSourcesFactory.fromNumericCellRange(sheet, new CellRangeAddress(28, 30, 2, 2));
+							
+							// category axis
+							bottomAxis = DocumentHelper.createCategoryAxis(chart);
+							
+							// left value axis
+							leftAxis = DocumentHelper.createLeftValueAxis(chart, null);
+							
+							data = DocumentHelper.createChartData(chart, ChartTypes.BAR, bottomAxis, leftAxis);
+							DocumentHelper.addSeries(dataExports.stream().allMatch(item -> item.getEstimatedCumulative() == null), data, categoriesData2, valuesData12, "Estimated Generation (kWh)", XDDFColor.from(PresetColor.STEEL_BLUE), null);
+							DocumentHelper.addSeries(dataExports.stream().allMatch(item -> item.getActualCumulative() == null), data, categoriesData2, valuesData22, "Actual Generation (kWh)", XDDFColor.from(PresetColor.LIGHT_SKY_BLUE), null);
+							
+							chart.plot(data);
+						}
+					} catch (Exception e) {}
+				}
+			});
+			
+			return writeToSheetFile(document, req.getReport_name());
 		} catch (Exception e) {
 			return null;
 		}
 	}
 	
-	private static void writeHeaderQuarterlyReport(Sheet sheet, ViewReportEntity dataObj) {
+	private static void writeHeaderQuarterlyReport(Sheet sheet, ReportDetail reportDetail, SiteByReport site, String startDate, String endDate) {
 		try {
 			sheet.setDefaultColumnWidth(16);
 			sheet.setColumnWidth(0, 25 * 256);
@@ -3250,7 +3410,7 @@ public class ReportsService extends DB {
 			CellStyle tableRowOneDecimalPlaceRedTextCellStyle = DocumentHelper.createStyleForTableRowNumber(sheet, false, DocumentHelper.oneDecimalPlaceDataFormat);
 			tableRowOneDecimalPlaceRedTextCellStyle.setFont(redFont);
 			
-			boolean quarterlyReportByMonth = dataObj.getData_intervals() == ReportIntervals.MONTHLY.getValue();
+			boolean quarterlyReportByMonth = reportDetail.getData_intervals() == ReportIntervals.MONTHLY.getValue();
 
 			Row row = sheet.createRow(0);
 			row.setHeight((short) 600);
@@ -3260,7 +3420,7 @@ public class ReportsService extends DB {
 
 			cell = row.createCell(1);
 			cell.setCellStyle(reportInfoBoldCellStyle);
-			cell.setCellValue(dataObj.getSite_name());
+			cell.setCellValue(site.getName());
 			cell = row.createCell(2);
 			cell.setCellStyle(reportInfoBoldCellStyle);
 			sheet.addMergedRegion(new CellRangeAddress(0, 0, 1, 2));
@@ -3273,7 +3433,7 @@ public class ReportsService extends DB {
 
 			cell = row.createCell(1);
 			cell.setCellStyle(reportInfoCellStyle);
-			cell.setCellValue(dataObj.getReport_date());
+			cell.setCellValue(reportDetail.getReport_date());
 			cell = row.createCell(2);
 			cell.setCellStyle(reportInfoCellStyle);
 			sheet.addMergedRegion(new CellRangeAddress(1, 1, 1, 2));
@@ -3286,7 +3446,7 @@ public class ReportsService extends DB {
 
 			cell = row.createCell(1);
 			cell.setCellStyle(reportInfoCellStyle);
-			cell.setCellValue(dataObj.getStart_date() + " - " + dataObj.getEnd_date());
+			cell.setCellValue(reportDateRangeDTF.format(inputDTF.parse(startDate)) + " - " + reportDateRangeDTF.format(inputDTF.parse(endDate)));
 			cell = row.createCell(2);
 			cell.setCellStyle(reportInfoCellStyle);
 			sheet.addMergedRegion(new CellRangeAddress(2, 2, 1, 2));
@@ -3299,7 +3459,7 @@ public class ReportsService extends DB {
 
 			cell = row.createCell(1);
 			cell.setCellStyle(reportInfoCellStyle);
-			cell.setCellValue(dataObj.getDc_capacity());
+			cell.setCellValue(site.getDc_capacity());
 			cell = row.createCell(2);
 			cell.setCellStyle(reportInfoCellStyle);
 			sheet.addMergedRegion(new CellRangeAddress(3, 3, 1, 2));
@@ -3309,7 +3469,7 @@ public class ReportsService extends DB {
 				for (int j = 3; j <= (quarterlyReportByMonth ? 10 : 8); j++) {
 					cell = row.createCell(j);
 					cell.setCellStyle(reportTitleCellStyle);
-					if(i == 0 && j == 3) cell.setCellValue("QUARTERLY PRODUCTION REPORT - " + LocalDate.parse(dataObj.getStart_date(), DateTimeFormatter.ofPattern("MM/dd/yyyy")).format(DateTimeFormatter.ofPattern("QQQ/yyyy")));
+					if(i == 0 && j == 3) cell.setCellValue("QUARTERLY PRODUCTION REPORT - " + DateTimeFormatter.ofPattern("QQQ/yyyy").format(inputDTF.parse(startDate)));
 				}
 			}
 			sheet.addMergedRegion(new CellRangeAddress(0, 5, 3, (quarterlyReportByMonth ? 10 : 8)));
@@ -3324,7 +3484,7 @@ public class ReportsService extends DB {
 			cell.setCellStyle(tableTitleCellStyle);
 			sheet.addMergedRegion(new CellRangeAddress(6, 6, 0, 2));
 			
-			List<QuarterlyDateEntity> dataExports = dataObj.getDataReports();
+			List<QuarterlyDateEntity> dataExports = (List<QuarterlyDateEntity>) site.getDataReports();
 			if (quarterlyReportByMonth) {
 				row = sheet.createRow(9);
 				cell = row.createCell(0);
@@ -3558,12 +3718,12 @@ public class ReportsService extends DB {
 	 * @description create quarterly report pdf file
 	 * @author Hung.Bui
 	 * @since 2025-08-08
-	 * @param obj
+	 * @param req
 	 * @return file path
 	 */
-	public String createQuarterlyReportPdfFile(ViewReportEntity obj, List<ViewReportEntity> dataObjList) {
+	public String createQuarterlyReportPdfFile(ViewReportEntity req, ReportDetail reportDetail) {
 		try {
-			File file = writeToPdfFile(obj.getReport_name());
+			File file = writeToPdfFile(reportDetail.getName());
 			
 			try (
 				PdfDocument pdfDocument = new PdfDocument(new PdfWriter(file));
@@ -3571,209 +3731,203 @@ public class ReportsService extends DB {
 			) {
 				Image logoImage = DocumentHelper.readLogoImageFile();
 				
-				for (int l = 0; l < dataObjList.size(); l++) {
-				try {
-					ViewReportEntity dataObj = dataObjList.get(l);
-					
-					if (dataObj != null) {
-						boolean quarterlyReportByMonth = dataObj.getData_intervals() == ReportIntervals.MONTHLY.getValue();
-	
-						SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-						SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
-						SimpleDateFormat monthYearFormat = new SimpleDateFormat("MMM-yyyy");
-						Date startDate = dateTimeFormat.parse(obj.getStart_date());
-						Date endDate = dateTimeFormat.parse(obj.getEnd_date());
-						dataObj.setStart_date(dateFormat.format(startDate));
-						dataObj.setEnd_date(dateFormat.format(endDate));
-						DecimalFormat df = new DecimalFormat(DocumentHelper.noDecimalDataFormat);
-						DecimalFormat dfp = new DecimalFormat(DocumentHelper.oneDecimalPlaceDataFormat);
-						DecimalFormat dfp4 = new DecimalFormat(DocumentHelper.fourDecimalPlaceDataFormat);
-						
-						List<QuarterlyDateEntity> dataExports = dataObj.getDataReports() != null ? dataObj.getDataReports() : new ArrayList<>();
-						
-						// total column: 13
-						final float[] columnWidths = {15, 15, 15, 15, 15, 3, 3, 3, 3, 3, 3, 3, 4};
-						Table table = quarterlyReportByMonth ? new Table(UnitValue.createPercentArray(columnWidths)).useAllAvailableWidth() : new Table(13).useAllAvailableWidth();
-						table.setFont(PdfFontFactory.createFont(StandardFonts.TIMES_ROMAN));
-						table.setFontSize(8);
-						table.setTextAlignment(TextAlignment.CENTER);
-						table.setMarginTop(quarterlyReportByMonth ? 75 : 0); // align table in middle of page
-						
-						//====== table ============================================================
-						// header and logo
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 3).setHeight(14).setBorder(Border.NO_BORDER));
-						table.addCell(new com.itextpdf.layout.element.Cell(6, 8).add(new Paragraph("QUARTERLY PRODUCTION REPORT - " + LocalDate.parse(dataObj.getStart_date(), DateTimeFormatter.ofPattern("MM/dd/yyyy")).format(DateTimeFormatter.ofPattern("QQQ/yyyy")))).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBorder(Border.NO_BORDER).setFontSize(20).setBold());
-						table.addCell(new com.itextpdf.layout.element.Cell(6, 2).add(logoImage).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBorder(Border.NO_BORDER));
-						table.addCell(new Paragraph("Site Name").setBold().setTextAlignment(TextAlignment.LEFT));
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph(dataObj.getSite_name()).setBold().setTextAlignment(TextAlignment.LEFT)));
-						table.addCell(new Paragraph("Report Date").setBold().setTextAlignment(TextAlignment.LEFT));
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph(dataObj.getReport_date()).setTextAlignment(TextAlignment.LEFT)));
-						table.addCell(new Paragraph("Covered Period").setBold().setTextAlignment(TextAlignment.LEFT));
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph(dataObj.getStart_date() + " - " + dataObj.getEnd_date()).setTextAlignment(TextAlignment.LEFT)));
-						table.addCell(new Paragraph("System Size (kW DC)").setBold().setTextAlignment(TextAlignment.LEFT));
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph(String.valueOf(dataObj.getDc_capacity())).setTextAlignment(TextAlignment.LEFT)));
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 3).setHeight(14).setBorder(Border.NO_BORDER));
-						
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph("Performance Reporting")).setBold().setBackgroundColor(new DeviceRgb(117, 117, 117)).setFontColor(DeviceGray.WHITE).setBorder(Border.NO_BORDER).setTextAlignment(TextAlignment.LEFT));
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 10).setBorder(Border.NO_BORDER));
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 13).setHeight(14).setBorder(Border.NO_BORDER));
-						
-						if (quarterlyReportByMonth) {
-							// first table
-							table.addCell(new com.itextpdf.layout.element.Cell(1, 5).add(new Paragraph("Monthly kWh Production").setBold()));
+				boolean quarterlyReportByMonth = reportDetail.getData_intervals() == ReportIntervals.MONTHLY.getValue();
+				SimpleDateFormat monthYearFormat = new SimpleDateFormat("MMM-yyyy");
+				Date startDate = inputSDF.parse(req.getStart_date());
+				Date endDate = inputSDF.parse(req.getEnd_date());
+				DecimalFormat df = new DecimalFormat(DocumentHelper.noDecimalDataFormat);
+				DecimalFormat dfp = new DecimalFormat(DocumentHelper.oneDecimalPlaceDataFormat);
+				DecimalFormat dfp4 = new DecimalFormat(DocumentHelper.fourDecimalPlaceDataFormat);
+				
+				Optional.ofNullable(reportDetail.getSites()).ifPresent(sites -> {
+					for (int l = 0; l < sites.size(); l++) {
+						try {
+							SiteByReport site = sites.get(l);
+							List<QuarterlyDateEntity> dataExports = Optional.ofNullable((List<QuarterlyDateEntity>) site.getDataReports()).orElse(new ArrayList<>());
 							
-							// empty column: gap between data table and chart
-							table.addCell(new com.itextpdf.layout.element.Cell(14, 1).setBorder(Border.NO_BORDER));
+							// total column: 13
+							final float[] columnWidths = {15, 15, 15, 15, 15, 3, 3, 3, 3, 3, 3, 3, 4};
+							Table table = quarterlyReportByMonth ? new Table(UnitValue.createPercentArray(columnWidths)).useAllAvailableWidth() : new Table(13).useAllAvailableWidth();
+							table.setFont(PdfFontFactory.createFont(StandardFonts.TIMES_ROMAN));
+							table.setFontSize(8);
+							table.setTextAlignment(TextAlignment.CENTER);
+							table.setMarginTop(quarterlyReportByMonth ? 75 : 0); // align table in middle of page
 							
-							// first chart
-							com.itextpdf.layout.element.Cell chartCell1 = new com.itextpdf.layout.element.Cell(14, 7);
-							table.addCell(chartCell1.setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE));
+							//====== table ============================================================
+							// header and logo
+							table.addCell(new com.itextpdf.layout.element.Cell(1, 3).setHeight(14).setBorder(Border.NO_BORDER));
+							table.addCell(new com.itextpdf.layout.element.Cell(6, 8).add(new Paragraph("QUARTERLY PRODUCTION REPORT - " + LocalDateTime.parse(req.getStart_date(), inputDTF).format(DateTimeFormatter.ofPattern("QQQ/yyyy")))).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBorder(Border.NO_BORDER).setFontSize(20).setBold());
+							table.addCell(new com.itextpdf.layout.element.Cell(6, 2).add(logoImage).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBorder(Border.NO_BORDER));
+							table.addCell(new Paragraph("Site Name").setBold().setTextAlignment(TextAlignment.LEFT));
+							table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph(site.getName()).setBold().setTextAlignment(TextAlignment.LEFT)));
+							table.addCell(new Paragraph("Report Date").setBold().setTextAlignment(TextAlignment.LEFT));
+							table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph(reportDetail.getReport_date()).setTextAlignment(TextAlignment.LEFT)));
+							table.addCell(new Paragraph("Covered Period").setBold().setTextAlignment(TextAlignment.LEFT));
+							table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph(reportDateRangeSDF.format(startDate) + " - " + reportDateRangeSDF.format(endDate)).setTextAlignment(TextAlignment.LEFT)));
+							table.addCell(new Paragraph("System Size (kW DC)").setBold().setTextAlignment(TextAlignment.LEFT));
+							table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph(String.valueOf(site.getDc_capacity())).setTextAlignment(TextAlignment.LEFT)));
+							table.addCell(new com.itextpdf.layout.element.Cell(1, 3).setHeight(14).setBorder(Border.NO_BORDER));
 							
-							table.addCell("");
-							table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Estimated Generation\n(kWh)")).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBold());
-							table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Actual Generation\n(kWh)")).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBold());
-							table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Difference\n(kWh)")).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBold());
-							table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Difference\n(%)")).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBold());
-							
-							// data table
-							QuarterlyDateEntity total = null;
-							for(int i = 0; i < dataExports.size(); i++ ) {
-								QuarterlyDateEntity item = (QuarterlyDateEntity) dataExports.get(i);
-								
-								table.addCell(new Paragraph(item.getCategories_time()).setBold());
-								table.addCell(item.getEstimated() != null ? df.format(item.getEstimated()) : "");
-								table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph(item.getActual() != null ? df.format(item.getActual()) : "")).setBackgroundColor(new DeviceRgb(133, 197, 251)));
-								table.addCell(new Paragraph(item.getDifference() != null ? df.format(item.getDifference()) : "").setFontColor(item.getDifference() != null && item.getDifference() < 0 ? new DeviceRgb(255, 0, 0) : null));
-								table.addCell(new Paragraph(item.getDifferencePercentage() != null ? dfp.format(item.getDifferencePercentage()) : "").setFontColor(item.getDifferencePercentage() != null && item.getDifferencePercentage() < 0 ? new DeviceRgb(255, 0, 0) : null));
-								
-								if(item.getActualCumulative() != null) total = item;
-							}
-							if(dataExports.size() == 0) for(int i = 0; i < 3; i++) for(int j = 0; j < 5; j++) table.addCell("");
-							
-							// total
-							table.addCell(new com.itextpdf.layout.element.Cell(8, 5).add(new Paragraph("\n\n\n\n\n\n\n\n\n\n")).setBorder(Border.NO_BORDER).setBorderBottom(new SolidBorder(1)));
-							table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Total")).setBold().setBorder(Border.NO_BORDER));
-							table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph(total != null && total.getEstimatedCumulative() != null ? df.format(total.getEstimatedCumulative()) : "")).setBold().setBorder(Border.NO_BORDER));
-							table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph(total != null && total.getActualCumulative() != null ? df.format(total.getActualCumulative()) : "")).setBold().setBorder(Border.NO_BORDER));
-							table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph(total != null && total.getCumulativeDifference() != null ? df.format(total.getCumulativeDifference()) : "")).setBold().setBorder(Border.NO_BORDER));
-							table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph(total != null && total.getCumulativeDifferencePercentage() != null ? dfp.format(total.getCumulativeDifferencePercentage()) : "")).setBold().setBorder(Border.NO_BORDER));
-							
-							// gap between 2 table
+							table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph("Performance Reporting")).setBold().setBackgroundColor(new DeviceRgb(117, 117, 117)).setFontColor(DeviceGray.WHITE).setBorder(Border.NO_BORDER).setTextAlignment(TextAlignment.LEFT));
+							table.addCell(new com.itextpdf.layout.element.Cell(1, 10).setBorder(Border.NO_BORDER));
 							table.addCell(new com.itextpdf.layout.element.Cell(1, 13).setHeight(14).setBorder(Border.NO_BORDER));
 							
-							// second table
-							table.addCell(new com.itextpdf.layout.element.Cell(1, 5).add(new Paragraph("Cumulative kWh Production").setBold()));
-							
-							// empty column: gap between data table and chart
-							table.addCell(new com.itextpdf.layout.element.Cell(14, 1).setBorder(Border.NO_BORDER));
-							
-							// second chart
-							com.itextpdf.layout.element.Cell chartCell2 = new com.itextpdf.layout.element.Cell(14, 7);
-							table.addCell(chartCell2.setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE));
-							
-							table.addCell("");
-							table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Estimated Generation\n(kWh)")).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBold());
-							table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Actual Generation\n(kWh)")).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBold());
-							table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Difference\n(kWh)")).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBold());
-							table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Difference\n(%)")).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBold());
-							
-							for(int i = 0; i < dataExports.size(); i++ ) {
-								QuarterlyDateEntity item = (QuarterlyDateEntity) dataExports.get(i);
+							if (quarterlyReportByMonth) {
+								// first table
+								table.addCell(new com.itextpdf.layout.element.Cell(1, 5).add(new Paragraph("Monthly kWh Production").setBold()));
 								
-								table.addCell(new Paragraph(item.getCategories_time()).setBold());
-								table.addCell(item.getEstimatedCumulative() != null ? df.format(item.getEstimatedCumulative()) : "");
-								table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph(item.getActualCumulative() != null ? df.format(item.getActualCumulative()) : "")).setBackgroundColor(new DeviceRgb(133, 197, 251)));
-								table.addCell(new Paragraph(item.getCumulativeDifference() != null ? df.format(item.getCumulativeDifference()) : "").setFontColor(item.getCumulativeDifference() != null && item.getCumulativeDifference() < 0 ? new DeviceRgb(255, 0, 0) : null));
-								table.addCell(new Paragraph(item.getCumulativeDifferencePercentage() != null ? dfp.format(item.getCumulativeDifferencePercentage()) : "").setFontColor(item.getCumulativeDifferencePercentage() != null && item.getCumulativeDifferencePercentage() < 0 ? new DeviceRgb(255, 0, 0) : null));
-							}
-							if(dataExports.size() == 0) for(int i = 0; i < 3; i++) for(int j = 0; j < 5; j++) table.addCell("");
-		
-							// empty rows
-							table.addCell(new com.itextpdf.layout.element.Cell(8, 5).add(new Paragraph("\n\n\n\n\n\n\n\n\n\n\n")).setBorder(Border.NO_BORDER));
-							
-							//====== first chart ============================================================
-							JFreeChart chart = DocumentHelper.createJFreeChart(null);
-							XYPlot plot = chart.getXYPlot();
-							
-							// data source
-							TimeSeries estimateSeries = new TimeSeries("Estimate Generation (kWh)");
-							TimeSeries actualSeries = new TimeSeries("Actual Generation (kWh)");
-							
-							for (int i = 0; i < dataExports.size(); i++) {
-								QuarterlyDateEntity item = dataExports.get(i);
-								RegularTimePeriod period = new Month(monthYearFormat.parse(item.getCategories_time()));
+								// empty column: gap between data table and chart
+								table.addCell(new com.itextpdf.layout.element.Cell(14, 1).setBorder(Border.NO_BORDER));
 								
-								estimateSeries.addOrUpdate(period, item.getEstimated());
-								actualSeries.addOrUpdate(period, item.getActual());
-							}
-							
-							TimeSeriesCollection barDataset = DocumentHelper.createJFreeChartBarDataset(0, plot);
-							barDataset.addSeries(estimateSeries);
-							plot.getRendererForDataset(barDataset).setSeriesPaint(0, BLUE_COLOR);
-							barDataset.addSeries(actualSeries);
-							plot.getRendererForDataset(barDataset).setSeriesPaint(1, LIGHT_BLUE_COLOR);
-							
-							// category axis
-							DocumentHelper.createJFreeChartDomainAxis(plot, new DateTickUnit(DateTickUnitType.MONTH, 1, monthYearFormat), startDate, endDate);
-							// left axis
-							DocumentHelper.createJFreeChartNumberAxis(null, AxisLocation.BOTTOM_OR_LEFT, 0, 0, plot);
-							
-							chartCell1.add(new Image(ImageDataFactory.create(chart.createBufferedImage(900, 300), null)).setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER).scaleToFit(600, 300));
-							
-							//====== second chart ============================================================
-							JFreeChart chart2 = DocumentHelper.createJFreeChart(null);
-							XYPlot plot2 = chart2.getXYPlot();
-							
-							// data source
-							TimeSeries estimatedCumulativeSeries = new TimeSeries("Estimate Generation (kWh)");
-							TimeSeries actualCumulativeSeries = new TimeSeries("Actual Generation (kWh)");
-							
-							for (int i = 0; i < dataExports.size(); i++) {
-								QuarterlyDateEntity item = dataExports.get(i);
-								RegularTimePeriod period = new Month(monthYearFormat.parse(item.getCategories_time()));
+								// first chart
+								com.itextpdf.layout.element.Cell chartCell1 = new com.itextpdf.layout.element.Cell(14, 7);
+								table.addCell(chartCell1.setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE));
 								
-								estimatedCumulativeSeries.addOrUpdate(period, item.getEstimatedCumulative());
-								actualCumulativeSeries.addOrUpdate(period, item.getActualCumulative());
-							}
-							
-							TimeSeriesCollection barDataset2 = DocumentHelper.createJFreeChartBarDataset(0, plot2);
-							barDataset2.addSeries(estimatedCumulativeSeries);
-							plot2.getRendererForDataset(barDataset2).setSeriesPaint(0, BLUE_COLOR);
-							barDataset2.addSeries(actualCumulativeSeries);
-							plot2.getRendererForDataset(barDataset2).setSeriesPaint(1, LIGHT_BLUE_COLOR);
-							
-							// category axis
-							DocumentHelper.createJFreeChartDomainAxis(plot2, new DateTickUnit(DateTickUnitType.MONTH, 1, monthYearFormat), startDate, endDate);
-							// left axis
-							DocumentHelper.createJFreeChartNumberAxis(null, AxisLocation.BOTTOM_OR_LEFT, 0, 0, plot2);
-							
-							chartCell2.add(new Image(ImageDataFactory.create(chart2.createBufferedImage(900, 300), null)).setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER).scaleToFit(600, 300));
-						} else {
-							table.addCell(new com.itextpdf.layout.element.Cell(1, 1).add(new Paragraph("Date")).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBold());
-							table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph("Daily System Production (kWh)")).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBold());
-							table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph("Daily POA Insolation (kWh/m²)")).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBold());
-							table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph("TCell (°C)")).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBold());
-							table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph("Temperature Corrected PR (%)")).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBold());
-							table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph("Inverter Availability (%)")).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBold());
-							
-							// data table
-							for(int i = 0; i < dataExports.size(); i++) {
-								QuarterlyDateEntity item = (QuarterlyDateEntity) dataExports.get(i);
+								table.addCell("");
+								table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Estimated Generation\n(kWh)")).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBold());
+								table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Actual Generation\n(kWh)")).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBold());
+								table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Difference\n(kWh)")).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBold());
+								table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Difference\n(%)")).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBold());
 								
-								table.addCell(new com.itextpdf.layout.element.Cell(1, 1).add(new Paragraph(item.getCategories_time()).setBold()));
-								table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph(item.getActual() != null ? df.format(item.getActual()) : "")));
-								table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph(item.getPOAInsolation() != null ? dfp4.format(item.getPOAInsolation()) : "")));
-								table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph(item.getTCellAVG() != null ? dfp.format(item.getTCellAVG()) : "")));
-								table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph(item.getTemperatureCorrected() != null ? dfp.format(item.getTemperatureCorrected()) : "")));
-								table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph(item.getInverterAvailability() != null ? dfp.format(item.getInverterAvailability()) : "")));
+								// data table
+								QuarterlyDateEntity total = null;
+								for(int i = 0; i < dataExports.size(); i++ ) {
+									QuarterlyDateEntity item = (QuarterlyDateEntity) dataExports.get(i);
+									
+									table.addCell(new Paragraph(item.getCategories_time()).setBold());
+									table.addCell(item.getEstimated() != null ? df.format(item.getEstimated()) : "");
+									table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph(item.getActual() != null ? df.format(item.getActual()) : "")).setBackgroundColor(new DeviceRgb(133, 197, 251)));
+									table.addCell(new Paragraph(item.getDifference() != null ? df.format(item.getDifference()) : "").setFontColor(item.getDifference() != null && item.getDifference() < 0 ? new DeviceRgb(255, 0, 0) : null));
+									table.addCell(new Paragraph(item.getDifferencePercentage() != null ? dfp.format(item.getDifferencePercentage()) : "").setFontColor(item.getDifferencePercentage() != null && item.getDifferencePercentage() < 0 ? new DeviceRgb(255, 0, 0) : null));
+									
+									if(item.getActualCumulative() != null) total = item;
+								}
+								if(dataExports.size() == 0) for(int i = 0; i < 3; i++) for(int j = 0; j < 5; j++) table.addCell("");
+								
+								// total
+								table.addCell(new com.itextpdf.layout.element.Cell(8, 5).add(new Paragraph("\n\n\n\n\n\n\n\n\n\n")).setBorder(Border.NO_BORDER).setBorderBottom(new SolidBorder(1)));
+								table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Total")).setBold().setBorder(Border.NO_BORDER));
+								table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph(total != null && total.getEstimatedCumulative() != null ? df.format(total.getEstimatedCumulative()) : "")).setBold().setBorder(Border.NO_BORDER));
+								table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph(total != null && total.getActualCumulative() != null ? df.format(total.getActualCumulative()) : "")).setBold().setBorder(Border.NO_BORDER));
+								table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph(total != null && total.getCumulativeDifference() != null ? df.format(total.getCumulativeDifference()) : "")).setBold().setBorder(Border.NO_BORDER));
+								table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph(total != null && total.getCumulativeDifferencePercentage() != null ? dfp.format(total.getCumulativeDifferencePercentage()) : "")).setBold().setBorder(Border.NO_BORDER));
+								
+								// gap between 2 table
+								table.addCell(new com.itextpdf.layout.element.Cell(1, 13).setHeight(14).setBorder(Border.NO_BORDER));
+								
+								// second table
+								table.addCell(new com.itextpdf.layout.element.Cell(1, 5).add(new Paragraph("Cumulative kWh Production").setBold()));
+								
+								// empty column: gap between data table and chart
+								table.addCell(new com.itextpdf.layout.element.Cell(14, 1).setBorder(Border.NO_BORDER));
+								
+								// second chart
+								com.itextpdf.layout.element.Cell chartCell2 = new com.itextpdf.layout.element.Cell(14, 7);
+								table.addCell(chartCell2.setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE));
+								
+								table.addCell("");
+								table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Estimated Generation\n(kWh)")).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBold());
+								table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Actual Generation\n(kWh)")).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBold());
+								table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Difference\n(kWh)")).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBold());
+								table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Difference\n(%)")).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBold());
+								
+								for(int i = 0; i < dataExports.size(); i++ ) {
+									QuarterlyDateEntity item = dataExports.get(i);
+									
+									table.addCell(new Paragraph(item.getCategories_time()).setBold());
+									table.addCell(item.getEstimatedCumulative() != null ? df.format(item.getEstimatedCumulative()) : "");
+									table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph(item.getActualCumulative() != null ? df.format(item.getActualCumulative()) : "")).setBackgroundColor(new DeviceRgb(133, 197, 251)));
+									table.addCell(new Paragraph(item.getCumulativeDifference() != null ? df.format(item.getCumulativeDifference()) : "").setFontColor(item.getCumulativeDifference() != null && item.getCumulativeDifference() < 0 ? new DeviceRgb(255, 0, 0) : null));
+									table.addCell(new Paragraph(item.getCumulativeDifferencePercentage() != null ? dfp.format(item.getCumulativeDifferencePercentage()) : "").setFontColor(item.getCumulativeDifferencePercentage() != null && item.getCumulativeDifferencePercentage() < 0 ? new DeviceRgb(255, 0, 0) : null));
+								}
+								if(dataExports.size() == 0) for(int i = 0; i < 3; i++) for(int j = 0; j < 5; j++) table.addCell("");
+								
+								// empty rows
+								table.addCell(new com.itextpdf.layout.element.Cell(8, 5).add(new Paragraph("\n\n\n\n\n\n\n\n\n\n\n")).setBorder(Border.NO_BORDER));
+								
+								//====== first chart ============================================================
+								JFreeChart chart = DocumentHelper.createJFreeChart(null);
+								XYPlot plot = chart.getXYPlot();
+								
+								// data source
+								TimeSeries estimateSeries = new TimeSeries("Estimate Generation (kWh)");
+								TimeSeries actualSeries = new TimeSeries("Actual Generation (kWh)");
+								
+								for (int i = 0; i < dataExports.size(); i++) {
+									QuarterlyDateEntity item = dataExports.get(i);
+									RegularTimePeriod period = new Month(monthYearFormat.parse(item.getCategories_time()));
+									
+									estimateSeries.addOrUpdate(period, item.getEstimated());
+									actualSeries.addOrUpdate(period, item.getActual());
+								}
+								
+								TimeSeriesCollection barDataset = DocumentHelper.createJFreeChartBarDataset(0, plot);
+								barDataset.addSeries(estimateSeries);
+								plot.getRendererForDataset(barDataset).setSeriesPaint(0, BLUE_COLOR);
+								barDataset.addSeries(actualSeries);
+								plot.getRendererForDataset(barDataset).setSeriesPaint(1, LIGHT_BLUE_COLOR);
+								
+								// category axis
+								DocumentHelper.createJFreeChartDomainAxis(plot, new DateTickUnit(DateTickUnitType.MONTH, 1, monthYearFormat), startDate, endDate);
+								// left axis
+								DocumentHelper.createJFreeChartNumberAxis(null, AxisLocation.BOTTOM_OR_LEFT, 0, 0, plot);
+								
+								chartCell1.add(new Image(ImageDataFactory.create(chart.createBufferedImage(900, 300), null)).setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER).scaleToFit(600, 300));
+								
+								//====== second chart ============================================================
+								JFreeChart chart2 = DocumentHelper.createJFreeChart(null);
+								XYPlot plot2 = chart2.getXYPlot();
+								
+								// data source
+								TimeSeries estimatedCumulativeSeries = new TimeSeries("Estimate Generation (kWh)");
+								TimeSeries actualCumulativeSeries = new TimeSeries("Actual Generation (kWh)");
+								
+								for (int i = 0; i < dataExports.size(); i++) {
+									QuarterlyDateEntity item = dataExports.get(i);
+									RegularTimePeriod period = new Month(monthYearFormat.parse(item.getCategories_time()));
+									
+									estimatedCumulativeSeries.addOrUpdate(period, item.getEstimatedCumulative());
+									actualCumulativeSeries.addOrUpdate(period, item.getActualCumulative());
+								}
+								
+								TimeSeriesCollection barDataset2 = DocumentHelper.createJFreeChartBarDataset(0, plot2);
+								barDataset2.addSeries(estimatedCumulativeSeries);
+								plot2.getRendererForDataset(barDataset2).setSeriesPaint(0, BLUE_COLOR);
+								barDataset2.addSeries(actualCumulativeSeries);
+								plot2.getRendererForDataset(barDataset2).setSeriesPaint(1, LIGHT_BLUE_COLOR);
+								
+								// category axis
+								DocumentHelper.createJFreeChartDomainAxis(plot2, new DateTickUnit(DateTickUnitType.MONTH, 1, monthYearFormat), startDate, endDate);
+								// left axis
+								DocumentHelper.createJFreeChartNumberAxis(null, AxisLocation.BOTTOM_OR_LEFT, 0, 0, plot2);
+								
+								chartCell2.add(new Image(ImageDataFactory.create(chart2.createBufferedImage(900, 300), null)).setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER).scaleToFit(600, 300));
+							} else {
+								table.addCell(new com.itextpdf.layout.element.Cell(1, 1).add(new Paragraph("Date")).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBold());
+								table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph("Daily System Production (kWh)")).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBold());
+								table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph("Daily POA Insolation (kWh/m²)")).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBold());
+								table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph("TCell (°C)")).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBold());
+								table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph("Temperature Corrected PR (%)")).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBold());
+								table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph("Inverter Availability (%)")).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBold());
+								
+								// data table
+								for(int i = 0; i < dataExports.size(); i++) {
+									QuarterlyDateEntity item = (QuarterlyDateEntity) dataExports.get(i);
+									
+									table.addCell(new com.itextpdf.layout.element.Cell(1, 1).add(new Paragraph(item.getCategories_time()).setBold()));
+									table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph(item.getActual() != null ? df.format(item.getActual()) : "")));
+									table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph(item.getPOAInsolation() != null ? dfp4.format(item.getPOAInsolation()) : "")));
+									table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph(item.getTCellAVG() != null ? dfp.format(item.getTCellAVG()) : "")));
+									table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph(item.getTemperatureCorrected() != null ? dfp.format(item.getTemperatureCorrected()) : "")));
+									table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph(item.getInverterAvailability() != null ? dfp.format(item.getInverterAvailability()) : "")));
+								}
 							}
-						}
-						
-						document.add(table);
-						if (l < dataObjList.size() - 1) document.add(new AreaBreak());
+							
+							document.add(table);
+							if (l < sites.size() - 1) document.add(new AreaBreak());
+						} catch (Exception e) {}
 					}
-				} catch (Exception e) {}
-				}
+				});
 				
 				// It must be closed before attach to mail
 				document.close();
@@ -3789,71 +3943,70 @@ public class ReportsService extends DB {
 	 * @description create annually report sheet file
 	 * @author Hung.Bui
 	 * @since 2025-08-08
-	 * @param obj
+	 * @param req
 	 * @return file path
 	 */
-	public String createAnnuallyReportSheetFile(ViewReportEntity obj, List<ViewReportEntity> dataObjList) {
+	public String createAnnuallyReportSheetFile(ViewReportEntity req, ReportDetail reportDetail) {
 		try (XSSFWorkbook document = new XSSFWorkbook()) {
 			int pictureIdx = DocumentHelper.readLogoImageFile(document);
-				
-			for (int i = 0; i < dataObjList.size(); i++) {
-			try {
-				ViewReportEntity dataObj = dataObjList.get(i);
-				
-				if (dataObj != null) {
-					List<QuarterlyDateEntity> dataExports = dataObj.getDataReports();
-					int numOfPoints = dataExports != null ? dataExports.size() : 0;
-					XSSFSheet sheet = document.createSheet(WorkbookUtil.createSafeSheetName((i + 1) + "_" + dataObj.getSite_name()));
-					sheet.setZoom(95);
-
-					// insert logo image
-					ClientAnchor logoAnchor = new XSSFClientAnchor(0, 0, 20 * Units.EMU_PER_PIXEL, 15 * Units.EMU_PER_PIXEL, 12, 1, 13, 4);
-					DocumentHelper.insertLogo(sheet, logoAnchor, pictureIdx);
-
-					// report information and table
-					writeHeaderAnnuallyReport(sheet, obj, dataObj);
-
-					// chart
-					ClientAnchor chartAnchor = new XSSFClientAnchor(5 * Units.EMU_PER_PIXEL, 0, 0, 0, 0, 18, 14, 40);
-					XDDFChart chart = DocumentHelper.insertChart(sheet, chartAnchor, "Annual Performance");
-					
-					// data sources
-					XDDFDataSource<String> categoriesData = XDDFDataSourcesFactory.fromStringCellRange(sheet, new CellRangeAddress(7, 7, 2, 2 + numOfPoints - 1));
-					XDDFNumericalDataSource<Double> valuesData1 = XDDFDataSourcesFactory.fromNumericCellRange(sheet, new CellRangeAddress(8, 8, 2, 2 + numOfPoints - 1));
-					XDDFNumericalDataSource<Double> valuesData2 = XDDFDataSourcesFactory.fromNumericCellRange(sheet, new CellRangeAddress(9, 9, 2, 2 + numOfPoints - 1));
-					XDDFNumericalDataSource<Double> valuesData3 = XDDFDataSourcesFactory.fromNumericCellRange(sheet, new CellRangeAddress(10, 10, 2, 2 + numOfPoints - 1));
-
-					// category axis
-					XDDFCategoryAxis bottomAxis = DocumentHelper.createCategoryAxis(chart);
-					
-					// left value axis
-					XDDFValueAxis leftAxis = DocumentHelper.createLeftValueAxis(chart, "GENERATION (KWH)");
-
-					XDDFChartData chartData = DocumentHelper.createChartData(chart, ChartTypes.BAR, bottomAxis, leftAxis);
-					DocumentHelper.addSeries(dataExports.stream().allMatch(item -> item.getActual() == null), chartData, categoriesData, valuesData1, "Actual Generation (kWh)", XDDFColor.from(PresetColor.STEEL_BLUE), null);
-					DocumentHelper.addSeries(dataExports.stream().allMatch(item -> item.getEstimated() == null), chartData, categoriesData, valuesData2, "Estimated Generation (kWh)", XDDFColor.from(PresetColor.LIGHT_SKY_BLUE), null);
-					
-					chart.plot(chartData);
-
-					// right value axis
-					XDDFValueAxis rightAxis = DocumentHelper.createRightValueAxis(chart, bottomAxis, "PERFORMANCE INDEX (%)");
-
-					chartData = DocumentHelper.createChartData(chart, ChartTypes.LINE, bottomAxis, rightAxis);
-					DocumentHelper.addSeries(dataExports.stream().allMatch(item -> item.getDifferencePercentage() == null), chartData, categoriesData, valuesData3, "Estimated Generation Index (%)", XDDFColor.from(PresetColor.GRAY), null);
-					
-					chart.plot(chartData);
-				}
-			} catch (Exception e) {}
-			}
 			
-			return writeToSheetFile(document, obj.getReport_name());
+			Optional.ofNullable(reportDetail.getSites()).ifPresent(sites -> {
+				for (int i = 0; i < sites.size(); i++) {
+					try {
+						SiteByReport site = sites.get(i);
+						List<QuarterlyDateEntity> dataExports = Optional.ofNullable((List<QuarterlyDateEntity>) site.getDataReports()).orElse(new ArrayList<>());
+						int numOfPoints = dataExports.size();
+						XSSFSheet sheet = document.createSheet(WorkbookUtil.createSafeSheetName((i + 1) + "_" + site.getName()));
+						sheet.setZoom(95);
+						
+						// insert logo image
+						ClientAnchor logoAnchor = new XSSFClientAnchor(0, 0, 20 * Units.EMU_PER_PIXEL, 15 * Units.EMU_PER_PIXEL, 12, 1, 13, 4);
+						DocumentHelper.insertLogo(sheet, logoAnchor, pictureIdx);
+						
+						// report information and table
+						writeHeaderAnnuallyReport(sheet, reportDetail, site, req.getStart_date(), req.getEnd_date());
+						
+						// chart
+						ClientAnchor chartAnchor = new XSSFClientAnchor(5 * Units.EMU_PER_PIXEL, 0, 0, 0, 0, 18, 14, 40);
+						XDDFChart chart = DocumentHelper.insertChart(sheet, chartAnchor, "Annual Performance");
+						
+						// data sources
+						XDDFDataSource<String> categoriesData = XDDFDataSourcesFactory.fromStringCellRange(sheet, new CellRangeAddress(7, 7, 2, 2 + numOfPoints - 1));
+						XDDFNumericalDataSource<Double> valuesData1 = XDDFDataSourcesFactory.fromNumericCellRange(sheet, new CellRangeAddress(8, 8, 2, 2 + numOfPoints - 1));
+						XDDFNumericalDataSource<Double> valuesData2 = XDDFDataSourcesFactory.fromNumericCellRange(sheet, new CellRangeAddress(9, 9, 2, 2 + numOfPoints - 1));
+						XDDFNumericalDataSource<Double> valuesData3 = XDDFDataSourcesFactory.fromNumericCellRange(sheet, new CellRangeAddress(10, 10, 2, 2 + numOfPoints - 1));
+						
+						// category axis
+						XDDFCategoryAxis bottomAxis = DocumentHelper.createCategoryAxis(chart);
+						
+						// left value axis
+						XDDFValueAxis leftAxis = DocumentHelper.createLeftValueAxis(chart, "GENERATION (KWH)");
+						
+						XDDFChartData chartData = DocumentHelper.createChartData(chart, ChartTypes.BAR, bottomAxis, leftAxis);
+						DocumentHelper.addSeries(dataExports.stream().allMatch(item -> item.getActual() == null), chartData, categoriesData, valuesData1, "Actual Generation (kWh)", XDDFColor.from(PresetColor.STEEL_BLUE), null);
+						DocumentHelper.addSeries(dataExports.stream().allMatch(item -> item.getEstimated() == null), chartData, categoriesData, valuesData2, "Estimated Generation (kWh)", XDDFColor.from(PresetColor.LIGHT_SKY_BLUE), null);
+						
+						chart.plot(chartData);
+						
+						// right value axis
+						XDDFValueAxis rightAxis = DocumentHelper.createRightValueAxis(chart, bottomAxis, "PERFORMANCE INDEX (%)");
+						
+						chartData = DocumentHelper.createChartData(chart, ChartTypes.LINE, bottomAxis, rightAxis);
+						DocumentHelper.addSeries(dataExports.stream().allMatch(item -> item.getDifferencePercentage() == null), chartData, categoriesData, valuesData3, "Estimated Generation Index (%)", XDDFColor.from(PresetColor.GRAY), null);
+						
+						chart.plot(chartData);
+					} catch (Exception e) {}
+				}
+			});
+			
+			return writeToSheetFile(document, req.getReport_name());
 		} catch (Exception e) {
 			return null;
 		}
 	}
 	
 	// Write header with format
-	private static void writeHeaderAnnuallyReport(Sheet sheet, ViewReportEntity report, ViewReportEntity dataObj) {
+	private static void writeHeaderAnnuallyReport(Sheet sheet, ReportDetail reportDetail, SiteByReport site, String startDate, String endDate) {
 		try {
 			sheet.setDefaultColumnWidth(16);
 			sheet.setColumnWidth(0, 35 * 256);
@@ -3892,7 +4045,7 @@ public class ReportsService extends DB {
 
 			cell = row.createCell(1);
 			cell.setCellStyle(reportInfoBoldCellStyle);
-			cell.setCellValue(dataObj.getSite_name());
+			cell.setCellValue(site.getName());
 
 			row = sheet.createRow(1);
 			row.setHeight((short) 600);
@@ -3902,7 +4055,7 @@ public class ReportsService extends DB {
 
 			cell = row.createCell(1);
 			cell.setCellStyle(reportInfoCellStyle);
-			cell.setCellValue(dataObj.getReport_date());
+			cell.setCellValue(reportDetail.getReport_date());
 
 			row = sheet.createRow(2);
 			row.setHeight((short) 600);
@@ -3910,11 +4063,9 @@ public class ReportsService extends DB {
 			cell.setCellStyle(reportInfoBoldCellStyle);
 			cell.setCellValue("Covered Period");
 
-			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-			SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
 			cell = row.createCell(1);
 			cell.setCellStyle(reportInfoCellStyle);
-			cell.setCellValue(format.format(dateFormat.parse(report.getStart_date())) + " - " + format.format(dateFormat.parse(report.getEnd_date())));
+			cell.setCellValue(reportDateRangeDTF.format(inputDTF.parse(startDate)) + " - " + reportDateRangeDTF.format(inputDTF.parse(endDate)));
 
 			row = sheet.createRow(3);
 			row.setHeight((short) 600);
@@ -3924,7 +4075,7 @@ public class ReportsService extends DB {
 
 			cell = row.createCell(1);
 			cell.setCellStyle(reportInfoCellStyle);
-			cell.setCellValue(dataObj.getDc_capacity());
+			cell.setCellValue(site.getDc_capacity());
 
 			row = sheet.createRow(5);
 			cell = row.createCell(0);
@@ -4010,12 +4161,12 @@ public class ReportsService extends DB {
 			Row row15 = sheet.createRow(15);
 			Cell cell15 = row15.createCell(0);
 			cell15.setCellStyle(tableRowLeftAlignCellStyle);
-			cell15.setCellValue(dataObj.getDeviceType() == "meter" ? "Site Availability (%)" : "Inverter Availability (%)");
+			cell15.setCellValue(site.isHave_inverter() ? "Inverter Availability (%)" : "Site Availability (%)");
 			Cell cell151 = row15.createCell(1);
 			cell151.setCellStyle(tableRowLeftAlignCellStyle);
 			sheet.addMergedRegion(new CellRangeAddress(15, 15, 0, 1));
 			
-			List<QuarterlyDateEntity> dataExports = dataObj.getDataReports();
+			List<QuarterlyDateEntity> dataExports = (List<QuarterlyDateEntity>) site.getDataReports();
 			if(dataExports != null && dataExports.size() > 0) {
 				int r = 2;
 				for (int i = 0; i < dataExports.size(); i++) {
@@ -4071,12 +4222,12 @@ public class ReportsService extends DB {
 	 * @description create annually report pdf file
 	 * @author Hung.Bui
 	 * @since 2025-08-08
-	 * @param obj
+	 * @param req
 	 * @return file path
 	 */
-	public String createAnnuallyReportPdfFile(ViewReportEntity obj, List<ViewReportEntity> dataObjList) {
+	public String createAnnuallyReportPdfFile(ViewReportEntity req, ReportDetail reportDetail) {
 		try {
-			File file = writeToPdfFile(obj.getReport_name());
+			File file = writeToPdfFile(reportDetail.getName());
 			
 			try (
 				PdfDocument pdfDocument = new PdfDocument(new PdfWriter(file));
@@ -4084,159 +4235,154 @@ public class ReportsService extends DB {
 			) {
 				Image logoImage = DocumentHelper.readLogoImageFile();
 				
-				for (int l = 0; l < dataObjList.size(); l++) {
-				try {
-					ViewReportEntity dataObj = dataObjList.get(l);
+				Date startDate = inputSDF.parse(req.getStart_date());
+				Date endDate = inputSDF.parse(req.getEnd_date());
 				
-					if (dataObj != null) {
-						SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-						Date startDate = dateFormat.parse(obj.getStart_date());
-						Date endDate = dateFormat.parse(obj.getEnd_date());
-						dataObj.setStart_date(new SimpleDateFormat("MM/dd/yyyy").format(startDate));
-						dataObj.setEnd_date(new SimpleDateFormat("MM/dd/yyyy").format(endDate));
-						
-						List<QuarterlyDateEntity> dataExports = dataObj.getDataReports();
-						
-						// total column: 14
-						Table table = new Table(14).useAllAvailableWidth();
-						table.setFont(PdfFontFactory.createFont(StandardFonts.TIMES_ROMAN));
-						table.setFontSize(8);
-						table.setTextAlignment(TextAlignment.CENTER);
-					
-						//====== table ============================================================
-						// header and logo
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 4).setHeight(14).setBorder(Border.NO_BORDER));
-						table.addCell(new com.itextpdf.layout.element.Cell(6, 6).add(new Paragraph("ANNUAL PRODUCTION REPORT")).setTextAlignment(TextAlignment.CENTER).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBorder(Border.NO_BORDER).setFontSize(20).setBold());
-						table.addCell(new com.itextpdf.layout.element.Cell(6, 4).add(logoImage).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBorder(Border.NO_BORDER));
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph("Site Name").setBold().setTextAlignment(TextAlignment.LEFT)));
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph(dataObj.getSite_name()).setBold().setTextAlignment(TextAlignment.LEFT)));
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph("Report Date").setBold().setTextAlignment(TextAlignment.LEFT)));
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph(dataObj.getReport_date()).setTextAlignment(TextAlignment.LEFT)));
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph("Covered Period").setBold().setTextAlignment(TextAlignment.LEFT)));
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph(dataObj.getStart_date() + " - " + dataObj.getEnd_date()).setTextAlignment(TextAlignment.LEFT)));
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph("System Size (kW DC)").setBold().setTextAlignment(TextAlignment.LEFT)));
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph(String.valueOf(dataObj.getDc_capacity())).setTextAlignment(TextAlignment.LEFT)));
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 4).setHeight(14).setBorder(Border.NO_BORDER));
-						
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph("Performance Reporting")).setBold().setBackgroundColor(new DeviceRgb(117, 117, 117)).setFontColor(DeviceGray.WHITE).setBorder(Border.NO_BORDER).setTextAlignment(TextAlignment.LEFT));
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 12).setBorder(Border.NO_BORDER));
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 14).setHeight(14).setBorder(Border.NO_BORDER));
-						
-						
-						// data table
-						DecimalFormat df = new DecimalFormat(DocumentHelper.noDecimalDataFormat);
-						DecimalFormat dfp = new DecimalFormat(DocumentHelper.oneDecimalPlaceDataFormat);
-	
-						// Monthly Data
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph("Monthly Data").setBold()).setTextAlignment(TextAlignment.LEFT));
-						for (int i = 0; i < dataExports.size(); i++) {
-							QuarterlyDateEntity item = dataExports.get(i);
-							table.addCell(new Paragraph(item.getCategories_time()).setBold());
-						}
-						
-						// Actual Generation (kWh)
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph("Actual Generation (kWh)")).setTextAlignment(TextAlignment.LEFT));
-						for (int i = 0; i < dataExports.size(); i++) {
-							QuarterlyDateEntity item = dataExports.get(i);
-							table.addCell(item.getActual() != null ? df.format(item.getActual()) : "");
-						}
-						
-						// Estimated Generation (kWh)
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph("Estimated Generation (kWh)")).setTextAlignment(TextAlignment.LEFT));
-						for (int i = 0; i < dataExports.size(); i++) {
-							QuarterlyDateEntity item = dataExports.get(i);
-							table.addCell(item.getEstimated() != null ? df.format(item.getEstimated()) : "");
-						}
-						
-						// Estimated Generation Index (%)
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph("Estimated Generation Index (%)")).setTextAlignment(TextAlignment.LEFT));
-						for (int i = 0; i < dataExports.size(); i++) {
-							QuarterlyDateEntity item = dataExports.get(i);
-							table.addCell(item.getDifferencePercentage() != null ? dfp.format(item.getDifferencePercentage()) : "");
-						}
-						
-						// Trailing Twelve Month Generation
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph("Trailing Twelve Month Generation").setBold()).setTextAlignment(TextAlignment.LEFT));
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 12));
-						
-						// Actual Generation (kWh)
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph("Actual Generation (kWh)")).setTextAlignment(TextAlignment.LEFT));
-						for (int i = 0; i < dataExports.size(); i++) {
-							QuarterlyDateEntity item = dataExports.get(i);
-							table.addCell(item.getActualCumulative() != null ? df.format(item.getActualCumulative()) : "");
-						}
-						
-						// Estimated Generation (kWh)
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph("Estimated Generation (kWh)")).setTextAlignment(TextAlignment.LEFT));
-						for (int i = 0; i < dataExports.size(); i++) {
-							QuarterlyDateEntity item = dataExports.get(i);
-							table.addCell(item.getEstimatedCumulative() != null ? df.format(item.getEstimatedCumulative()) : "");
-						}
-						
-						// Baseline Generation Index (%)
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph("Estimated Generation Index (%)")).setTextAlignment(TextAlignment.LEFT));
-						for (int i = 0; i < dataExports.size(); i++) {
-							QuarterlyDateEntity item = dataExports.get(i);
-							table.addCell(item.getCumulativeDifferencePercentage() != null ? dfp.format(item.getCumulativeDifferencePercentage()) : "");
-						}
-						
-						// Inverter Availability (%)
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph(dataObj.getDeviceType() == "meter" ? "Site Availability (%)" : "Inverter Availability (%)")).setTextAlignment(TextAlignment.LEFT));
-						for (int i = 0; i < dataExports.size(); i++) {
-							QuarterlyDateEntity item = dataExports.get(i);
-							table.addCell(item.getInverterAvailability() != null ? dfp.format(item.getInverterAvailability()) : "");
-						}
-	
-						// empty row: gap between data table and chart
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 14).setHeight(14).setBorder(Border.NO_BORDER));
-						
-						// chart
-						com.itextpdf.layout.element.Cell chartCell = new com.itextpdf.layout.element.Cell(22, 14);
-						table.addCell(chartCell.setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE));
-						
-						//====== chart ============================================================
-						JFreeChart chart = DocumentHelper.createJFreeChart("Annual Performance");
-						XYPlot plot = chart.getXYPlot();
-						
-						// data source
-						TimeSeriesCollection barDataset = DocumentHelper.createJFreeChartBarDataset(0, plot);
-						TimeSeries actualSeries = new TimeSeries("Actual Generation (kWh)");
-						barDataset.addSeries(actualSeries);
-						plot.getRendererForDataset(barDataset).setSeriesPaint(0, BLUE_COLOR);
-						TimeSeries estimateSeries = new TimeSeries("Estimate Generation (kWh)");
-						barDataset.addSeries(estimateSeries);
-						plot.getRendererForDataset(barDataset).setSeriesPaint(1, LIGHT_BLUE_COLOR);
-						
-						TimeSeriesCollection lineDataset = DocumentHelper.createJFreeChartLineDataset(1, plot, null);
-						TimeSeries estimateIndexSeries = new TimeSeries("Estimate Generation Index (%)");
-						lineDataset.addSeries(estimateIndexSeries);
-						plot.getRendererForDataset(lineDataset).setSeriesPaint(0, Color.gray);
-						
-						SimpleDateFormat monthFormat = new SimpleDateFormat("MMM");
-						SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy");
-						SimpleDateFormat monthYearFormat = new SimpleDateFormat("MMM-yyyy");
-						for (int i = 0; i < dataExports.size(); i++) {
-							QuarterlyDateEntity item = dataExports.get(i);
-							Month period = new Month(monthYearFormat.parse(item.getCategories_time() + '-' + yearFormat.format(endDate)));
+				Optional.ofNullable(reportDetail.getSites()).ifPresent(sites -> {
+					for (int l = 0; l < sites.size(); l++) {
+						try {
+							SiteByReport site = sites.get(l);
+							List<QuarterlyDateEntity> dataExports = Optional.ofNullable((List<QuarterlyDateEntity>) site.getDataReports()).orElse(new ArrayList<>());
 							
-							actualSeries.add(period, item.getActual());
-							estimateSeries.add(period, item.getEstimated());
-							estimateIndexSeries.add(period, item.getDifferencePercentage());
-						}
-						
-						// category axis
-						DocumentHelper.createJFreeChartDomainAxis(plot, new DateTickUnit(DateTickUnitType.MONTH, 1, monthFormat), startDate, endDate);
-						// left axis
-						DocumentHelper.createJFreeChartNumberAxis("GENERATION (KWH)", AxisLocation.BOTTOM_OR_LEFT, 0, 0, plot);
-						// right axis
-						DocumentHelper.createJFreeChartNumberAxis("PERFORMANCE INDEX (%)", AxisLocation.BOTTOM_OR_RIGHT, 1, 1, plot);
-						
-						chartCell.add(new Image(ImageDataFactory.create(chart.createBufferedImage(1650, 600), null)).setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER).scaleToFit(1100, 400));
-						document.add(table);
-						if (l < dataObjList.size() - 1) document.add(new AreaBreak());
+							// total column: 14
+							Table table = new Table(14).useAllAvailableWidth();
+							table.setFont(PdfFontFactory.createFont(StandardFonts.TIMES_ROMAN));
+							table.setFontSize(8);
+							table.setTextAlignment(TextAlignment.CENTER);
+							
+							//====== table ============================================================
+							// header and logo
+							table.addCell(new com.itextpdf.layout.element.Cell(1, 4).setHeight(14).setBorder(Border.NO_BORDER));
+							table.addCell(new com.itextpdf.layout.element.Cell(6, 6).add(new Paragraph("ANNUAL PRODUCTION REPORT")).setTextAlignment(TextAlignment.CENTER).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBorder(Border.NO_BORDER).setFontSize(20).setBold());
+							table.addCell(new com.itextpdf.layout.element.Cell(6, 4).add(logoImage).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBorder(Border.NO_BORDER));
+							table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph("Site Name").setBold().setTextAlignment(TextAlignment.LEFT)));
+							table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph(site.getName()).setBold().setTextAlignment(TextAlignment.LEFT)));
+							table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph("Report Date").setBold().setTextAlignment(TextAlignment.LEFT)));
+							table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph(reportDetail.getReport_date()).setTextAlignment(TextAlignment.LEFT)));
+							table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph("Covered Period").setBold().setTextAlignment(TextAlignment.LEFT)));
+							table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph(reportDateRangeSDF.format(startDate) + " - " + reportDateRangeSDF.format(endDate)).setTextAlignment(TextAlignment.LEFT)));
+							table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph("System Size (kW DC)").setBold().setTextAlignment(TextAlignment.LEFT)));
+							table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph(String.valueOf(site.getDc_capacity())).setTextAlignment(TextAlignment.LEFT)));
+							table.addCell(new com.itextpdf.layout.element.Cell(1, 4).setHeight(14).setBorder(Border.NO_BORDER));
+							
+							table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph("Performance Reporting")).setBold().setBackgroundColor(new DeviceRgb(117, 117, 117)).setFontColor(DeviceGray.WHITE).setBorder(Border.NO_BORDER).setTextAlignment(TextAlignment.LEFT));
+							table.addCell(new com.itextpdf.layout.element.Cell(1, 12).setBorder(Border.NO_BORDER));
+							table.addCell(new com.itextpdf.layout.element.Cell(1, 14).setHeight(14).setBorder(Border.NO_BORDER));
+							
+							// data table
+							DecimalFormat df = new DecimalFormat(DocumentHelper.noDecimalDataFormat);
+							DecimalFormat dfp = new DecimalFormat(DocumentHelper.oneDecimalPlaceDataFormat);
+							
+							// Monthly Data
+							table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph("Monthly Data").setBold()).setTextAlignment(TextAlignment.LEFT));
+							for (int i = 0; i < dataExports.size(); i++) {
+								QuarterlyDateEntity item = dataExports.get(i);
+								table.addCell(new Paragraph(item.getCategories_time()).setBold());
+							}
+							
+							// Actual Generation (kWh)
+							table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph("Actual Generation (kWh)")).setTextAlignment(TextAlignment.LEFT));
+							for (int i = 0; i < dataExports.size(); i++) {
+								QuarterlyDateEntity item = dataExports.get(i);
+								table.addCell(item.getActual() != null ? df.format(item.getActual()) : "");
+							}
+							
+							// Estimated Generation (kWh)
+							table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph("Estimated Generation (kWh)")).setTextAlignment(TextAlignment.LEFT));
+							for (int i = 0; i < dataExports.size(); i++) {
+								QuarterlyDateEntity item = dataExports.get(i);
+								table.addCell(item.getEstimated() != null ? df.format(item.getEstimated()) : "");
+							}
+							
+							// Estimated Generation Index (%)
+							table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph("Estimated Generation Index (%)")).setTextAlignment(TextAlignment.LEFT));
+							for (int i = 0; i < dataExports.size(); i++) {
+								QuarterlyDateEntity item = dataExports.get(i);
+								table.addCell(item.getDifferencePercentage() != null ? dfp.format(item.getDifferencePercentage()) : "");
+							}
+							
+							// Trailing Twelve Month Generation
+							table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph("Trailing Twelve Month Generation").setBold()).setTextAlignment(TextAlignment.LEFT));
+							table.addCell(new com.itextpdf.layout.element.Cell(1, 12));
+							
+							// Actual Generation (kWh)
+							table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph("Actual Generation (kWh)")).setTextAlignment(TextAlignment.LEFT));
+							for (int i = 0; i < dataExports.size(); i++) {
+								QuarterlyDateEntity item = dataExports.get(i);
+								table.addCell(item.getActualCumulative() != null ? df.format(item.getActualCumulative()) : "");
+							}
+							
+							// Estimated Generation (kWh)
+							table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph("Estimated Generation (kWh)")).setTextAlignment(TextAlignment.LEFT));
+							for (int i = 0; i < dataExports.size(); i++) {
+								QuarterlyDateEntity item = dataExports.get(i);
+								table.addCell(item.getEstimatedCumulative() != null ? df.format(item.getEstimatedCumulative()) : "");
+							}
+							
+							// Baseline Generation Index (%)
+							table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph("Estimated Generation Index (%)")).setTextAlignment(TextAlignment.LEFT));
+							for (int i = 0; i < dataExports.size(); i++) {
+								QuarterlyDateEntity item = dataExports.get(i);
+								table.addCell(item.getCumulativeDifferencePercentage() != null ? dfp.format(item.getCumulativeDifferencePercentage()) : "");
+							}
+							
+							// Inverter Availability (%)
+							table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph(site.isHave_inverter() ? "Inverter Availability (%)" : "Site Availability (%)")).setTextAlignment(TextAlignment.LEFT));
+							for (int i = 0; i < dataExports.size(); i++) {
+								QuarterlyDateEntity item = dataExports.get(i);
+								table.addCell(item.getInverterAvailability() != null ? dfp.format(item.getInverterAvailability()) : "");
+							}
+							
+							// empty row: gap between data table and chart
+							table.addCell(new com.itextpdf.layout.element.Cell(1, 14).setHeight(14).setBorder(Border.NO_BORDER));
+							
+							// chart
+							com.itextpdf.layout.element.Cell chartCell = new com.itextpdf.layout.element.Cell(22, 14);
+							table.addCell(chartCell.setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE));
+							
+							//====== chart ============================================================
+							JFreeChart chart = DocumentHelper.createJFreeChart("Annual Performance");
+							XYPlot plot = chart.getXYPlot();
+							
+							// data source
+							TimeSeriesCollection barDataset = DocumentHelper.createJFreeChartBarDataset(0, plot);
+							TimeSeries actualSeries = new TimeSeries("Actual Generation (kWh)");
+							barDataset.addSeries(actualSeries);
+							plot.getRendererForDataset(barDataset).setSeriesPaint(0, BLUE_COLOR);
+							TimeSeries estimateSeries = new TimeSeries("Estimate Generation (kWh)");
+							barDataset.addSeries(estimateSeries);
+							plot.getRendererForDataset(barDataset).setSeriesPaint(1, LIGHT_BLUE_COLOR);
+							
+							TimeSeriesCollection lineDataset = DocumentHelper.createJFreeChartLineDataset(1, plot, null);
+							TimeSeries estimateIndexSeries = new TimeSeries("Estimate Generation Index (%)");
+							lineDataset.addSeries(estimateIndexSeries);
+							plot.getRendererForDataset(lineDataset).setSeriesPaint(0, Color.gray);
+							
+							SimpleDateFormat monthFormat = new SimpleDateFormat("MMM");
+							SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy");
+							SimpleDateFormat monthYearFormat = new SimpleDateFormat("MMM-yyyy");
+							for (int i = 0; i < dataExports.size(); i++) {
+								QuarterlyDateEntity item = dataExports.get(i);
+								Month period = new Month(monthYearFormat.parse(item.getCategories_time() + '-' + yearFormat.format(endDate)));
+								
+								actualSeries.add(period, item.getActual());
+								estimateSeries.add(period, item.getEstimated());
+								estimateIndexSeries.add(period, item.getDifferencePercentage());
+							}
+							
+							// category axis
+							DocumentHelper.createJFreeChartDomainAxis(plot, new DateTickUnit(DateTickUnitType.MONTH, 1, monthFormat), startDate, endDate);
+							// left axis
+							DocumentHelper.createJFreeChartNumberAxis("GENERATION (KWH)", AxisLocation.BOTTOM_OR_LEFT, 0, 0, plot);
+							// right axis
+							DocumentHelper.createJFreeChartNumberAxis("PERFORMANCE INDEX (%)", AxisLocation.BOTTOM_OR_RIGHT, 1, 1, plot);
+							
+							chartCell.add(new Image(ImageDataFactory.create(chart.createBufferedImage(1650, 600), null)).setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER).scaleToFit(1100, 400));
+							document.add(table);
+							if (l < sites.size() - 1) document.add(new AreaBreak());
+						} catch (Exception e) {}
 					}
-				} catch (Exception e) {}
-				}
+				});
 				
 				// It must be closed before attach to mail
 				document.close();
@@ -4252,10 +4398,10 @@ public class ReportsService extends DB {
 	 * @description create custom report sheet file
 	 * @author Hung.Bui
 	 * @since 2025-08-08
-	 * @param obj
+	 * @param req
 	 * @return file path
 	 */
-	public String createCustomReportSheetFile(ViewReportEntity obj, List<ViewReportEntity> dataObjList) {
+	public String createCustomReportSheetFile(ViewReportEntity req, ReportDetail reportDetail) {
 		try (XSSFWorkbook document = new XSSFWorkbook()) {
 			XSSFSheet sheet = document.createSheet("Production Report");
 			
@@ -4273,47 +4419,48 @@ public class ReportsService extends DB {
 			
 			// adjust tick mark position based on data intervals
 			int dataIntervals = 1;
-			if (obj.getData_intervals() == ReportIntervals._15_MINUTES.getValue()) dataIntervals = 96;
-			else if (obj.getData_intervals() == ReportIntervals._30_MINUTES.getValue()) dataIntervals = 48;
+			if (reportDetail.getData_intervals() == ReportIntervals._15_MINUTES.getValue()) dataIntervals = 96;
+			else if (reportDetail.getData_intervals() == ReportIntervals._30_MINUTES.getValue()) dataIntervals = 48;
             chart.getCTChart().getPlotArea().getCatAxArray(0).addNewTickLblSkip().setVal(dataIntervals);
             chart.getCTChart().getPlotArea().getCatAxArray(0).addNewTickMarkSkip().setVal(dataIntervals);
 			
 			// left value axis
 			XDDFValueAxis leftAxis = DocumentHelper.createLeftValueAxis(chart, "kWh");
 			
-			// report information and table
-			writeHeaderCustomReport(sheet, obj, dataObjList);
+			List<SiteByReport> sites = Optional.ofNullable(reportDetail.getSites()).orElse(new ArrayList<>());
+			if (sites.size() == 0) return null;
 			
-			for (int i = 0; i < dataObjList.size(); i++) {
-			try {
-				ViewReportEntity dataObj = dataObjList.get(i);
-				if (dataObj.getSite_name().equals("Total")) continue; // exclude total by interval
-				
-				if (dataObj != null) {
-					List<CustomReportDataEntity> dataExports = dataObj.getDataReports();
-					int numOfPoints = dataExports != null ? dataExports.size() - 1 : 0; // exclude total row
+			// report information and table
+			writeHeaderCustomReport(sheet, req, reportDetail, sites, req.getStart_date(), req.getEnd_date());
+			
+			for (int i = 0; i < sites.size(); i++) {
+				try {
+					SiteByReport site = sites.get(i);
+					if (site.getName().equals("Total")) continue; // exclude total by interval
+					
+					List<CustomReportDataEntity> dataExports = Optional.ofNullable((List<CustomReportDataEntity>) site.getDataReports()).orElse(new ArrayList<>());
+					int numOfPoints = dataExports.size() - 1; // exclude total row
 					
 					if (numOfPoints > 0) {
 						// data sources
-						XDDFDataSource<String> categoriesData = XDDFDataSourcesFactory.fromStringCellRange(sheet, obj.isTransposed() ? new CellRangeAddress(25, 25 + numOfPoints - 1, 1, 1) : new CellRangeAddress(24, 24, 3, 3 + numOfPoints - 1));
-						XDDFNumericalDataSource<Double> valuesData = XDDFDataSourcesFactory.fromNumericCellRange(sheet, obj.isTransposed() ? new CellRangeAddress(25, 25 + numOfPoints - 1, 4 + 3*i, 4 + 3*i) : new CellRangeAddress(25 + i, 25 + i, 3, 3 + numOfPoints - 1));
+						XDDFDataSource<String> categoriesData = XDDFDataSourcesFactory.fromStringCellRange(sheet, req.isTransposed() ? new CellRangeAddress(25, 25 + numOfPoints - 1, 1, 1) : new CellRangeAddress(24, 24, 3, 3 + numOfPoints - 1));
+						XDDFNumericalDataSource<Double> valuesData = XDDFDataSourcesFactory.fromNumericCellRange(sheet, req.isTransposed() ? new CellRangeAddress(25, 25 + numOfPoints - 1, 4 + 3*i, 4 + 3*i) : new CellRangeAddress(25 + i, 25 + i, 3, 3 + numOfPoints - 1));
 						
 						XDDFChartData data = DocumentHelper.createChartData(chart, ChartTypes.LINE, bottomAxis, leftAxis);
-						Series lineSeries = DocumentHelper.addSeries(dataExports.stream().filter(item -> !item.getCategories_time().equals("Total")).allMatch(item -> item.getActual() == null), data, categoriesData, valuesData, dataObj.getSite_name());
+						Series lineSeries = DocumentHelper.addSeries(dataExports.stream().filter(item -> !item.getCategories_time().equals("Total")).allMatch(item -> item.getActual() == null), data, categoriesData, valuesData, site.getName());
 						if (numOfPoints == 1) DocumentHelper.solidFillLineMarker(chart, lineSeries, 0, MarkerStyle.CIRCLE, null);
 						chart.plot(data);
 					}
-				}
-			} catch (Exception e) {}
+				} catch (Exception e) {}
 			}
 			
-			return writeToSheetFile(document, obj.getReport_name());
+			return writeToSheetFile(document, req.getReport_name());
 		} catch (Exception e) {
 			return null;
 		}
 	}
 	
-	private static void writeHeaderCustomReport(Sheet sheet, ViewReportEntity report, List<ViewReportEntity> dataList) {
+	private static void writeHeaderCustomReport(Sheet sheet, ViewReportEntity req, ReportDetail reportDetail, List<SiteByReport> sites, String startDate, String endDate) {
 		try {
 			sheet.setDefaultColumnWidth(16);
 			sheet.setColumnWidth(0, 15 * 256);
@@ -4381,7 +4528,7 @@ public class ReportsService extends DB {
 			
 			cell = row.createCell(2);
 			cell.setCellStyle(reportInfoCellStyle);
-			cell.setCellValue(dataList.get(0).getReport_date());
+			cell.setCellValue(reportDetail.getReport_date());
 			cell = row.createCell(3);
 			cell.setCellStyle(reportInfoCellStyle);
 			cell = row.createCell(4);
@@ -4397,15 +4544,14 @@ public class ReportsService extends DB {
 			cell.setCellStyle(reportInfoBoldCellStyle);
 			sheet.addMergedRegion(new CellRangeAddress(2, 2, 0, 1));
 			
-			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-			SimpleDateFormat format = new SimpleDateFormat("MM/yyyy");
-			if (report.getData_intervals() == ReportIntervals.ANNUAL.getValue()) format = new SimpleDateFormat("yyyy");
-			else if (report.getData_intervals() == ReportIntervals.MONTHLY.getValue()) format = new SimpleDateFormat("MM/yyyy");
-			else format = new SimpleDateFormat("MM/dd/yyyy");
+			DateTimeFormatter reportDateRangeFormat = DateTimeFormatter.ofPattern("MM/yyyy");
+			if (reportDetail.getData_intervals() == ReportIntervals.ANNUAL.getValue()) reportDateRangeFormat = DateTimeFormatter.ofPattern("yyyy");
+			else if (reportDetail.getData_intervals() == ReportIntervals.MONTHLY.getValue()) reportDateRangeFormat = DateTimeFormatter.ofPattern("MM/yyyy");
+			else reportDateRangeFormat = DateTimeFormatter.ofPattern("MM/dd/yyyy");
 			
 			cell = row.createCell(2);
 			cell.setCellStyle(reportInfoCellStyle);
-			cell.setCellValue(format.format(dateFormat.parse(report.getStart_date())) + " - " + format.format(dateFormat.parse(report.getEnd_date())));
+			cell.setCellValue(reportDateRangeFormat.format(inputDTF.parse(startDate)) + " - " + reportDateRangeFormat.format(inputDTF.parse(endDate)));
 			cell = row.createCell(3);
 			cell.setCellStyle(reportInfoCellStyle);
 			cell = row.createCell(4);
@@ -4451,29 +4597,29 @@ public class ReportsService extends DB {
 			sheet.addMergedRegion(new CellRangeAddress(24, 24, 0, 2));
 			
 			// if there are too many data points that exceed sheet columns limit, it should be rotated vertically
-			if (!report.isTransposed() && dataList.size() > 0 && Objects.nonNull(dataList.get(0).getDataReports()) && dataList.get(0).getDataReports().size() > (DocumentHelper.MAX_SHEET_COLUMN - 3)) report.setTransposed(true);
+			if (!req.isTransposed() && Objects.nonNull(sites.get(0).getDataReports()) && sites.get(0).getDataReports().size() > (DocumentHelper.MAX_SHEET_COLUMN - 3)) req.setTransposed(true);
 			
-			if (report.isTransposed()) {
-				for (int i = 0; i < dataList.size(); i++) {
+			if (req.isTransposed()) {
+				for (int i = 0; i < sites.size(); i++) {
 				try {
-					ViewReportEntity dataObj = dataList.get(i);
-					if (dataObj.getSite_name().equals("Total") && !report.isShowTotal()) continue;
+					SiteByReport site = sites.get(i);
+					if (site.getName().equals("Total") && !req.isShowTotal()) continue;
 					
 					cell = row.createCell(3 + 3*i);
 					cell.setCellStyle(tableHeaderCellStyle);
-					cell.setCellValue(dataObj.getSite_name());
+					cell.setCellValue(site.getName());
 					cell = row.createCell(4 + 3*i);
 					cell.setCellStyle(tableHeaderCellStyle);
 					cell = row.createCell(5 + 3*i);
 					cell.setCellStyle(tableHeaderCellStyle);
 					sheet.addMergedRegion(new CellRangeAddress(24, 24, 3 + 3*i, 5 + 3*i));
 					
-					List<CustomReportDataEntity> dataExports = dataObj.getDataReports();
+					List<CustomReportDataEntity> dataExports = (List<CustomReportDataEntity>) site.getDataReports();
 					
 					if(dataExports != null && dataExports.size() > 0) {
 						for(int j = 0 ; j < dataExports.size(); j++) {
 							CustomReportDataEntity item = dataExports.get(j);
-							if (item.getCategories_time().equals("Total") && !report.isShowTotal()) continue;
+							if (item.getCategories_time().equals("Total") && !req.isShowTotal()) continue;
 							int t = 25 + j;
 							
 							Row row26 = sheet.getRow(t) != null ? sheet.getRow(t) : sheet.createRow(t);
@@ -4499,28 +4645,28 @@ public class ReportsService extends DB {
 				} catch (Exception e) {}
 				}
 			} else {
-				for (int i = 0; i < dataList.size(); i++) {
+				for (int i = 0; i < sites.size(); i++) {
 				try {
-					ViewReportEntity dataObj = dataList.get(i);
-					if (dataObj.getSite_name().equals("Total") && !report.isShowTotal()) continue;
+					SiteByReport site = sites.get(i);
+					if (site.getName().equals("Total") && !req.isShowTotal()) continue;
 					
 					int t = 25 + i;
 					Row row26 = sheet.createRow(t);
 					Cell cel26D = row26.createCell(0);
 					cel26D.setCellStyle(tableRowCellStyle);
-					cel26D.setCellValue(dataObj.getSite_name());
+					cel26D.setCellValue(site.getName());
 					cel26D = row26.createCell(1);
 					cel26D.setCellStyle(tableRowCellStyle);
 					cel26D = row26.createCell(2);
 					cel26D.setCellStyle(tableRowCellStyle);
 					sheet.addMergedRegion(new CellRangeAddress(t, t, 0, 2));
 					
-					List<CustomReportDataEntity> dataExports = dataObj.getDataReports();
+					List<CustomReportDataEntity> dataExports = (List<CustomReportDataEntity>) site.getDataReports();
 					
 					if(dataExports != null && dataExports.size() > 0) {
 						for(int j = 0 ; j < dataExports.size(); j++) {
 							CustomReportDataEntity item = dataExports.get(j);
-							if (item.getCategories_time().equals("Total") && !report.isShowTotal()) continue;
+							if (item.getCategories_time().equals("Total") && !req.isShowTotal()) continue;
 							
 							if (i == 0) {
 								cell = row.createCell(3 + j);
@@ -4544,12 +4690,12 @@ public class ReportsService extends DB {
 	 * @description create custom report pdf file
 	 * @author Hung.Bui
 	 * @since 2025-08-08
-	 * @param obj
+	 * @param req
 	 * @return file path
 	 */
-	public String createCustomReportPdfFile(ViewReportEntity obj, List<ViewReportEntity> dataObjList) {
+	public String createCustomReportPdfFile(ViewReportEntity req, ReportDetail reportDetail) {
 		try {
-			File file = writeToPdfFile(obj.getReport_name());
+			File file = writeToPdfFile(reportDetail.getName());
 			
 			try (
 				PdfDocument pdfDocument = new PdfDocument(new PdfWriter(file));
@@ -4564,149 +4710,148 @@ public class ReportsService extends DB {
 				
 				Image logoImage = DocumentHelper.readLogoImageFile();
 				
-				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-				SimpleDateFormat format  = new SimpleDateFormat("MM/yyyy");
-				SimpleDateFormat coveredPeriodFormat = new SimpleDateFormat("MM/dd/yyyy");
-				DateTickUnitType dateTickUnitType = DateTickUnitType.MONTH;
-				int dateTickInterval = (int) Math.ceil((double) dataObjList.get(0).getDataReports().size() / 15);
-				Date startDate = dateFormat.parse(obj.getStart_date());
-				Date endDate = dateFormat.parse(obj.getEnd_date());
-				
-				// select format based on intervals
-				switch (ReportIntervals.fromValue(obj.getData_intervals())) {
-					case DAILY:
-						format = new SimpleDateFormat("MM/dd/yyyy");
-						dateTickUnitType = DateTickUnitType.DAY;
-						break;
+				Optional.ofNullable(reportDetail.getSites()).ifPresent(sites -> {
+					try {
+						SimpleDateFormat format = new SimpleDateFormat("MM/yyyy");
+						SimpleDateFormat coveredPeriodFormat = new SimpleDateFormat("MM/dd/yyyy");
+						DateTickUnitType dateTickUnitType = DateTickUnitType.MONTH;
+						Date startDate = inputSDF.parse(req.getStart_date());
+						Date endDate = inputSDF.parse(req.getEnd_date());
+						int dateTickInterval = (int) Math.ceil((double) sites.get(0).getDataReports().size() / 15);
 						
-					case MONTHLY:
-						format = new SimpleDateFormat("MM/yyyy");
-						coveredPeriodFormat = new SimpleDateFormat("MM/yyyy");
-						dateTickUnitType = DateTickUnitType.MONTH;
-						startDate = Date.from(startDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime().with(TemporalAdjusters.firstDayOfMonth()).atZone(ZoneId.systemDefault()).toInstant());
-						endDate = Date.from(endDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime().with(TemporalAdjusters.lastDayOfMonth()).atZone(ZoneId.systemDefault()).toInstant());
-						break;
-						
-					case ANNUAL:
-						format = new SimpleDateFormat("yyyy");
-						coveredPeriodFormat = new SimpleDateFormat("yyyy");
-						dateTickUnitType = DateTickUnitType.YEAR;
-						break;
-					
-					default:
-						format = new SimpleDateFormat("MM/dd/yyyy HH:mm");
-						dateTickUnitType = DateTickUnitType.DAY;
-						dateTickInterval = (int) Math.ceil((double) (TimeUnit.DAYS.convert(endDate.getTime() - startDate.getTime(), TimeUnit.MILLISECONDS) + 1) / 15);
-						break;
-				}
-				
-				// header and logo
-				table.addCell(new com.itextpdf.layout.element.Cell(1, 3).setHeight(14).setBorder(Border.NO_BORDER));
-				table.addCell(new com.itextpdf.layout.element.Cell(6, 7).add(new Paragraph("PRODUCTION REPORT")).setTextAlignment(TextAlignment.CENTER).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBorder(Border.NO_BORDER).setFontSize(20).setBold());
-				table.addCell(new com.itextpdf.layout.element.Cell(6, 2).add(logoImage).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBorder(Border.NO_BORDER));
-				table.addCell(new com.itextpdf.layout.element.Cell(1, 1).setHeight(14).setBorder(Border.NO_BORDER));
-				table.addCell(new com.itextpdf.layout.element.Cell(1, 2).setHeight(14).setBorder(Border.NO_BORDER));
-				table.addCell(new com.itextpdf.layout.element.Cell(1, 1).add(new Paragraph("Report Date").setBold().setTextAlignment(TextAlignment.LEFT)));
-				table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph(dataObjList.get(0).getReport_date()).setTextAlignment(TextAlignment.LEFT)));
-				table.addCell(new com.itextpdf.layout.element.Cell(1, 1).add(new Paragraph("Covered Period").setBold().setTextAlignment(TextAlignment.LEFT)));
-				table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph(coveredPeriodFormat.format(startDate) + " - " + coveredPeriodFormat.format(endDate)).setTextAlignment(TextAlignment.LEFT)));
-				table.addCell(new com.itextpdf.layout.element.Cell(1, 1).setHeight(14).setBorder(Border.NO_BORDER));
-				table.addCell(new com.itextpdf.layout.element.Cell(1, 2).setHeight(14).setBorder(Border.NO_BORDER));
-				table.addCell(new com.itextpdf.layout.element.Cell(1, 3).setHeight(14).setBorder(Border.NO_BORDER));
-				table.addCell(new com.itextpdf.layout.element.Cell(1, 12).setHeight(14).setBorder(Border.NO_BORDER));
-				
-				//====== chart ============================================================
-				JFreeChart chart = DocumentHelper.createJFreeChart("Actual Generation (kWh)");
-				XYPlot plot = chart.getXYPlot();
-				
-				// category axis
-				DocumentHelper.createJFreeChartDomainAxis(plot, new DateTickUnit(dateTickUnitType, dateTickInterval, format), startDate, endDate);
-				// left axis
-				DocumentHelper.createJFreeChartNumberAxis("kWh", AxisLocation.BOTTOM_OR_LEFT, 0, 0, plot);
-				
-				for (int l = 0; l < dataObjList.size(); l++) {
-				try {
-					ViewReportEntity dataObj = dataObjList.get(l);
-					if (dataObj.getSite_name().equals("Total")) continue;
-					
-					if (dataObj != null) {
-						List<CustomReportDataEntity> dataExports = dataObj.getDataReports() != null ? dataObj.getDataReports() : new ArrayList<>();
-						
-						// data source
-						TimeSeries series = new TimeSeries(dataObj.getSite_name());
-						
-						for (int i = 0; i < dataExports.size(); i++) {
-							CustomReportDataEntity item = dataExports.get(i);
-							String itemCategoryTime = item.getCategories_time();
-							Double itemActual = item.getActual();
+						// select format based on intervals
+						switch (ReportIntervals.fromValue(reportDetail.getData_intervals())) {
+						case DAILY:
+							format = new SimpleDateFormat("MM/dd/yyyy");
+							dateTickUnitType = DateTickUnitType.DAY;
+							break;
 							
-							if (itemCategoryTime.equals("Total")) continue;
-							RegularTimePeriod period = new Month(format.parse(itemCategoryTime));
-							switch (ReportIntervals.fromValue(obj.getData_intervals())) {
-								case DAILY:
-									period = new Day(format.parse(itemCategoryTime));
-									break;
-								case MONTHLY:
-									period = new Month(format.parse(itemCategoryTime));
-									break;
-								case ANNUAL:
-									period = new Year(format.parse(itemCategoryTime));
-									break;
-								default:
-									period = new Minute(format.parse(itemCategoryTime));
-									break;
-							}
+						case MONTHLY:
+							format = new SimpleDateFormat("MM/yyyy");
+							coveredPeriodFormat = new SimpleDateFormat("MM/yyyy");
+							dateTickUnitType = DateTickUnitType.MONTH;
+							startDate = Date.from(startDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime().with(TemporalAdjusters.firstDayOfMonth()).atZone(ZoneId.systemDefault()).toInstant());
+							endDate = Date.from(endDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime().with(TemporalAdjusters.lastDayOfMonth()).atZone(ZoneId.systemDefault()).toInstant());
+							break;
 							
-							series.addOrUpdate(period, itemActual);
+						case ANNUAL:
+							format = new SimpleDateFormat("yyyy");
+							coveredPeriodFormat = new SimpleDateFormat("yyyy");
+							dateTickUnitType = DateTickUnitType.YEAR;
+							break;
+							
+						default:
+							format = new SimpleDateFormat("MM/dd/yyyy HH:mm");
+							dateTickUnitType = DateTickUnitType.DAY;
+							dateTickInterval = (int) Math.ceil((double) (TimeUnit.DAYS.convert(endDate.getTime() - startDate.getTime(), TimeUnit.MILLISECONDS) + 1) / 15);
+							break;
 						}
 						
-						int numOfPoints = dataExports != null ? dataExports.size() - 1 : 0; // exclude total row
-						TimeSeriesCollection lineDataset = DocumentHelper.createJFreeChartLineDataset(l, plot, numOfPoints == 1 ? new Ellipse2D.Double(-3, -3, 6, 6) : null);
-						lineDataset.addSeries(series);
-					}
-				} catch (Exception e) {}
-				}
-				
-				com.itextpdf.layout.element.Cell chartCell = new com.itextpdf.layout.element.Cell(16, 12);
-				table.addCell(chartCell.setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE));
-				chartCell.add(new Image(ImageDataFactory.create(chart.createBufferedImage(1800, 700), null)).setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER).scaleToFit(1100, 700));
-
-				//====== table ============================================================
-				DecimalFormat dfs = new DecimalFormat(DocumentHelper.noDecimalDataFormat);
-				
-				for (int l = 0; l < dataObjList.size(); l++) {
-				try {
-					ViewReportEntity dataObj = dataObjList.get(l);
-					if (dataObj.getSite_name().equals("Total") && !obj.isShowTotal()) continue;
-
-					if (dataObj != null) {
-						List<CustomReportDataEntity> dataExports = dataObj.getDataReports() != null ? dataObj.getDataReports() : new ArrayList<>();
-						
-						// empty row
+						// header and logo
+						table.addCell(new com.itextpdf.layout.element.Cell(1, 3).setHeight(14).setBorder(Border.NO_BORDER));
+						table.addCell(new com.itextpdf.layout.element.Cell(6, 7).add(new Paragraph("PRODUCTION REPORT")).setTextAlignment(TextAlignment.CENTER).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBorder(Border.NO_BORDER).setFontSize(20).setBold());
+						table.addCell(new com.itextpdf.layout.element.Cell(6, 2).add(logoImage).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBorder(Border.NO_BORDER));
+						table.addCell(new com.itextpdf.layout.element.Cell(1, 1).setHeight(14).setBorder(Border.NO_BORDER));
+						table.addCell(new com.itextpdf.layout.element.Cell(1, 2).setHeight(14).setBorder(Border.NO_BORDER));
+						table.addCell(new com.itextpdf.layout.element.Cell(1, 1).add(new Paragraph("Report Date").setBold().setTextAlignment(TextAlignment.LEFT)));
+						table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph(reportDetail.getReport_date()).setTextAlignment(TextAlignment.LEFT)));
+						table.addCell(new com.itextpdf.layout.element.Cell(1, 1).add(new Paragraph("Covered Period").setBold().setTextAlignment(TextAlignment.LEFT)));
+						table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph(coveredPeriodFormat.format(startDate) + " - " + coveredPeriodFormat.format(endDate)).setTextAlignment(TextAlignment.LEFT)));
+						table.addCell(new com.itextpdf.layout.element.Cell(1, 1).setHeight(14).setBorder(Border.NO_BORDER));
+						table.addCell(new com.itextpdf.layout.element.Cell(1, 2).setHeight(14).setBorder(Border.NO_BORDER));
+						table.addCell(new com.itextpdf.layout.element.Cell(1, 3).setHeight(14).setBorder(Border.NO_BORDER));
 						table.addCell(new com.itextpdf.layout.element.Cell(1, 12).setHeight(14).setBorder(Border.NO_BORDER));
 						
-						// header of data table
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 4).setBorder(Border.NO_BORDER));
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph("Timestamp").setBold()));
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph(dataObj.getSite_name()).setBold()));
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 3).setBorder(Border.NO_BORDER));
+						//====== chart ============================================================
+						JFreeChart chart = DocumentHelper.createJFreeChart("Actual Generation (kWh)");
+						XYPlot plot = chart.getXYPlot();
 						
-						for (int i = 0; i < dataExports.size(); i++) {
-							CustomReportDataEntity item = dataExports.get(i);
-							String itemCategoryTime = item.getCategories_time();
-							Double itemActual = item.getActual();
-							
-							if (itemCategoryTime.equals("Total") && !obj.isShowTotal()) continue;
-							table.addCell(new com.itextpdf.layout.element.Cell(1, 4).setBorder(Border.NO_BORDER));
-							table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph(itemCategoryTime)));
-							table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph(itemActual != null ? dfs.format(itemActual).toString() : "")));
-							table.addCell(new com.itextpdf.layout.element.Cell(1, 3).setBorder(Border.NO_BORDER));
-							
-							if (i % 100 == 0) table.flush();
+						// category axis
+						DocumentHelper.createJFreeChartDomainAxis(plot, new DateTickUnit(dateTickUnitType, dateTickInterval, format), startDate, endDate);
+						// left axis
+						DocumentHelper.createJFreeChartNumberAxis("kWh", AxisLocation.BOTTOM_OR_LEFT, 0, 0, plot);
+						
+						for (int l = 0; l < sites.size(); l++) {
+							try {
+								SiteByReport site = sites.get(l);
+								if (site.getName().equals("Total")) continue;
+								
+								List<CustomReportDataEntity> dataExports = Optional.ofNullable((List<CustomReportDataEntity>) site.getDataReports()).orElse(new ArrayList<>());
+								
+								// data source
+								TimeSeries series = new TimeSeries(site.getName());
+								
+								for (int i = 0; i < dataExports.size(); i++) {
+									CustomReportDataEntity item = dataExports.get(i);
+									String itemCategoryTime = item.getCategories_time();
+									Double itemActual = item.getActual();
+									
+									if (itemCategoryTime.equals("Total")) continue;
+									RegularTimePeriod period = new Month(format.parse(itemCategoryTime));
+									switch (ReportIntervals.fromValue(reportDetail.getData_intervals())) {
+									case DAILY:
+										period = new Day(format.parse(itemCategoryTime));
+										break;
+									case MONTHLY:
+										period = new Month(format.parse(itemCategoryTime));
+										break;
+									case ANNUAL:
+										period = new Year(format.parse(itemCategoryTime));
+										break;
+									default:
+										period = new Minute(format.parse(itemCategoryTime));
+										break;
+									}
+									
+									series.addOrUpdate(period, itemActual);
+								}
+								
+								int numOfPoints = dataExports.size() - 1; // exclude total row
+								TimeSeriesCollection lineDataset = DocumentHelper.createJFreeChartLineDataset(l, plot, numOfPoints == 1 ? new Ellipse2D.Double(-3, -3, 6, 6) : null);
+								lineDataset.addSeries(series);
+							} catch (Exception e) {}
 						}
-					}
-				} catch (Exception e) {}
-				}
+						
+						com.itextpdf.layout.element.Cell chartCell = new com.itextpdf.layout.element.Cell(16, 12);
+						table.addCell(chartCell.setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE));
+						chartCell.add(new Image(ImageDataFactory.create(chart.createBufferedImage(1800, 700), null)).setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER).scaleToFit(1100, 700));
+						
+						//====== table ============================================================
+						DecimalFormat dfs = new DecimalFormat(DocumentHelper.noDecimalDataFormat);
+						
+						for (int l = 0; l < sites.size(); l++) {
+							try {
+								SiteByReport site = sites.get(l);
+								if (site.getName().equals("Total") && !req.isShowTotal()) continue;
+								
+								List<CustomReportDataEntity> dataExports = Optional.ofNullable((List<CustomReportDataEntity>) site.getDataReports()).orElse(new ArrayList<>());
+								
+								// empty row
+								table.addCell(new com.itextpdf.layout.element.Cell(1, 12).setHeight(14).setBorder(Border.NO_BORDER));
+								
+								// header of data table
+								table.addCell(new com.itextpdf.layout.element.Cell(1, 4).setBorder(Border.NO_BORDER));
+								table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph("Timestamp").setBold()));
+								table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph(site.getName()).setBold()));
+								table.addCell(new com.itextpdf.layout.element.Cell(1, 3).setBorder(Border.NO_BORDER));
+								
+								for (int i = 0; i < dataExports.size(); i++) {
+									CustomReportDataEntity item = dataExports.get(i);
+									String itemCategoryTime = item.getCategories_time();
+									Double itemActual = item.getActual();
+									
+									if (itemCategoryTime.equals("Total") && !req.isShowTotal()) continue;
+									table.addCell(new com.itextpdf.layout.element.Cell(1, 4).setBorder(Border.NO_BORDER));
+									table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph(itemCategoryTime)));
+									table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph(itemActual != null ? dfs.format(itemActual).toString() : "")));
+									table.addCell(new com.itextpdf.layout.element.Cell(1, 3).setBorder(Border.NO_BORDER));
+									
+									if (i % 100 == 0) table.flush();
+								}
+							} catch (Exception e) {}
+						}
+					} catch (Exception e) {}
+				});
 				
 				table.complete();
 				// It must be closed before attach to mail
@@ -4726,9 +4871,19 @@ public class ReportsService extends DB {
 	 * @param obj
 	 * @return file path
 	 */
-	public String createAssetManagementAndOperationPerformanceReportSheetFile(AssetManagementAndOperationPerformanceReportEntity dataObj) {
+	public String createAssetManagementAndOperationPerformanceReportSheetFile(ViewReportEntity req, AssetManagementAndOperationPerformanceReportEntity dataObj) {
 		try (XSSFWorkbook document = new XSSFWorkbook()) {
 			int pictureIdx = DocumentHelper.readLogoImageFile(document);
+			
+			ReportDetail reportDetail = dataObj.getReportDetail();
+			SiteByReport site = Optional.ofNullable(reportDetail.getSites())
+					.orElse(new ArrayList<>())
+					.stream()
+					.filter(item -> item.getId() == req.getId_site())
+					.findFirst()
+					.orElse(null);
+			
+			if (Objects.isNull(site)) return null;
 			
 			/* === operation performance === */
 			{
@@ -4741,7 +4896,7 @@ public class ReportsService extends DB {
 				DocumentHelper.insertLogo(sheet, logoAnchor, pictureIdx);
 				
 				// report information
-				writeHeaderAssetManagementAndOperationPerformanceReport(sheet, dataObj.getReportDetail(), 12, "OPERATION PERFORMANCE SUMMARY");
+				writeHeaderAssetManagementAndOperationPerformanceReport(sheet, req, reportDetail, site, 12, "OPERATION PERFORMANCE SUMMARY");
 				
 				// report table
 				writeTableOperationPerformanceReport(sheet, data);
@@ -4849,7 +5004,7 @@ public class ReportsService extends DB {
 					DocumentHelper.insertLogo(sheet, logoAnchor, pictureIdx);
 					
 					// report information
-					writeHeaderAssetManagementAndOperationPerformanceReport(sheet, dataObj.getReportDetail(), 14, "MONTHLY PERFORMANCE");
+					writeHeaderAssetManagementAndOperationPerformanceReport(sheet, req, reportDetail, site, 14, "MONTHLY PERFORMANCE");
 					
 					// report table
 					writeTableMonthlyPerformanceReport(sheet, data, total);
@@ -4902,7 +5057,7 @@ public class ReportsService extends DB {
 				DocumentHelper.insertLogo(sheet, logoAnchor, pictureIdx);
 				
 				// report information
-				writeHeaderAssetManagementAndOperationPerformanceReport(sheet, dataObj.getReportDetail(), 7, "ASSET MANAGEMENT");
+				writeHeaderAssetManagementAndOperationPerformanceReport(sheet, req, reportDetail, site, 7, "ASSET MANAGEMENT");
 				
 				// report table
 				writeTableMonthlyAssetManagementReport(sheet, data);
@@ -4918,19 +5073,19 @@ public class ReportsService extends DB {
 				DocumentHelper.insertLogo(sheet, logoAnchor, pictureIdx);
 				
 				// report information
-				writeHeaderAssetManagementAndOperationPerformanceReport(sheet, dataObj.getReportDetail(), 8, "ESTIMATED LOSS BY EVENT");
+				writeHeaderAssetManagementAndOperationPerformanceReport(sheet, req, reportDetail, site, 8, "ESTIMATED LOSS BY EVENT");
 				
 				// report table
 				writeTableEstimatedLossByEventReport(sheet, data);
 			}
 			
-			return writeToSheetFile(document, dataObj.getReportDetail().getReport_name());
+			return writeToSheetFile(document, dataObj.getReportDetail().getName());
 		} catch (Exception e) {
 			return null;
 		}
 	}
 	
-	private static void writeHeaderAssetManagementAndOperationPerformanceReport(Sheet sheet, ViewReportEntity dataObj, int totalColumns, String title) {
+	private static void writeHeaderAssetManagementAndOperationPerformanceReport(Sheet sheet, ViewReportEntity req, ReportDetail reportDetail, SiteByReport site, int totalColumns, String title) {
 		try {
 			sheet.setDefaultColumnWidth(16);
 			sheet.setDisplayGridlines(false);
@@ -4958,7 +5113,7 @@ public class ReportsService extends DB {
 
 			cell = row.createCell(2);
 			cell.setCellStyle(reportInfoBoldCellStyle);
-			cell.setCellValue(dataObj.getSite_name());
+			cell.setCellValue(reportDetail.getName());
 			cell = row.createCell(3);
 			cell.setCellStyle(reportInfoBoldCellStyle);
 			sheet.addMergedRegion(new CellRangeAddress(2, 2, 2, 3));
@@ -4973,7 +5128,7 @@ public class ReportsService extends DB {
 			
 			cell = row.createCell(2);
 			cell.setCellStyle(reportInfoCellStyle);
-			cell.setCellValue(dataObj.getDc_capacity());
+			cell.setCellValue(site.getDc_capacity());
 			cell = row.createCell(3);
 			cell.setCellStyle(reportInfoCellStyle);
 			sheet.addMergedRegion(new CellRangeAddress(3, 3, 2, 3));
@@ -4988,7 +5143,7 @@ public class ReportsService extends DB {
 
 			cell = row.createCell(2);
 			cell.setCellStyle(reportInfoCellStyle);
-			cell.setCellValue(LocalDateTime.parse(dataObj.getEnd_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")).format(DateTimeFormatter.ofPattern("MMM-yy")));
+			cell.setCellValue(LocalDateTime.parse(req.getEnd_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")).format(DateTimeFormatter.ofPattern("MMM-yy")));
 			cell = row.createCell(3);
 			cell.setCellStyle(reportInfoCellStyle);
 			sheet.addMergedRegion(new CellRangeAddress(4, 4, 2, 3));
@@ -5536,7 +5691,7 @@ public class ReportsService extends DB {
 	 * @param obj
 	 * @return file path
 	 */
-	public String createSanityCheckReportSheetFile(ViewReportEntity dataObj) {
+	public String createSanityCheckReportSheetFile(ReportDetail dataObj, String startDate, String endDate) {
 		try (XSSFWorkbook document = new XSSFWorkbook()) {
 			XSSFSheet sheet = document.createSheet("Sanity Check Report");
 			
@@ -5546,16 +5701,19 @@ public class ReportsService extends DB {
 			DocumentHelper.insertLogo(sheet, logoAnchor, pictureIdx);
 			
 			// report information and table
-			writeHeaderSanityCheckReport(sheet, dataObj);
+			writeHeaderSanityCheckReport(sheet, dataObj, startDate, endDate);
 			
-			return writeToSheetFile(document, dataObj.getReport_name());
+			return writeToSheetFile(document, dataObj.getName());
 		} catch (Exception e) {
 			return null;
 		}
 	}
 	
-	private void writeHeaderSanityCheckReport(Sheet sheet, ViewReportEntity dataObj) {
+	private void writeHeaderSanityCheckReport(Sheet sheet, ReportDetail reportDetail, String startDate, String endDate) {
 		try {
+			SiteByReport site = Optional.ofNullable(reportDetail.getSites()).map(item -> item.stream().findFirst().get()).orElse(null);
+			if (Objects.isNull(site)) return;
+			
 			sheet.setDefaultColumnWidth(16);
 			sheet.setColumnWidth(0, 15 * 256);
 			sheet.setColumnWidth(1, 15 * 256);
@@ -5607,7 +5765,7 @@ public class ReportsService extends DB {
 			
 			cell = row.createCell(2);
 			cell.setCellStyle(reportInfoCellStyle);
-			cell.setCellValue(dataObj.getReport_date());
+			cell.setCellValue(reportDetail.getReport_date());
 			cell = row.createCell(3);
 			cell.setCellStyle(reportInfoCellStyle);
 			cell = row.createCell(4);
@@ -5628,7 +5786,7 @@ public class ReportsService extends DB {
 			
 			cell = row.createCell(2);
 			cell.setCellStyle(reportInfoCellStyle);
-			cell.setCellValue(format.format(dateFormat.parse(dataObj.getStart_date())) + " - " + format.format(dateFormat.parse(dataObj.getEnd_date())));
+			cell.setCellValue(format.format(dateFormat.parse(startDate)) + " - " + format.format(dateFormat.parse(endDate)));
 			cell = row.createCell(3);
 			cell.setCellStyle(reportInfoCellStyle);
 			cell = row.createCell(4);
@@ -5785,7 +5943,12 @@ public class ReportsService extends DB {
 			cell.setCellStyle(tableHeaderCellStyle);
 			sheet.addMergedRegion(new CellRangeAddress(5, 5, 19, 20));
 				
-			List<SanityCheckReportEntity> dataExports = dataObj.getDataReports();
+			List<SanityCheckReportEntity> dataExports = (List<SanityCheckReportEntity>) Optional.ofNullable(reportDetail.getSites())
+					.orElse(new ArrayList<>())
+					.stream()
+					.map(item -> (SanityCheckReportEntity) item.getDataReports().get(0))
+					.collect(Collectors.toList());
+			
 			if(Objects.nonNull(dataExports) && dataExports.size() > 0) {
 				int accumulatedRowCount = 0;
 				
@@ -5800,7 +5963,7 @@ public class ReportsService extends DB {
 						Row row6 = Objects.nonNull(sheet.getRow(j)) ? sheet.getRow(j) : sheet.createRow(j);
 						cell = row6.createCell(0);
 						cell.setCellStyle(tableRowCellStyle);
-						if (j == firstRow) cell.setCellValue(item.getSiteName());
+						if (j == firstRow) cell.setCellValue(site.getName());
 						cell = row6.createCell(1);
 						cell.setCellStyle(tableRowCellStyle);
 						
@@ -5903,7 +6066,7 @@ public class ReportsService extends DB {
 	 * @param obj
 	 * @return file path
 	 */
-	public String createPerformanceReportSheetFile(ViewReportEntity dataObj) {
+	public String createPerformanceReportSheetFile(ReportDetail dataObj) {
 		try (XSSFWorkbook document = new XSSFWorkbook()) {
 			XSSFSheet sheet = document.createSheet("Boviet Format Production Report");
 			
@@ -5915,14 +6078,17 @@ public class ReportsService extends DB {
 			// report information and table
 			writeHeaderPerformanceReport(sheet, dataObj);
 			
-			return writeToSheetFile(document, dataObj.getReport_name());
+			return writeToSheetFile(document, dataObj.getName());
 		} catch (Exception e) {
 			return null;
 		}
 	}
 	
-	private void writeHeaderPerformanceReport(Sheet sheet, ViewReportEntity dataObj) {
+	private void writeHeaderPerformanceReport(Sheet sheet, ReportDetail dataObj) {
 		try {
+			SiteByReport site = Optional.ofNullable(dataObj.getSites()).map(item -> item.stream().findFirst().get()).orElse(null);
+			if (Objects.isNull(site)) return;
+			
 			sheet.setDefaultColumnWidth(16);
 			sheet.setColumnWidth(0, 15 * 256);
 			sheet.setColumnWidth(1, 15 * 256);
@@ -5958,7 +6124,7 @@ public class ReportsService extends DB {
 			
 			cell = row.createCell(2);
 			cell.setCellStyle(reportInfoCellStyle);
-			cell.setCellValue(dataObj.getSite_name());
+			cell.setCellValue(dataObj.getName());
 			cell = row.createCell(3);
 			cell.setCellStyle(reportInfoCellStyle);
 			cell = row.createCell(4);
@@ -5994,7 +6160,7 @@ public class ReportsService extends DB {
 			
 			cell = row.createCell(2);
 			cell.setCellStyle(reportInfoCellStyle);
-			cell.setCellValue(dataObj.getDc_capacity());
+			cell.setCellValue(site.getDc_capacity());
 			cell = row.createCell(3);
 			cell.setCellStyle(reportInfoCellStyle);
 			cell = row.createCell(4);
@@ -6011,7 +6177,7 @@ public class ReportsService extends DB {
 			}
 			sheet.addMergedRegion(new CellRangeAddress(0, 2, 5, 9));	
 			
-			List<PerformanceReportResponse> dataExports = dataObj.getDataReports();
+			List<PerformanceReportResponse> dataExports = (List<PerformanceReportResponse>) Optional.ofNullable(site.getDataReports()).orElse(new ArrayList<>());
 			int dataRows = Objects.nonNull(dataExports) && dataExports.size() > 0 ? dataExports.size() : 0;
 			
 			// Monthly Performance Data
@@ -6180,6 +6346,207 @@ public class ReportsService extends DB {
 	}
 	
 	/**
+	 * @description create meter inverter production report sheet file
+	 * @author Hung.Bui
+	 * @since 2026-10-22
+	 * @param obj
+	 * @return file path
+	 */
+	public String createMeterInverterProductionReportSheetFile(ReportDetail reportDetail, String startDate, String endDate) {
+		try (XSSFWorkbook document = new XSSFWorkbook()) {
+			int pictureIdx = DocumentHelper.readLogoImageFile(document);
+			
+			Optional.ofNullable(reportDetail.getSites()).ifPresent(sites -> {
+				for (int i = 0; i < sites.size(); i++) {
+					try {
+						SiteByReport site = sites.get(i);
+						XSSFSheet sheet = document.createSheet(WorkbookUtil.createSafeSheetName((i + 1) + "_" + site.getName()));
+						
+						// insert logo image
+						ClientAnchor logoAnchor = new XSSFClientAnchor(50 * Units.EMU_PER_PIXEL, -30 * Units.EMU_PER_PIXEL, 0, 0 * Units.EMU_PER_PIXEL, 7, 1, 8, 4);
+						DocumentHelper.insertLogo(sheet, logoAnchor, pictureIdx);
+						
+						// report information and table
+						writeMeterInverterProductionReportTable(sheet, reportDetail, site, startDate, endDate);
+					} catch (Exception e) {}
+				}
+			});
+			
+			return writeToSheetFile(document, reportDetail.getName());
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	
+	private void writeMeterInverterProductionReportTable(Sheet sheet, ReportDetail reportDetail, SiteByReport site, String startDate, String endDate) {
+		try {
+			sheet.setDefaultColumnWidth(16);
+			sheet.setColumnWidth(0, 25 * 256);
+			sheet.setColumnWidth(1, 35 * 256);
+			sheet.setColumnWidth(2, 25 * 256);
+			sheet.setColumnWidth(3, 35 * 256);
+			sheet.setColumnWidth(4, 25 * 256);
+			sheet.setColumnWidth(5, 15 * 256);
+			sheet.setColumnWidth(6, 25 * 256);
+			sheet.setColumnWidth(7, 25 * 256);
+			sheet.setDefaultRowHeight((short) 500);
+			sheet.setDisplayGridlines(false);
+			
+			CellStyle reportTitleCellStyle = DocumentHelper.createStyleForReportTitle(sheet, (short) 22, true);
+			CellStyle reportInfoCellStyle = DocumentHelper.createStyleForReportInfo(sheet, false);
+			CellStyle tableHeaderCellStyle = DocumentHelper.createStyleForTableHeader(sheet);
+			CellStyle tableRowCellStyle = DocumentHelper.createStyleForTableRow(sheet, false);
+			CellStyle tableRowOneDecimalPlaceCellStyle = DocumentHelper.createStyleForTableRowNumber(sheet, false, DocumentHelper.oneDecimalPlaceDataFormat);
+			CellStyle tableRowTwoDecimalPlaceCellStyle = DocumentHelper.createStyleForTableRowNumber(sheet, false, DocumentHelper.twoDecimalPlaceDataFormat);
+			
+			Row row = sheet.createRow(0);
+			row.setHeight((short) 600);
+			Cell cell = row.createCell(0);
+			cell.setCellStyle(reportInfoCellStyle);
+			cell.setCellValue("Site Name");
+
+			cell = row.createCell(1);
+			cell.setCellStyle(reportInfoCellStyle);
+			cell.setCellValue(site.getName());
+
+			row = sheet.createRow(1);
+			row.setHeight((short) 600);
+			cell = row.createCell(0);
+			cell.setCellStyle(reportInfoCellStyle);
+			cell.setCellValue("Report Generated");
+
+			cell = row.createCell(1);
+			cell.setCellStyle(reportInfoCellStyle);
+			cell.setCellValue(reportDetail.getReport_date());
+
+			row = sheet.createRow(2);
+			row.setHeight((short) 600);
+			cell = row.createCell(0);
+			cell.setCellStyle(reportInfoCellStyle);
+			cell.setCellValue("Covered Period");
+
+			cell = row.createCell(1);
+			cell.setCellStyle(reportInfoCellStyle);
+			cell.setCellValue(reportDateRangeDTF.format(inputDTF.parse(startDate)) + " - " + reportDateRangeDTF.format(inputDTF.parse(endDate)));
+
+			row = sheet.createRow(3);
+			row.setHeight((short) 600);
+			cell = row.createCell(0);
+			cell.setCellStyle(reportInfoCellStyle);
+			cell.setCellValue("Data Granularity");
+			
+			String granularity = "";
+			switch (ReportIntervals.fromValue(reportDetail.getData_intervals())) {
+			case _15_MINUTES:
+				granularity = "15 Min";
+				break;
+				
+			case _1_HOUR:
+				granularity = "1 Hour";
+				break;
+				
+			case DAILY:
+				granularity = "1 Day";
+				break;
+				
+			case MONTHLY:
+				granularity = "1 Month";
+				break;
+
+			default:
+				break;
+			}
+			cell = row.createCell(1);
+			cell.setCellStyle(reportInfoCellStyle);
+			cell.setCellValue(granularity);
+
+			for (int i = 0; i <= 3; i++) {
+				row = sheet.getRow(i) != null ? sheet.getRow(i) : sheet.createRow(i);
+				for (int j = 2; j <= 6; j++) {
+					cell = row.createCell(j);
+					cell.setCellStyle(reportTitleCellStyle);
+					if(i == 0 && j == 2) cell.setCellValue("Meter & Inverter Production Report");
+				}
+			}
+			sheet.addMergedRegion(new CellRangeAddress(0, 3, 2, 6));
+			
+			row = sheet.createRow(6);
+			cell = row.createCell(0);
+			cell.setCellStyle(tableHeaderCellStyle);
+			cell.setCellValue("Timestamp");
+			
+			cell = row.createCell(1);
+			cell.setCellStyle(tableHeaderCellStyle);
+			cell.setCellValue("Production Meter Active Power (kW)");
+			
+			cell = row.createCell(2);
+			cell.setCellStyle(tableHeaderCellStyle);
+			cell.setCellValue("Inverter Active Power (kW)");
+			
+			cell = row.createCell(3);
+			cell.setCellStyle(tableHeaderCellStyle);
+			cell.setCellValue("Production Meter Net Energy (kWh)");
+			
+			cell = row.createCell(4);
+			cell.setCellStyle(tableHeaderCellStyle);
+			cell.setCellValue("Inverter Net Energy (kWh)");
+			
+			cell = row.createCell(5);
+			cell.setCellStyle(tableHeaderCellStyle);
+			cell.setCellValue("POA");
+			
+			cell = row.createCell(6);
+			cell.setCellStyle(tableHeaderCellStyle);
+			cell.setCellValue("Expected Power (kW)");
+			
+			cell = row.createCell(7);
+			cell.setCellStyle(tableHeaderCellStyle);
+			cell.setCellValue("Expected Energy (kWh)");
+			
+			List<ValueDTO> dataReports = Optional.ofNullable((List<ValueDTO>) site.getDataReports()).orElse(new ArrayList<>());
+			
+			for (int i = 0; i < dataReports.size(); i++) {
+				ValueDTO item = dataReports.get(i);
+				Row tableRow = sheet.createRow(7 + i);
+				
+				AtomicReference<Cell> tableCell = new AtomicReference<>();
+				tableCell.set(tableRow.createCell(0));
+				tableCell.get().setCellStyle(tableRowCellStyle);
+				tableCell.get().setCellValue(item.getTimestamp());
+				
+				tableCell.set(tableRow.createCell(1));
+				tableCell.get().setCellStyle(tableRowTwoDecimalPlaceCellStyle);
+				Optional.ofNullable(item.getProductionMeterActivePower()).ifPresent(value -> tableCell.get().setCellValue(value));
+				
+				tableCell.set(tableRow.createCell(2));
+				tableCell.get().setCellStyle(tableRowTwoDecimalPlaceCellStyle);
+				Optional.ofNullable(item.getInverterActivePower()).ifPresent(value -> tableCell.get().setCellValue(value));
+				
+				tableCell.set(tableRow.createCell(3));
+				tableCell.get().setCellStyle(tableRowTwoDecimalPlaceCellStyle);
+				Optional.ofNullable(item.getProductionMeterNetEnergy()).ifPresent(value -> tableCell.get().setCellValue(value));
+				
+				tableCell.set(tableRow.createCell(4));
+				tableCell.get().setCellStyle(tableRowTwoDecimalPlaceCellStyle);
+				Optional.ofNullable(item.getInverterNetEnergy()).ifPresent(value -> tableCell.get().setCellValue(value));
+				
+				tableCell.set(tableRow.createCell(5));
+				tableCell.get().setCellStyle(tableRowOneDecimalPlaceCellStyle);
+				Optional.ofNullable(item.getPoa()).ifPresent(value -> tableCell.get().setCellValue(value));
+				
+				tableCell.set(tableRow.createCell(6));
+				tableCell.get().setCellStyle(tableRowTwoDecimalPlaceCellStyle);
+				Optional.ofNullable(item.getExpectedPower()).ifPresent(value -> tableCell.get().setCellValue(value));
+				
+				tableCell.set(tableRow.createCell(7));
+				tableCell.get().setCellStyle(tableRowTwoDecimalPlaceCellStyle);
+				Optional.ofNullable(item.getExpectedEnergy()).ifPresent(value -> tableCell.get().setCellValue(value));
+			}
+		} catch (Exception e) {
+		}
+	}
+	
+	/**
 	   * @Get Meter level energy power  production report
 	   * @author Duy.Phan
 	   * @since 2025-10-06
@@ -6324,30 +6691,40 @@ public class ReportsService extends DB {
 	   * @return {}
 	   */
 	  
-	  public ViewReportEntity getMeterLevelProductionIrradianceTempReport(ViewReportEntity obj) {
+	  public ViewReportEntity getMeterLevelProductionIrradianceTempReport(ViewReportEntity obj) throws Exception {
 	    try {
+	    	Integer id = (Integer) obj.getIds().get(0);
+	    	
+	    	if (id == null || id < 0) {
+	    		return obj;
+	    	}
+	    	obj.setId_site(id);
+	    	
+	    	ReportDetail reportDetail = getReportDetail(obj);
+	    	if (Objects.isNull(reportDetail)) throw new Exception("Report not found");
+	    	
+	    	SiteByReport site = Optional.ofNullable(reportDetail.getSites())
+	    			.orElse(new ArrayList<>())
+	    			.stream()
+	    			.filter(item -> item.getId() == obj.getId_site())
+	    			.findFirst()
+	    			.orElse(null);
+	    	if (Objects.isNull(site)) return obj;
+	    	
+	    	obj.setSite_name(site.getName()); 
+	    	
 	    	List<String> headerPower = new ArrayList<>();
 			List<String> headerEnergy = new ArrayList<>();
 			List<String> headerIrradiance = new ArrayList<>();
 			List<String> headerTemp = new ArrayList<>();
-			  
-	    	Integer id = (Integer) obj.getIds().get(0);
-
-	        if (id == null || id < 0) {
-	            return obj;
-	        }
-	        obj.setId_site(id);
-	        
-	        ViewReportEntity dataObj = getReportDetail(obj);
-			if (dataObj != null) obj.setSite_name(dataObj.getSite_name()); 
 			
-	        DevicesByTypeEntity devices = deviceService.getDevicesBySite(obj);
+			DevicesByTypeEntity devices = deviceService.getDevicesBySite(site.getId(), obj.getDomain());
 			List<DeviceEntity> meterDevices = devices.getMeter();
 			List<DeviceEntity> irradianceResersePOADevices = devices.getAll().stream().filter(item -> EnumSet.of(DeviceType.WEATHER_STATION,DeviceType.VIRTUAL_WEATHER_STATION).contains( DeviceType.fromValue(item.getId_device_type()))).collect(Collectors.toList());
 			
 			List<List<Map<String, Object>>> dataList = new ArrayList<>();			
-			LocalDateTime startDate = LocalDateTime.parse(obj.getStart_date(), dateTimeFormatter);
-			LocalDateTime endDate = LocalDateTime.parse(obj.getEnd_date(), dateTimeFormatter);
+			LocalDateTime startDate = LocalDateTime.parse(obj.getStart_date(), inputDTF);
+			LocalDateTime endDate = LocalDateTime.parse(obj.getEnd_date(), inputDTF);
 			ChartingGranularity granularity = ChartingGranularity.fromValue(obj.getData_intervals());
 					
 			ChartingFilter filter;
@@ -6459,7 +6836,8 @@ public class ReportsService extends DB {
 
 	        return obj;
 	    } catch (Exception ex) {
-	      return null;
+	    	log.error("Reports.getMeterLevelProductionIrradianceTempReport", ex);
+			throw ex;
 	    }
 	  }
 	  
@@ -6711,24 +7089,22 @@ public class ReportsService extends DB {
 		 * @since 2025-10-08
 		 * @param obj
 		 */
-		public boolean sentMailMeterLevelProductionIrradianceTempReport(ViewReportEntity obj) {
+		public boolean sentMailMeterLevelProductionIrradianceTempReport(ViewReportEntity obj) throws Exception {
 			try {
 				ViewReportEntity dataObj = getMeterLevelProductionIrradianceTempReport(obj);
 				if (dataObj == null) return false;
-				dataObj.setStart_date(obj.getStart_date());
-				dataObj.setEnd_date(obj.getEnd_date());
 				
-				obj.setId_site((int) obj.getIds().get(0));
-				ViewReportEntity reportDetail = getReportDetail(obj);
-				if (reportDetail != null) dataObj.setSubscribers(reportDetail.getSubscribers());
+				ReportDetail reportDetail = getReportDetail(obj);
+		    	if (Objects.isNull(reportDetail)) throw new Exception("Report not found");
 				
 				String filePath = createMeterLevelProductionIrradianceTempReportSheetFile(obj, dataObj);
 				if (filePath == null) return false;
 				
-				sentReportByMail(filePath, dataObj.getSubscribers(), "Meter-Level Production vs Irradiance/Temp", 26);
+				sentReportByMail(filePath, reportDetail.getSubscribers(), "Meter-Level Production vs Irradiance/Temp", 26);
 				return true;
-			} catch (Exception e) {
-				return false;
+			} catch (Exception ex) {
+				log.error("Reports.sentMailMeterLevelProductionIrradianceTempReport", ex);
+				throw ex;
 			}
 		}
 		
@@ -6757,6 +7133,8 @@ public class ReportsService extends DB {
 					ClientAnchor logoAnchor = new XSSFClientAnchor(0, 0, 20 * Units.EMU_PER_PIXEL, 20 * Units.EMU_PER_PIXEL, 10, 1, 11, 4);
 					DocumentHelper.insertLogo(sheet, logoAnchor, pictureIdx);
 					
+					dataObj.setStart_date(obj.getStart_date());
+					dataObj.setEnd_date(obj.getEnd_date());
 					// report information and table
 					writeHeaderMeterLevelProductionIrradianceTempReport(sheet, dataObj);
 					
@@ -6990,16 +7368,28 @@ public class ReportsService extends DB {
 	      try {
  	        obj.setId_site(Integer.parseInt(Optional.ofNullable(obj.getId_sites()).orElse(Optional.ofNullable(obj.getIds_site()).orElse("0"))));
 	        
-	        ViewReportEntity dataObj = getReportDetail(obj);
-	        if (dataObj == null) return null;
-	        dataObj.setReport_name(obj.getReport_name());
-	        obj.setCadence_range(dataObj.getCadence_range());
-	        obj.setData_intervals(dataObj.getData_intervals());
-	        obj.setmWh(true);
-	        dataObj.setmWh(true);
+	        ReportDetail reportDetail = getReportDetail(obj);
+	        if (reportDetail == null) return null;
 	        
-	        LocalDateTime startDate = LocalDateTime.parse(obj.getStart_date(), dateTimeFormatter);
-	        LocalDateTime endDate = LocalDateTime.parse(obj.getEnd_date(), dateTimeFormatter);
+	        SiteByReport site = Optional.ofNullable(reportDetail.getSites())
+	    			.orElse(new ArrayList<>())
+	    			.stream()
+	    			.filter(item -> item.getId() == obj.getId_site())
+	    			.findFirst()
+	    			.orElse(null);
+	    	if (Objects.isNull(site)) return obj;
+	        
+	    	ViewReportEntity dataObj = new ViewReportEntity();
+	    	dataObj.setReport_name(reportDetail.getName());
+	    	dataObj.setmWh(true);
+	    	dataObj.setDc_capacity(site.getDc_capacity());
+	    	
+	        obj.setCadence_range(reportDetail.getCadence_range());
+	        obj.setData_intervals(reportDetail.getData_intervals());
+	        obj.setmWh(true);
+	        
+	        LocalDateTime startDate = LocalDateTime.parse(obj.getStart_date(), inputDTF);
+	        LocalDateTime endDate = LocalDateTime.parse(obj.getEnd_date(), inputDTF);
 	        ChartingFilter filter = ChartingFilter.CUSTOM;
 	        
 	        DevicesByTypeEntity devices = deviceService.getDevicesBySite(obj);

@@ -33,6 +33,7 @@ import com.nwm.api.entities.ReportDuplicateRequest;
 import com.nwm.api.entities.ReportsEntity;
 import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.entities.ViewReportEntity;
+import com.nwm.api.entities.report.ReportDetail;
 import com.nwm.api.services.ReportsService;
 import com.nwm.api.utils.Constants;
 import com.nwm.api.utils.Lib;
@@ -75,17 +76,12 @@ public class ReportsController extends BaseController {
 	 * @return data (status, message, array, total_row
 	 */
 	@PostMapping("/daily-report")
-	public Object getDailyReport(@RequestBody ViewReportEntity obj) {
+	public Object getDailyReport(@RequestBody ViewReportEntity req) {
 		try {
-			ViewReportEntity dataObj = service.getDailyReport(obj);
-			if (dataObj != null) {
-				return this.jsonResult(true, Constants.GET_SUCCESS_MSG, dataObj, 1);
-			} else {
-				return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
-			}
+			ReportDetail dataObj = service.getDailyReport(req);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, dataObj, 1);
 		} catch (Exception e) {
-			log.error(e);
-			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
 		}
 	}
 	
@@ -113,17 +109,12 @@ public class ReportsController extends BaseController {
 	 * @return data (status, message, array, total_row
 	 */
 	@PostMapping("/annually-report")
-	public Object getAnnuallyReport(@RequestBody ViewReportEntity obj) {
+	public Object getAnnuallyReport(@RequestBody ViewReportEntity req) {
 		try {
-			ViewReportEntity dataObj = service.getAnnuallyReport(obj);
-			if (dataObj != null) {
-				return this.jsonResult(true, Constants.GET_SUCCESS_MSG, dataObj, 1);
-			} else {
-				return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
-			}
+			ReportDetail dataObj = service.getAnnuallyReport(req);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, dataObj, 1);
 		} catch (Exception e) {
-			log.error(e);
-			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
 		}
 	}
 		
@@ -151,18 +142,12 @@ public class ReportsController extends BaseController {
 	 * @return data (status, message, array, total_row
 	 */
 	@PostMapping("/quarterly-report")
-	public Object getQuarterlyReport(@RequestBody ViewReportEntity obj) {
+	public Object getQuarterlyReport(@RequestBody ViewReportEntity req) {
 		try {
-			ViewReportEntity dataObj = service.getQuarterlyReport(obj);
-
-			if (dataObj != null) {
-				return this.jsonResult(true, Constants.GET_SUCCESS_MSG, dataObj, 1);
-			} else {
-				return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
-			}
+			ReportDetail dataObj = service.getQuarterlyReport(req);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, dataObj, 1);
 		} catch (Exception e) {
-			log.error(e);
-			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
 		}
 	}
 	
@@ -177,15 +162,9 @@ public class ReportsController extends BaseController {
 	public Object getAssetManagementAndOperationPerformanceReport(@RequestBody ViewReportEntity obj) {
 		try {
 			AssetManagementAndOperationPerformanceReportEntity dataObj = service.getAssetManagementAndOperationPerformanceReport(obj);
-
-			if (dataObj != null) {
-				return this.jsonResult(true, Constants.GET_SUCCESS_MSG, dataObj, 1);
-			} else {
-				return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
-			}
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, dataObj, 1);
 		} catch (Exception e) {
-			log.error(e);
-			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
 		}
 	}
 	
@@ -435,12 +414,14 @@ public class ReportsController extends BaseController {
 	 * @description download report
 	 * @author Hung.Bui
 	 * @since 2025-08-07
-	 * @param obj { id }
+	 * @param req { id }
 	 */
 	@PostMapping("/download")
-	public ResponseEntity<Resource> download(@Valid @RequestBody ViewReportEntity obj) {
+	public ResponseEntity<Resource> download(@Valid @RequestBody ViewReportEntity req, @RequestHeader(name = "Authorization") String authz) {
 		try {
-			Resource resource = service.download(obj);
+			req.setId_employee(Lib.getUserId(authz));
+			req.setIs_supper_admin(Lib.isSuperAdmin(authz) ? 1 : 0);
+			Resource resource = service.download(req);
 			if (resource == null || !resource.exists()) return ResponseEntity.ok(null);
 			return ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM).body(resource);
 		} catch (Exception e) {
@@ -524,18 +505,12 @@ public class ReportsController extends BaseController {
 	 * @return data (status, message, array, total_row
 	 */
 	@PostMapping("/monthly-report")
-	public Object getMonthlyReport(@RequestBody ViewReportEntity obj) {
+	public Object getMonthlyReport(@RequestBody ViewReportEntity req) {
 		try {
-			ViewReportEntity dataObj = service.getMonthlyReport(obj);
-
-			if (dataObj != null) {
-				return this.jsonResult(true, Constants.GET_SUCCESS_MSG, dataObj, 1);
-			} else {
-				return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
-			}
+			ReportDetail dataObj = service.getMonthlyReport(req);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, dataObj, 1);
 		} catch (Exception e) {
-			log.error(e);
-			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
 		}
 	}
 
@@ -563,14 +538,12 @@ public class ReportsController extends BaseController {
 	 * @return data (status, message, array, total_row
 	 */
 	@PostMapping("/custom-report")
-	public Object getCustomReport(@RequestBody ViewReportEntity obj) {
+	public Object getCustomReport(@RequestBody ViewReportEntity req) {
 		try {
-			List<ViewReportEntity> dataObjList = service.getReportDataList(obj);
-			if (dataObjList == null || dataObjList.size() == 0) return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
-			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, dataObjList, dataObjList.size());
+			ReportDetail reportDetail = service.getCustomReport(req);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, reportDetail, 1);
 		} catch (Exception e) {
-			log.error(e);
-			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
 		}
 	}
 					
@@ -594,18 +567,15 @@ public class ReportsController extends BaseController {
 	 * Get sanity check report
 	 * @author Hung.Bui
 	 * @since 2025-06-25
-	 * @param obj
+	 * @param req
 	 * @return data (status, message, array, total_row
 	 */
 	@PostMapping("/sanity-check-report")
-	public Object getSanityCheckReport(@RequestBody ViewReportEntity obj) {
+	public Object getSanityCheckReport(@RequestBody ViewReportEntity req) {
 		try {
-			ViewReportEntity dataObj = service.getSanityCheckReport(obj);
-			
-			if (dataObj == null) return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
+			ReportDetail dataObj = service.getSanityCheckReport(req);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, dataObj, 1);
 		} catch (Exception e) {
-			log.error(e);
 			return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
 		}
 	}
@@ -637,11 +607,8 @@ public class ReportsController extends BaseController {
 	public Object getMeterLevelProductionIrradianceTempReport(@RequestBody ViewReportEntity obj) {
 		try {
 			ViewReportEntity dataObj = service.getMeterLevelProductionIrradianceTempReport(obj);
-			
-			if (dataObj == null) return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, dataObj, 1);
 		} catch (Exception e) {
-			log.error(e);
 			return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
 		}
 	}
@@ -666,18 +633,15 @@ public class ReportsController extends BaseController {
 	 * Get performance report
 	 * @author Hung.Bui
 	 * @since 2025-12-01
-	 * @param obj
+	 * @param req
 	 * @return data (status, message, array, total_row
 	 */
 	@PostMapping("/performance-report")
-	public Object getPerformanceReport(@RequestBody ViewReportEntity obj) {
+	public Object getPerformanceReport(@RequestBody ViewReportEntity req) {
 		try {
-			ViewReportEntity dataObj = service.getPerformanceReport(obj);
-			
-			if (dataObj == null) return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
+			ReportDetail dataObj = service.getPerformanceReport(req);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, dataObj, 1);
 		} catch (Exception e) {
-			log.error(e);
 			return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
 		}
 	}
@@ -733,5 +697,42 @@ public class ReportsController extends BaseController {
 	      return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, e, 0);
 	    }
 	  }
+	  
+	/**
+	 * Get meter inverter production report
+	 * @author Hung.Bui
+	 * @since 2026-10-15
+	 * @param req
+	 * @return meter inverter production report
+	 */
+	@PostMapping("/meter-inverter-production-report")
+	public Object getMeterInverterProductionReport(@RequestBody ViewReportEntity req, @RequestHeader(name = "Authorization") String authz) {
+		try {
+			req.setId_employee(Lib.getUserId(authz));
+			req.setIs_supper_admin(Lib.isSuperAdmin(authz) ? 1 : 0);
+			ReportDetail res = service.getMeterInverterProductionReport(req);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, res, 1);
+		} catch (Exception e) {
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
+		}
+	}
+	
+	/**
+	 * Sent mail meter inverter production report
+	 * @author Hung.Bui
+	 * @since 2026-10-22
+	 * @param req
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/sent-mail-meter-inverter-production-report")
+	public Object sentMailMeterInverterProductionReport(@RequestBody ViewReportEntity req, @RequestHeader(name = "Authorization") String authz) {
+		try {
+			req.setId_employee(Lib.getUserId(authz));
+			req.setIs_supper_admin(Lib.isSuperAdmin(authz) ? 1 : 0);
+			return service.sentMailMeterInverterProductionReport(req) ? this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, req, 1) : this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
+		} catch (Exception e) {
+			return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, e, 0);
+		}
+	}
 
 }
