@@ -47,7 +47,8 @@
 					IFNULL(LAG(d.nvmActiveEnergy) OVER (ORDER BY d.time), d.nvmActiveEnergy) AS prev_nvmActiveEnergy,
 					d.nvmActiveEnergy,
 					r.`name` AS room,
-					CASE s.data_send_time WHEN 1 THEN 5 WHEN 2 THEN 15 WHEN 3 THEN 1 END data_send_time
+					CASE s.data_send_time WHEN 1 THEN 5 WHEN 2 THEN 15 WHEN 3 THEN 1 END data_send_time,
+					tz.`value` AS time_zone
 				FROM ${data_table_name} d
 				INNER JOIN device dv ON d.id_device = dv.id
 				INNER JOIN site_area_building_floor_room_device_map map ON map.id_device = dv.id
@@ -67,7 +68,8 @@
 					IFNULL(prev_nvmActiveEnergy, IFNULL(LAG(nvmActiveEnergy) OVER (ORDER BY id_device, time), nvmActiveEnergy)) AS prev_nvmActiveEnergy,
 					IFNULL(nvmActiveEnergy, prev_nvmActiveEnergy) AS nvmActiveEnergy,
 					room,
-					data_send_time
+					data_send_time,
+					time_zone
 				FROM base
 				ORDER BY id_device, `time`
 			),
@@ -90,7 +92,10 @@
 				ROUND(MAX(nvmActiveEnergy) - MIN(nvmActiveEnergy),3) AS total_energy,
 				ROUND(AVG(energy),3) AS avg_energy,
 				time(MAX(time)) AS last_time,
-				CASE WHEN time(MAX(time)) <![CDATA[<]]> time(DATE_ADD(DATE_FORMAT(time,'%Y-%m-%d'),INTERVAL - data_send_time MINUTE)) THEN 1 ELSE 0 END AS is_incomplete
+				CASE 
+					WHEN time(MAX(time)) <![CDATA[<]]> time( DATE_ADD(CONVERT_TZ(CURRENT_TIMESTAMP(), 'UTC', time_zone), INTERVAL - data_send_time MINUTE)) THEN 1 
+					ELSE 0 
+				END AS is_incomplete
 			FROM grouped
 			GROUP BY id_device
 			)t ON DUPLICATE KEY UPDATE total_energy = VALUES(total_energy), last_time = VALUES(last_time), is_incomplete = VALUES(is_incomplete), avg_energy = VALUES(avg_energy),opening_reading = VALUES(opening_reading),closing_reading = VALUES(closing_reading), serial_number=VALUES(serial_number), meter_name=VALUES(meter_name);
