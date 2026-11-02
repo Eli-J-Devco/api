@@ -1,11 +1,26 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper
-  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="TroubleshootingMainMeterConfig">
-	<resultMap id="MainMeterConfigMap" type="com.nwm.api.entities.TroubleshootingMainMeterConfigEntity">
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="TroubleshootingConfig">
+	<select id="lockSite" resultType="int" parameterType="int">
+		SELECT id FROM site WHERE id = #{_parameter} FOR UPDATE
+	</select>
+	<select id="getActiveConfig" resultType="com.nwm.api.entities.TroubleshootingConfigEntity" parameterType="map">
+		SELECT id AS id_config, version FROM troubleshooting_config
+		WHERE id_site = #{id_site} AND id_config_type = #{id_config_type} AND is_active = 1
+	</select>
+	<select id="getNextVersion" resultType="int" parameterType="map">
+		SELECT COALESCE(MAX(version), 0) + 1 FROM troubleshooting_config
+		WHERE id_site = #{id_site} AND id_config_type = #{id_config_type}
+	</select>
+	<insert id="insertConfig" parameterType="map" useGeneratedKeys="true" keyProperty="id_config" keyColumn="id">
+		INSERT INTO troubleshooting_config (id_site, id_config_type, version, is_active)
+		VALUES (#{id_site}, #{id_config_type}, #{version}, 1)
+	</insert>
+
+	<resultMap id="MainMeterConfigMap" type="com.nwm.api.entities.TroubleshootingConfigEntity$MainMeter">
 		<id property="id_config" column="id_config" />
 		<result property="id_site" column="id_site" />
+		<result property="version" column="version" />
 		<result property="id_device" column="id_device" />
 		<result property="current_parameter" column="current_parameter" />
 		<result property="current_phase_a_parameter" column="current_phase_a_parameter" />
@@ -24,8 +39,8 @@
 		<result property="power_factor_issue_threshold" column="power_factor_issue_threshold" />
 	</resultMap>
 
-	<select id="getBySite" resultMap="MainMeterConfigMap" parameterType="int">
-		SELECT c.id AS id_config, c.id_site, m.id_device, m.current_parameter,
+	<select id="getMainMeter" resultMap="MainMeterConfigMap" parameterType="int">
+		SELECT c.id AS id_config, c.id_site, c.version, m.id_device, m.current_parameter,
 			m.current_phase_a_parameter, m.current_phase_b_parameter, m.current_phase_c_parameter,
 			m.current_issue_threshold, m.voltage_parameter, m.voltage_phase_a_parameter,
 			m.voltage_phase_b_parameter, m.voltage_phase_c_parameter, m.voltage_issue_threshold,
@@ -38,28 +53,11 @@
 		LIMIT 1
 	</select>
 
-	<select id="getActiveConfigId" resultType="int" parameterType="int">
-		SELECT id FROM troubleshooting_config
-		WHERE id_site = #{_parameter} AND id_config_type = 1 AND is_active = 1
-		LIMIT 1
-	</select>
-
-	<select id="getNextVersion" resultType="int" parameterType="int">
-		SELECT COALESCE(MAX(version), 0) + 1 FROM troubleshooting_config
-		WHERE id_site = #{_parameter} AND id_config_type = 1
-	</select>
-
-	<select id="countByConfig" resultType="int" parameterType="int">
+	<select id="countMainMeter" resultType="int" parameterType="int">
 		SELECT COUNT(*) FROM troubleshooting_main_meter_config WHERE id_config = #{_parameter}
 	</select>
 
-	<insert id="insertConfig" parameterType="com.nwm.api.entities.TroubleshootingMainMeterConfigEntity"
-		useGeneratedKeys="true" keyProperty="id_config" keyColumn="id">
-		INSERT INTO troubleshooting_config (id_site, id_config_type, version, is_active)
-		VALUES (#{id_site}, 1, #{version}, 1)
-	</insert>
-
-	<insert id="insert" parameterType="com.nwm.api.entities.TroubleshootingMainMeterConfigEntity">
+	<insert id="insertMainMeter" parameterType="com.nwm.api.entities.TroubleshootingConfigEntity$MainMeter">
 		INSERT INTO troubleshooting_main_meter_config (
 			id_config, id_device, current_parameter, current_phase_a_parameter, current_phase_b_parameter,
 			current_phase_c_parameter, current_issue_threshold, voltage_parameter,
@@ -75,7 +73,7 @@
 		)
 	</insert>
 
-	<update id="update" parameterType="com.nwm.api.entities.TroubleshootingMainMeterConfigEntity">
+	<update id="updateMainMeter" parameterType="com.nwm.api.entities.TroubleshootingConfigEntity$MainMeter">
 		UPDATE troubleshooting_main_meter_config SET
 			id_device = #{id_device}, current_parameter = #{current_parameter},
 			current_phase_a_parameter = #{current_phase_a_parameter},
@@ -90,6 +88,50 @@
 			power_factor_phase_b_parameter = #{power_factor_phase_b_parameter},
 			power_factor_phase_c_parameter = #{power_factor_phase_c_parameter},
 			power_factor_issue_threshold = #{power_factor_issue_threshold}
+		WHERE id_config = #{id_config}
+	</update>
+
+	<resultMap id="PqMeterConfigMap" type="com.nwm.api.entities.TroubleshootingConfigEntity$PqMeter">
+		<id property="id" column="id" />
+		<result property="id_config" column="id_config" />
+		<result property="id_site" column="id_site" />
+		<result property="version" column="version" />
+		<result property="id_device" column="id_device" />
+		<result property="direction_parameter" column="direction_parameter" />
+		<result property="confidence_parameter" column="confidence_parameter" />
+		<result property="timestamp_parameter" column="timestamp_parameter" />
+		<result property="duration_parameter" column="duration_parameter" />
+		<result property="phase_a_parameter" column="phase_a_parameter" />
+		<result property="phase_b_parameter" column="phase_b_parameter" />
+		<result property="phase_c_parameter" column="phase_c_parameter" />
+	</resultMap>
+	<select id="getPqMeter" resultMap="PqMeterConfigMap" parameterType="int">
+		SELECT p.*, c.id_site, c.version
+		FROM troubleshooting_config c
+		INNER JOIN troubleshooting_pq_config p ON p.id_config = c.id
+		WHERE c.id_site = #{_parameter} AND c.id_config_type = 2 AND c.is_active = 1
+		ORDER BY p.id LIMIT 1
+	</select>
+	<select id="countPqMeter" resultType="int" parameterType="int">
+		SELECT COUNT(*) FROM troubleshooting_pq_config WHERE id_config = #{_parameter}
+	</select>
+	<insert id="insertPqMeter" parameterType="com.nwm.api.entities.TroubleshootingConfigEntity$PqMeter" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+		INSERT INTO troubleshooting_pq_config (
+			id_config, id_device, direction_parameter, confidence_parameter, timestamp_parameter, duration_parameter, phase_a_parameter, phase_b_parameter, phase_c_parameter
+		) VALUES (
+			#{id_config}, #{id_device}, #{direction_parameter}, #{confidence_parameter}, #{timestamp_parameter}, #{duration_parameter}, #{phase_a_parameter}, #{phase_b_parameter}, #{phase_c_parameter}
+		)
+	</insert>
+	<update id="updatePqMeter" parameterType="com.nwm.api.entities.TroubleshootingConfigEntity$PqMeter">
+		UPDATE troubleshooting_pq_config SET
+			id_device = #{id_device},
+			direction_parameter = #{direction_parameter},
+			confidence_parameter = #{confidence_parameter},
+			timestamp_parameter = #{timestamp_parameter},
+			duration_parameter = #{duration_parameter},
+			phase_a_parameter = #{phase_a_parameter},
+			phase_b_parameter = #{phase_b_parameter},
+			phase_c_parameter = #{phase_c_parameter}
 		WHERE id_config = #{id_config}
 	</update>
 </mapper>
