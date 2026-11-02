@@ -80,7 +80,7 @@
 			SELECT 
 				id_device,
 				id_site,
-				DATE_FORMAT(time,'%Y-%m-%d') AS `date`,
+				DATE_FORMAT(MAX(time),'%Y-%m-%d') AS `date`,
 				device_name AS tenant_name,
 				serial_number,
 				meter_name,
