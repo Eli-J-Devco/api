@@ -54,7 +54,7 @@
 				INNER JOIN site_area_building_floor_room r ON map.id_room = r.id
 				INNER JOIN site s ON s.id = dv.id_site 
 				INNER JOIN time_zone tz ON tz.id = s.id_time_zone
-				WHERE d.time <![CDATA[>=]]> CONVERT_TZ(DATE_FORMAT(CONVERT_TZ(#{time_execute},'UTC',tz.`value`), '%Y-%m-%d'), tz.`value`,'UTC') AND d.time <![CDATA[<=]]> CONVERT_TZ(CONCAT(DATE_FORMAT(CONVERT_TZ(#{time_execute},'UTC',tz.`value`), '%Y-%m-%d'),' 23:59:59'), tz.`value`,'UTC')
+				WHERE d.time <![CDATA[>=]]> CONVERT_TZ(DATE_ADD(DATE_FORMAT(CONVERT_TZ(#{time_execute},'UTC',tz.`value`), '%Y-%m-%d'), INTERVAL - (CASE s.data_send_time WHEN 1 THEN 5 WHEN 2 THEN 15 WHEN 3 THEN 1 END) MINUTE), tz.`value`,'UTC') AND d.time <![CDATA[<=]]> CONVERT_TZ(CONCAT(DATE_FORMAT(CONVERT_TZ(#{time_execute},'UTC',tz.`value`), '%Y-%m-%d'),' 23:59:59'), tz.`value`,'UTC')
 			),
 			marked AS (
 				SELECT 
@@ -80,14 +80,14 @@
 			SELECT 
 				id_device,
 				id_site,
-				DATE_FORMAT(time,'%Y-%m-%d') AS `date`,
+				DATE_FORMAT(MAX(time),'%Y-%m-%d') AS `date`,
 				device_name AS tenant_name,
 				serial_number,
 				meter_name,
 				room AS location,
 				MIN(nvmActiveEnergy) AS opening_reading,
 				MAX(nvmActiveEnergy) AS closing_reading,
-				ROUND(SUM(energy),3) AS total_energy,
+				ROUND(MAX(nvmActiveEnergy) - MIN(nvmActiveEnergy),3) AS total_energy,
 				ROUND(AVG(energy),3) AS avg_energy,
 				time(MAX(time)) AS last_time,
 				CASE WHEN time(MAX(time)) <![CDATA[<]]> time(DATE_ADD(DATE_FORMAT(time,'%Y-%m-%d'),INTERVAL - data_send_time MINUTE)) THEN 1 ELSE 0 END AS is_incomplete
