@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="TroubleshootingMainMeterConfig">
+	<resultMap id="MainMeterConfigMap" type="com.nwm.api.entities.TroubleshootingMainMeterConfigEntity">
+		<id property="id_config" column="id_config" />
+		<result property="id_site" column="id_site" />
+		<result property="id_device" column="id_device" />
+		<result property="current_parameter" column="current_parameter" />
+		<result property="current_phase_a_parameter" column="current_phase_a_parameter" />
+		<result property="current_phase_b_parameter" column="current_phase_b_parameter" />
+		<result property="current_phase_c_parameter" column="current_phase_c_parameter" />
+		<result property="current_issue_threshold" column="current_issue_threshold" />
+		<result property="voltage_parameter" column="voltage_parameter" />
+		<result property="voltage_phase_a_parameter" column="voltage_phase_a_parameter" />
+		<result property="voltage_phase_b_parameter" column="voltage_phase_b_parameter" />
+		<result property="voltage_phase_c_parameter" column="voltage_phase_c_parameter" />
+		<result property="voltage_issue_threshold" column="voltage_issue_threshold" />
+		<result property="power_factor_parameter" column="power_factor_parameter" />
+		<result property="power_factor_phase_a_parameter" column="power_factor_phase_a_parameter" />
+		<result property="power_factor_phase_b_parameter" column="power_factor_phase_b_parameter" />
+		<result property="power_factor_phase_c_parameter" column="power_factor_phase_c_parameter" />
+		<result property="power_factor_issue_threshold" column="power_factor_issue_threshold" />
+	</resultMap>
+
+	<select id="getBySite" resultMap="MainMeterConfigMap" parameterType="int">
+		SELECT c.id AS id_config, c.id_site, m.id_device, m.current_parameter,
+			m.current_phase_a_parameter, m.current_phase_b_parameter, m.current_phase_c_parameter,
+			m.current_issue_threshold, m.voltage_parameter, m.voltage_phase_a_parameter,
+			m.voltage_phase_b_parameter, m.voltage_phase_c_parameter, m.voltage_issue_threshold,
+			m.power_factor_parameter, m.power_factor_phase_a_parameter,
+			m.power_factor_phase_b_parameter, m.power_factor_phase_c_parameter,
+			m.power_factor_issue_threshold
+		FROM troubleshooting_config c
+		INNER JOIN troubleshooting_main_meter_config m ON m.id_config = c.id
+		WHERE c.id_site = #{_parameter} AND c.id_config_type = 1 AND c.is_active = 1
+		LIMIT 1
+	</select>
+
+	<select id="getActiveConfigId" resultType="int" parameterType="int">
+		SELECT id FROM troubleshooting_config
+		WHERE id_site = #{_parameter} AND id_config_type = 1 AND is_active = 1
+		LIMIT 1
+	</select>
+
+	<select id="getNextVersion" resultType="int" parameterType="int">
+		SELECT COALESCE(MAX(version), 0) + 1 FROM troubleshooting_config
+		WHERE id_site = #{_parameter} AND id_config_type = 1
+	</select>
+
+	<select id="countByConfig" resultType="int" parameterType="int">
+		SELECT COUNT(*) FROM troubleshooting_main_meter_config WHERE id_config = #{_parameter}
+	</select>
+
+	<insert id="insertConfig" parameterType="com.nwm.api.entities.TroubleshootingMainMeterConfigEntity"
+		useGeneratedKeys="true" keyProperty="id_config" keyColumn="id">
+		INSERT INTO troubleshooting_config (id_site, id_config_type, version, is_active)
+		VALUES (#{id_site}, 1, #{version}, 1)
+	</insert>
+
+	<insert id="insert" parameterType="com.nwm.api.entities.TroubleshootingMainMeterConfigEntity">
+		INSERT INTO troubleshooting_main_meter_config (
+			id_config, id_device, current_parameter, current_phase_a_parameter, current_phase_b_parameter,
+			current_phase_c_parameter, current_issue_threshold, voltage_parameter,
+			voltage_phase_a_parameter, voltage_phase_b_parameter, voltage_phase_c_parameter,
+			voltage_issue_threshold, power_factor_parameter, power_factor_phase_a_parameter,
+			power_factor_phase_b_parameter, power_factor_phase_c_parameter, power_factor_issue_threshold
+		) VALUES (
+			#{id_config}, #{id_device}, #{current_parameter}, #{current_phase_a_parameter}, #{current_phase_b_parameter},
+			#{current_phase_c_parameter}, #{current_issue_threshold}, #{voltage_parameter},
+			#{voltage_phase_a_parameter}, #{voltage_phase_b_parameter}, #{voltage_phase_c_parameter},
+			#{voltage_issue_threshold}, #{power_factor_parameter}, #{power_factor_phase_a_parameter},
+			#{power_factor_phase_b_parameter}, #{power_factor_phase_c_parameter}, #{power_factor_issue_threshold}
+		)
+	</insert>
+
+	<update id="update" parameterType="com.nwm.api.entities.TroubleshootingMainMeterConfigEntity">
+		UPDATE troubleshooting_main_meter_config SET
+			id_device = #{id_device}, current_parameter = #{current_parameter},
+			current_phase_a_parameter = #{current_phase_a_parameter},
+			current_phase_b_parameter = #{current_phase_b_parameter},
+			current_phase_c_parameter = #{current_phase_c_parameter},
+			current_issue_threshold = #{current_issue_threshold}, voltage_parameter = #{voltage_parameter},
+			voltage_phase_a_parameter = #{voltage_phase_a_parameter},
+			voltage_phase_b_parameter = #{voltage_phase_b_parameter},
+			voltage_phase_c_parameter = #{voltage_phase_c_parameter},
+			voltage_issue_threshold = #{voltage_issue_threshold}, power_factor_parameter = #{power_factor_parameter},
+			power_factor_phase_a_parameter = #{power_factor_phase_a_parameter},
+			power_factor_phase_b_parameter = #{power_factor_phase_b_parameter},
+			power_factor_phase_c_parameter = #{power_factor_phase_c_parameter},
+			power_factor_issue_threshold = #{power_factor_issue_threshold}
+		WHERE id_config = #{id_config}
+	</update>
+</mapper>
