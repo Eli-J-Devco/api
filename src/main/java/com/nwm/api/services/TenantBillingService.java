@@ -12,10 +12,12 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeParseException;
+import java.time.format.TextStyle;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
@@ -82,11 +84,11 @@ public class TenantBillingService extends DB {
 	 */
 	public Map<String, Object> getExportAllData(TenantBillingEntity obj) throws Exception {
 		Period period = preparePeriod(obj);
-		// This month can be downloaded too (data until today); the spec blocked it until the month closes.
-		// if (!period.end.isBefore(period.today)) {
-		// 	throw new IllegalStateException(period.end.getMonth().getDisplayName(TextStyle.FULL, Locale.ENGLISH)
-		// 			+ " can be exported after the month closes");
-		// }
+		// a period that is not over yet (e.g. This month) is exported after it closes
+		if (!period.end.isBefore(period.today)) {
+			throw new IllegalStateException(period.end.getMonth().getDisplayName(TextStyle.FULL, Locale.ENGLISH)
+					+ " can be exported after the month closes");
+		}
 
 		// every meter, no search / filter / paging from the list
 		obj.setId_device(0);
@@ -149,43 +151,31 @@ public class TenantBillingService extends DB {
 	}
 
 	/**
-	 * @description API 4: daily kWh for the chart, from the raw meter table (BemsTenantBilling.getChartData).
-	 * TODO: after missing days the next day with data gets the energy of the missing days too.
-	 * TODO: no multiplier is applied here; align with the rule used to build total_energy.
-	 * TODO: a register reset or a meter swap gives a negative kWh; not handled.
+	 * @description API 4: daily kWh for the chart, from bems_tenant_billing_daily_summary (BemsTenantBilling.getChartData).
+	 * TODO: days after today are left out of the chart.
 	 */
 	public List<Map<String, Object>> getChart(TenantBillingEntity obj) throws Exception {
 		if (obj.getId_device() <= 0) throw new IllegalArgumentException("id_device is required");
-		Period period = preparePeriod(obj);
-
-		TenantBillingEntity query = new TenantBillingEntity();
-		query.setId_site(obj.getId_site());
-		query.setId_device(obj.getId_device());
-		query.setStart_date(obj.getStart_date());
-		query.setEnd_date(obj.getEnd_date());
-		query.setTimezone(Lib.str(period.site.get("timezone")));
-		query.setData_send_time(period.site.get("data_send_time") == null ? null : ((Number) period.site.get("data_send_time")).intValue());
-		List<Map<String, Object>> tables = queryForList("BemsTenantBilling.getDataTables", query);
-		if (tables.isEmpty()) throw new IllegalArgumentException("Meter not found");
-		query.setDatatablename(Lib.str(tables.get(0).get("datatablename")));
+		preparePeriod(obj);
+		if ((Integer) queryForObject("BemsTenantBilling.getListMeterTotal", obj) == 0) throw new IllegalArgumentException("Meter not found");
 
 		List<Map<String, Object>> data = new ArrayList<>();
 		Map<String, Object> peak = null;
-		for (Map<String, Object> row : (List<Map<String, Object>>) queryForList("BemsTenantBilling.getChartData", query)) {
-			// TODO: days after today are left out of the chart.
-			if (LocalDate.parse(Lib.str(row.get("date"))).isAfter(period.today)) break;
-			boolean missing = ((Number) row.get("total_row")).intValue() == 0;
+		for (Map<String, Object> row : (List<Map<String, Object>>) queryForList("BemsTenantBilling.getChartData", obj)) {
+			Double kwh = row.get("kwh") == null ? null : ((Number) row.get("kwh")).doubleValue();
 			Map<String, Object> day = new LinkedHashMap<>();
 			day.put("date", row.get("date"));
-			day.put("kwh", missing ? null : ((Number) row.get("total_energy")).doubleValue());
-			day.put("missing", missing);
-			day.put("incomplete", ((Number) row.get("is_incomplete")).intValue() == 1);
+			day.put("kwh", kwh);
+			day.put("missing", ((Number) row.get("missing")).intValue() == 1);
+			day.put("incomplete", ((Number) row.get("incomplete")).intValue() == 1);
 			day.put("is_peak", false);
 			// TODO: on a tie the earliest day is the peak.
-			if (!missing && (peak == null || (Double) day.get("kwh") > (Double) peak.get("kwh"))) peak = day;
+			if (kwh != null && (peak == null || kwh > (Double) peak.get("kwh"))) peak = day;
 			data.add(day);
 		}
-		if (peak != null) peak.put("is_peak", true);
+		// no data in the period (e.g. a meter that is not sending): null, so the chart draws no missing days
+		if (peak == null) return null;
+		peak.put("is_peak", true);
 		return data;
 	}
 

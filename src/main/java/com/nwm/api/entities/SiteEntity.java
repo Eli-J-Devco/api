@@ -366,6 +366,7 @@ public class SiteEntity extends SortEntity {
 	private Double clip;
 	private Double t_avg;
 	private int apply_sunset_sunrise_to_cf_window;
+  private String site_code;
 
 	public int getApply_sunset_sunrise_to_cf_window() {
 		return apply_sunset_sunrise_to_cf_window;
@@ -2405,4 +2406,12 @@ public class SiteEntity extends SortEntity {
 	public void setT_avg(Double t_avg) {
 		this.t_avg = t_avg;
 	}
+
+  public String getSite_code() {
+    return site_code;
+  }
+
+  public void setSite_code(String site_code) {
+    this.site_code = site_code;
+  }
 }

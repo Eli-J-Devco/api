@@ -214,6 +214,7 @@ public class DeviceEntity {
 	}
 
 	private DeviceWorkHourEntity work_hour;
+    private int multiplier;
     
     
     
@@ -1360,4 +1361,12 @@ public class DeviceEntity {
 	public void setIs_combine_consumption(int is_combine_consumption) {
 		this.is_combine_consumption = is_combine_consumption;
 	}
+
+  public int getMultiplier() {
+    return multiplier;
+  }
+
+  public void setMultiplier(int multiplier) {
+    this.multiplier = multiplier;
+  }
 }
