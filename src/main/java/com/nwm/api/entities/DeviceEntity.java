@@ -195,6 +195,7 @@ public class DeviceEntity {
     private String type_title_trans;
     
     private InverterAvailabilityEntity inverter_availability;
+    private int multiplier;
     
     
     
@@ -1307,4 +1308,12 @@ public class DeviceEntity {
 	public void setInverter_availability(InverterAvailabilityEntity inverter_availability) {
 		this.inverter_availability = inverter_availability;
 	}
+
+  public int getMultiplier() {
+    return multiplier;
+  }
+
+  public void setMultiplier(int multiplier) {
+    this.multiplier = multiplier;
+  }
 }
