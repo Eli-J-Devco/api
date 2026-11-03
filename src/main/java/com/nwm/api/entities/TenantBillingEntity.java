@@ -5,9 +5,6 @@
 *********************************************************/
 package com.nwm.api.entities;
 
-import java.util.List;
-import java.util.Map;
-
 public class TenantBillingEntity {
 
 	private int id_site;
@@ -30,7 +27,6 @@ public class TenantBillingEntity {
 	private String timezone;
 	private Integer data_send_time;
 	private String datatablename;
-	private List<Map<String, Object>> devices;
 
 	public int getId_site() {
 		return id_site;
@@ -174,13 +170,5 @@ public class TenantBillingEntity {
 
 	public void setDatatablename(String datatablename) {
 		this.datatablename = datatablename;
-	}
-
-	public List<Map<String, Object>> getDevices() {
-		return devices;
-	}
-
-	public void setDevices(List<Map<String, Object>> devices) {
-		this.devices = devices;
 	}
 }

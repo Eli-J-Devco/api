@@ -29,8 +29,7 @@ import com.opencsv.CSVWriter;
 
 /**
  * Tenant Billing (WEBDEV-5686).
- * Data comes from bems_tenant_billing_daily_summary (one row per meter per local day),
- * except the chart (API 4) and the opening / closing readings of API 3, which read the raw meter table.
+ * Data comes from bems_tenant_billing_daily_summary (one row per meter per local day).
  */
 @Service
 @SuppressWarnings("unchecked")
@@ -98,7 +97,7 @@ public class TenantBillingService extends DB {
 		data.put("timezone", period.site.get("timezone"));
 		data.put("start_date", obj.getStart_date());
 		data.put("end_date", obj.getEnd_date());
-		data.put("meters", exportMeters(obj));
+		data.put("meters", queryForList("BemsTenantBilling.getExportAll", obj));
 		return data;
 	}
 
@@ -187,7 +186,7 @@ public class TenantBillingService extends DB {
 	public Map<String, Object> getExportDeviceData(TenantBillingEntity obj) throws Exception {
 		if (obj.getId_device() <= 0) throw new IllegalArgumentException("id_device is required");
 		Period period = preparePeriod(obj);
-		List<Map<String, Object>> meters = exportMeters(obj);
+		List<Map<String, Object>> meters = queryForList("BemsTenantBilling.getExportAll", obj);
 		if (meters.isEmpty()) throw new IllegalArgumentException("Meter not found");
 
 		Map<String, Object> data = new LinkedHashMap<>();
@@ -273,29 +272,6 @@ public class TenantBillingService extends DB {
 		}
 		return avg;
 	}
-
-
-	/**
-	 * Rows of API 3 / 5: every meter of the site (or obj.id_device) with its opening and closing readings.
-	 * Needs preparePeriod(obj) first.
-	 */
-	private List<Map<String, Object>> exportMeters(TenantBillingEntity obj) throws Exception {
-		TenantBillingEntity query = new TenantBillingEntity();
-		query.setId_site(obj.getId_site());
-		query.setId_device(obj.getId_device());
-		query.setStart_date(obj.getStart_date());
-		query.setEnd_date(obj.getEnd_date());
-		query.setTimezone_offset(obj.getTimezone_offset());
-		query.setExpected_days(obj.getExpected_days());
-		query.setDevices(queryForList("BemsTenantBilling.getDataTables", query));
-		if (query.getDevices().isEmpty()) return new ArrayList<>();
-
-		List<Map<String, Object>> meters = queryForList("BemsTenantBilling.getExportAll", query);
-		// TODO: multiplier source is not confirmed; 1 like the FE mock.
-		for (Map<String, Object> m : meters) m.put("multiplier", 1);
-		return meters;
-	}
-
 
 	// ---------------------------------------------------------------- period
 

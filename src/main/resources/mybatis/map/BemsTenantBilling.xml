@@ -129,7 +129,6 @@
 		Name, serial and location are the current values of the device.
 		Ready = a complete row for every day from start_date until min(end_date, today) (expected_days, set by the service).
 		Wrapped in a derived table: device.status would hide the status alias in ORDER BY / HAVING.
-		TODO: confirm total_energy already has the multiplier applied.
 	-->
 	<sql id="meterPeriod">
 		SELECT * FROM (
@@ -140,6 +139,8 @@
 				CONCAT(d.devicename, '・', d.serialnumber) AS meter_name,
 				<!-- device.status: 0 = not active (the chart draws no missing / incomplete days) -->
 				d.status AS device_status,
+				<!-- no multiplier on the device: 1 -->
+				IFNULL(d.multiplier, 1) AS multiplier,
 				<!-- subquery, not a JOIN: a device mapped to 2 rooms would count its rows twice -->
 				(
 					SELECT r.`name`
@@ -221,24 +222,6 @@
 			<include refid="meterPeriod"/>
 			<include refid="meterFilter"/>
 		) t
-	</select>
-
-	<!-- Raw data table of each tenant meter of the site (or of id_device), for the opening / closing readings; also checks the meter exists -->
-	<select id="getDataTables" resultType="Map" parameterType="com.nwm.api.entities.TenantBillingEntity">
-		SELECT
-			d.id AS id_device,
-			d.datatablename
-		FROM
-			device d
-		WHERE
-			d.id_site = #{id_site}
-			AND d.meter_type = 14
-			AND d.is_delete = 0
-			<!-- a meter without a raw table has no readings -->
-			AND d.datatablename IS NOT NULL AND d.datatablename != ''
-			<if test="id_device != 0">
-				AND d.id = #{id_device}
-			</if>
 	</select>
 
 	<!--
@@ -422,64 +405,36 @@
 
 
 	<!--
-		API 3: one row per tenant meter with its opening and closing reading (first and last raw reading of the period).
-		The readings are in the raw table of each meter (devices = getDataTables), so they are built per meter and joined to the list.
-		TODO: drop the readings part if the summary table gets first/last reading columns.
+		API 3: one row per tenant meter with its opening and closing reading, from bems_tenant_billing_daily_summary:
+		opening = opening_reading of the first day with a row in the period, closing = closing_reading of the last one.
+		kwh (Consumption) = (closing - opening) * multiplier.
+		TODO: the summary has no time for the opening reading, so opening_time is the date only.
 	-->
 	<select id="getExportAll" resultType="Map" parameterType="com.nwm.api.entities.TenantBillingEntity">
 		SELECT
 			t.serial,
 			t.tenant_name,
 			t.location,
-			r.opening_reading,
-			r.opening_time,
-			r.closing_reading,
-			r.closing_time,
-			t.kwh,
+			t.multiplier,
+			o.opening_reading,
+			o.`date` AS opening_time,
+			c.closing_reading,
+			CONCAT(c.`date`, ' ', LEFT(c.last_time, 5)) AS closing_time,
+			ROUND((c.closing_reading - o.opening_reading) * t.multiplier, 2) AS kwh,
 			t.status
 		FROM (
 			<include refid="meterPeriod"/>
 		) t
-		LEFT JOIN (
-			<foreach collection="devices" item="item" separator="UNION ALL">
-				SELECT
-					o.id_device,
-					o.reading AS opening_reading,
-					o.time AS opening_time,
-					c.reading AS closing_reading,
-					c.time AS closing_time
-				FROM (
-					SELECT
-						#{item.id_device} AS id_device,
-						DATE_FORMAT(CONVERT_TZ(dv.time, '+00:00', #{timezone_offset}), '%Y-%m-%d %H:%i') AS time,
-						dv.nvmActiveEnergy AS reading
-					FROM
-						${item.datatablename} dv
-					WHERE
-						dv.id_device = #{item.id_device}
-						AND dv.nvmActiveEnergy IS NOT NULL
-						AND dv.time <![CDATA[ >= ]]> CONVERT_TZ(#{start_date}, #{timezone_offset}, '+00:00')
-						AND dv.time <![CDATA[ < ]]> CONVERT_TZ(DATE_ADD(#{end_date}, INTERVAL 1 DAY), #{timezone_offset}, '+00:00')
-					ORDER BY dv.time ASC
-					LIMIT 1
-				) o
-				INNER JOIN (
-					SELECT
-						dv.id_device,
-						DATE_FORMAT(CONVERT_TZ(dv.time, '+00:00', #{timezone_offset}), '%Y-%m-%d %H:%i') AS time,
-						dv.nvmActiveEnergy AS reading
-					FROM
-						${item.datatablename} dv
-					WHERE
-						dv.id_device = #{item.id_device}
-						AND dv.nvmActiveEnergy IS NOT NULL
-						AND dv.time <![CDATA[ >= ]]> CONVERT_TZ(#{start_date}, #{timezone_offset}, '+00:00')
-						AND dv.time <![CDATA[ < ]]> CONVERT_TZ(DATE_ADD(#{end_date}, INTERVAL 1 DAY), #{timezone_offset}, '+00:00')
-					ORDER BY dv.time DESC
-					LIMIT 1
-				) c ON c.id_device = o.id_device
-			</foreach>
-		) r ON r.id_device = t.id_device
+		LEFT JOIN bems_tenant_billing_daily_summary o ON o.id = (
+			SELECT s.id FROM bems_tenant_billing_daily_summary s
+			WHERE s.id_device = t.id_device AND s.id_site = #{id_site} AND s.`date` BETWEEN #{start_date} AND #{end_date}
+			ORDER BY s.`date` ASC LIMIT 1
+		)
+		LEFT JOIN bems_tenant_billing_daily_summary c ON c.id = (
+			SELECT s.id FROM bems_tenant_billing_daily_summary s
+			WHERE s.id_device = t.id_device AND s.id_site = #{id_site} AND s.`date` BETWEEN #{start_date} AND #{end_date}
+			ORDER BY s.`date` DESC LIMIT 1
+		)
 		ORDER BY
 			t.status = 'incomplete',
 			CAST(t.serial AS UNSIGNED)
