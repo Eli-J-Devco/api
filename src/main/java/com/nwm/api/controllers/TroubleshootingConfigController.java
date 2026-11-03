@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.nwm.api.entities.TroubleshootingConfigEntity;
 import com.nwm.api.entities.TroubleshootingConfigEntity.MainMeter;
 import com.nwm.api.entities.TroubleshootingConfigEntity.PqMeter;
+import com.nwm.api.entities.TroubleshootingConfigEntity.SubMeterConfig;
 import com.nwm.api.services.TroubleshootingConfigService;
 import com.nwm.api.services.TroubleshootingConfigService.MeterType;
 import com.nwm.api.utils.Constants;
@@ -34,6 +35,16 @@ public class TroubleshootingConfigController extends BaseController {
 	@PostMapping("/pq-meter-config/save")
 	public Object savePqMeter(@RequestBody PqMeter config) {
 		return save(config, MeterType.PQ);
+	}
+
+	@PostMapping("/sub-meter-config/get")
+	public Object getSubMeter(@RequestBody TroubleshootingConfigEntity request) {
+		return get(request.getId_site(), MeterType.SUB);
+	}
+
+	@PostMapping("/sub-meter-config/save")
+	public Object saveSubMeter(@RequestBody SubMeterConfig config) {
+		return save(config, MeterType.SUB);
 	}
 
 	private Object get(int idSite, MeterType type) {

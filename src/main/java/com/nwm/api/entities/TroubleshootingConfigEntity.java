@@ -1,6 +1,8 @@
 package com.nwm.api.entities;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -96,5 +98,84 @@ public class TroubleshootingConfigEntity {
 		public void setPhase_b_parameter(String value) { this.phase_b_parameter = value; }
 		public String getPhase_c_parameter() { return phase_c_parameter; }
 		public void setPhase_c_parameter(String value) { this.phase_c_parameter = value; }
+	}
+
+	@JsonIgnoreProperties(ignoreUnknown = true)
+	public static class SubMeterConfig extends TroubleshootingConfigEntity {
+		private List<Panel> panels;
+		public List<Panel> getPanels() { return panels; }
+		public void setPanels(List<Panel> value) { panels = value; }
+	}
+
+	@JsonIgnoreProperties(ignoreUnknown = true)
+	public static class Panel {
+		private int id;
+		private int id_config;
+		private String name;
+		private int sort_order;
+		private List<Submeter> submeters = new ArrayList<>();
+		private List<MeterGroup> groups = new ArrayList<>();
+
+		public int getId() { return id; }
+		public void setId(int value) { id = value; }
+		public int getId_config() { return id_config; }
+		public void setId_config(int value) { id_config = value; }
+		public String getName() { return name; }
+		public void setName(String value) { name = value; }
+		public int getSort_order() { return sort_order; }
+		public void setSort_order(int value) { sort_order = value; }
+		public List<Submeter> getSubmeters() { return submeters; }
+		public void setSubmeters(List<Submeter> value) { submeters = value; }
+		public List<MeterGroup> getGroups() { return groups; }
+		public void setGroups(List<MeterGroup> value) { groups = value; }
+	}
+
+	@JsonIgnoreProperties(ignoreUnknown = true)
+	public static class MeterGroup {
+		private int id;
+		private int id_panel;
+		private String name;
+		private int sort_order;
+
+		public int getId() { return id; }
+		public void setId(int value) { id = value; }
+		public int getId_panel() { return id_panel; }
+		public void setId_panel(int value) { id_panel = value; }
+		public String getName() { return name; }
+		public void setName(String value) { name = value; }
+		public int getSort_order() { return sort_order; }
+		public void setSort_order(int value) { sort_order = value; }
+	}
+
+	@JsonIgnoreProperties(ignoreUnknown = true)
+	public static class Submeter {
+		private int id;
+		private int id_panel;
+		private Integer id_group;
+		private String name;
+		private Integer id_device;
+		private String current_parameter;
+		private String voltage_parameter;
+		private String power_factor_parameter;
+		private String phase_type;
+
+		public int getId() { return id; }
+		public void setId(int value) { id = value; }
+		public int getId_panel() { return id_panel; }
+		public void setId_panel(int value) { id_panel = value; }
+		public Integer getId_group() { return id_group; }
+		public void setId_group(Integer value) { id_group = value; }
+		public String getName() { return name; }
+		public void setName(String value) { name = value; }
+		public Integer getId_device() { return id_device; }
+		public void setId_device(Integer value) { id_device = value; }
+		public String getCurrent_parameter() { return current_parameter; }
+		public void setCurrent_parameter(String value) { current_parameter = value; }
+		public String getVoltage_parameter() { return voltage_parameter; }
+		public void setVoltage_parameter(String value) { voltage_parameter = value; }
+		public String getPower_factor_parameter() { return power_factor_parameter; }
+		public void setPower_factor_parameter(String value) { power_factor_parameter = value; }
+		public String getPhase_type() { return phase_type; }
+		public void setPhase_type(String value) { phase_type = value; }
 	}
 }
