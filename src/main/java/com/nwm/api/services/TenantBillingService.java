@@ -160,7 +160,7 @@ public class TenantBillingService extends DB {
 		if ((Integer) queryForObject("BemsTenantBilling.getListMeterTotal", obj) == 0) throw new IllegalArgumentException("Meter not found");
 
 		List<Map<String, Object>> data = new ArrayList<>();
-		Map<String, Object> peak = null;
+		Double peak = null;
 		for (Map<String, Object> row : (List<Map<String, Object>>) queryForList("BemsTenantBilling.getChartData", obj)) {
 			Double kwh = row.get("kwh") == null ? null : ((Number) row.get("kwh")).doubleValue();
 			Map<String, Object> day = new LinkedHashMap<>();
@@ -168,14 +168,13 @@ public class TenantBillingService extends DB {
 			day.put("kwh", kwh);
 			day.put("missing", ((Number) row.get("missing")).intValue() == 1);
 			day.put("incomplete", ((Number) row.get("incomplete")).intValue() == 1);
-			day.put("is_peak", false);
-			// TODO: on a tie the earliest day is the peak.
-			if (kwh != null && (peak == null || kwh > (Double) peak.get("kwh"))) peak = day;
+			if (kwh != null && (peak == null || kwh > peak)) peak = kwh;
 			data.add(day);
 		}
 		// no data in the period (e.g. a meter that is not sending): null, so the chart draws no missing days
 		if (peak == null) return null;
-		peak.put("is_peak", true);
+		// every day tied with the max is a peak
+		for (Map<String, Object> day : data) day.put("is_peak", peak.equals(day.get("kwh")));
 		return data;
 	}
 
@@ -332,7 +331,7 @@ public class TenantBillingService extends DB {
 		if (period.end.isBefore(period.start)) throw new IllegalArgumentException("end_date must not be before start_date");
 		// TODO: "within the past 6 months" is read as today minus 6 months.
 		if (period.start.isBefore(period.today.minusMonths(6))) throw new IllegalArgumentException("start_date must be within the past 6 months");
-		if (period.end.isAfter(period.start.plusMonths(3).minusDays(1))) throw new IllegalArgumentException("The range can be up to 3 months long");
+		if (period.end.isAfter(period.start.plusMonths(3))) throw new IllegalArgumentException("The range can be up to 3 months long");
 		// This month is sent as the whole month, so the end may be in the future, but not past the current month.
 		if (period.end.isAfter(period.today.withDayOfMonth(period.today.lengthOfMonth()))) throw new IllegalArgumentException("end_date must not be after the current month");
 
