@@ -56,6 +56,9 @@
 				INNER JOIN site s ON s.id = dv.id_site 
 				INNER JOIN time_zone tz ON tz.id = s.id_time_zone
 				WHERE d.time <![CDATA[>=]]> CONVERT_TZ(DATE_ADD(DATE_FORMAT(CONVERT_TZ(#{time_execute},'UTC',tz.`value`), '%Y-%m-%d'), INTERVAL - (CASE s.data_send_time WHEN 1 THEN 5 WHEN 2 THEN 15 WHEN 3 THEN 1 END) MINUTE), tz.`value`,'UTC') AND d.time <![CDATA[<=]]> CONVERT_TZ(CONCAT(DATE_FORMAT(CONVERT_TZ(#{time_execute},'UTC',tz.`value`), '%Y-%m-%d'),' 23:59:59'), tz.`value`,'UTC')
+<!--                WHERE -->
+<!--                    d.time <![CDATA[>=]]> CONVERT_TZ(CONCAT(DATE_FORMAT(CONVERT_TZ(NOW(),'UTC',tz.`value`), '%Y-%m-%d'), ' 00:00:00'), tz.`value`, 'UTC')-->
+<!--                    AND d.time <![CDATA[<=]]> CONVERT_TZ(CONCAT(DATE_FORMAT(CONVERT_TZ(NOW(),'UTC',tz.`value`), '%Y-%m-%d'), ' 23:59:59'), tz.`value`, 'UTC')-->
 			),
 			marked AS (
 				SELECT 
