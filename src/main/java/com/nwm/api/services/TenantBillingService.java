@@ -12,12 +12,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeParseException;
-import java.time.format.TextStyle;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
@@ -53,7 +51,7 @@ public class TenantBillingService extends DB {
 	 * @return { data, total_row }
 	 */
 	public Map<String, Object> getListDevice(TenantBillingEntity obj) throws Exception {
-		preparePeriod(obj);
+		preparePeriod(obj, true);
 		if (obj.getLimit() <= 0) obj.setLimit(DEFAULT_LIMIT);
 		if (obj.getOffset() < 0) obj.setOffset(0);
 
@@ -67,7 +65,7 @@ public class TenantBillingService extends DB {
 	 * @description API 2: Ready, Incomplete, Period usage
 	 */
 	public Map<String, Object> getSummary(TenantBillingEntity obj) throws Exception {
-		Period period = preparePeriod(obj);
+		Period period = preparePeriod(obj, true);
 
 		// start_date and end_date one month back, e.g. Dec 1-15 -> Nov 1-15, Sep 5 - Oct 4 -> Aug 5 - Sep 4
 		obj.setPrevious_start_date(period.start.minusMonths(1).toString());
@@ -82,12 +80,8 @@ public class TenantBillingService extends DB {
 	 * @return { site_code, site_name, timezone, start_date, end_date, meters }
 	 */
 	public Map<String, Object> getExportAllData(TenantBillingEntity obj) throws Exception {
-		Period period = preparePeriod(obj);
-		// a period that is not over yet (e.g. This month) is exported after it closes
-		if (!period.end.isBefore(period.today)) {
-			throw new IllegalStateException(period.end.getMonth().getDisplayName(TextStyle.FULL, Locale.ENGLISH)
-					+ " can be exported after the month closes");
-		}
+		// no period rules for the export, the FE checks them
+		Period period = preparePeriod(obj, false);
 
 		// every meter, no search / filter / paging from the list
 		obj.setId_device(0);
@@ -155,7 +149,7 @@ public class TenantBillingService extends DB {
 	 */
 	public List<Map<String, Object>> getChart(TenantBillingEntity obj) throws Exception {
 		if (obj.getId_device() <= 0) throw new IllegalArgumentException("id_device is required");
-		preparePeriod(obj);
+		preparePeriod(obj, true);
 		if ((Integer) queryForObject("BemsTenantBilling.getListMeterTotal", obj) == 0) throw new IllegalArgumentException("Meter not found");
 
 		List<Map<String, Object>> data = new ArrayList<>();
@@ -179,13 +173,13 @@ public class TenantBillingService extends DB {
 
 	/**
 	 * @description API 5 (data): one meter with its readings and daily kWh, for the FE to build the Excel file
-	 * TODO: spec only blocks Download all for an open period; single meter is allowed here.
 	 * TODO: Note text is not defined yet.
 	 * @return { site_code, site_name, timezone, start_date, end_date, meter, days: [{ date, kwh, note }] }
 	 */
 	public Map<String, Object> getExportDeviceData(TenantBillingEntity obj) throws Exception {
 		if (obj.getId_device() <= 0) throw new IllegalArgumentException("id_device is required");
-		Period period = preparePeriod(obj);
+		// no period rules for the export, the FE checks them
+		Period period = preparePeriod(obj, false);
 		List<Map<String, Object>> meters = queryForList("BemsTenantBilling.getExportAll", obj);
 		if (meters.isEmpty()) throw new IllegalArgumentException("Meter not found");
 
@@ -241,7 +235,7 @@ public class TenantBillingService extends DB {
 	 */
 	public Map<String, Object> getSummaryDevice(TenantBillingEntity obj) throws Exception {
 		if (obj.getId_device() <= 0) throw new IllegalArgumentException("id_device is required");
-		preparePeriod(obj);
+		preparePeriod(obj, true);
 		Map<String, Object> summary = (Map<String, Object>) queryForObject("BemsTenantBilling.getSummaryDevice", obj);
 		if (summary == null) throw new IllegalArgumentException("Meter not found");
 
@@ -260,7 +254,7 @@ public class TenantBillingService extends DB {
 	 */
 	public Map<String, Object> getAvgDaily(TenantBillingEntity obj) throws Exception {
 		if (obj.getId_device() <= 0) throw new IllegalArgumentException("id_device is required");
-		preparePeriod(obj);
+		preparePeriod(obj, true);
 		Map<String, Object> avg = (Map<String, Object>) queryForObject("BemsTenantBilling.getAvgDaily", obj);
 
 		// peak_date, peak_kwh -> peak_day: { date, kwh }
@@ -286,8 +280,9 @@ public class TenantBillingService extends DB {
 
 	/**
 	 * Validates the period and fills obj.timezone_offset, obj.expected_days and obj.today.
+	 * checkRange false (the Excel export): only the date format, no past 6 months / 3 months / current month rules.
 	 */
-	private Period preparePeriod(TenantBillingEntity obj) throws Exception {
+	private Period preparePeriod(TenantBillingEntity obj, boolean checkRange) throws Exception {
 		if (obj.getId_site() <= 0) throw new IllegalArgumentException("id_site is required");
 		Map<String, Object> site = (Map<String, Object>) queryForObject("BemsTenantBilling.getSiteInfo", obj);
 		if (site == null) throw new IllegalArgumentException("Site not found");
@@ -304,12 +299,14 @@ public class TenantBillingService extends DB {
 			throw new IllegalArgumentException("start_date and end_date must be YYYY-MM-DD");
 		}
 
-		if (period.end.isBefore(period.start)) throw new IllegalArgumentException("end_date must not be before start_date");
-		// TODO: "within the past 6 months" is read as today minus 6 months.
-		if (period.start.isBefore(period.today.minusMonths(6))) throw new IllegalArgumentException("start_date must be within the past 6 months");
-		if (period.end.isAfter(period.start.plusMonths(3))) throw new IllegalArgumentException("The range can be up to 3 months long");
-		// This month is sent as the whole month, so the end may be in the future, but not past the current month.
-		if (period.end.isAfter(period.today.withDayOfMonth(period.today.lengthOfMonth()))) throw new IllegalArgumentException("end_date must not be after the current month");
+		if (checkRange) {
+			if (period.end.isBefore(period.start)) throw new IllegalArgumentException("end_date must not be before start_date");
+			// TODO: "within the past 6 months" is read as today minus 6 months.
+			if (period.start.isBefore(period.today.minusMonths(6))) throw new IllegalArgumentException("start_date must be within the past 6 months");
+			if (period.end.isAfter(period.start.plusMonths(3))) throw new IllegalArgumentException("The range can be up to 3 months long");
+			// This month is sent as the whole month, so the end may be in the future, but not past the current month.
+			if (period.end.isAfter(period.today.withDayOfMonth(period.today.lengthOfMonth()))) throw new IllegalArgumentException("end_date must not be after the current month");
+		}
 
 		// days that need a complete row to be Ready: start until the end of the period or today, whichever is first
 		LocalDate lastDay = period.end.isAfter(period.today) ? period.today : period.end;
