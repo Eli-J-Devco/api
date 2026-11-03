@@ -258,10 +258,9 @@
 	-->
 	<sql id="deviceDays">
 		WITH RECURSIVE range_date (local_date) AS (
-			SELECT CAST(#{start_date} AS DATE) FROM DUAL WHERE #{expected_days} > 0
+			SELECT CAST(#{start_date} AS DATE)
 			UNION ALL
-			SELECT local_date + INTERVAL 1 DAY FROM range_date
-			WHERE local_date <![CDATA[ < ]]> DATE_ADD(#{start_date}, INTERVAL #{expected_days} - 1 DAY)
+			SELECT local_date + INTERVAL 1 DAY FROM range_date WHERE local_date <![CDATA[ < ]]> #{end_date}
 		),
 		days AS (
 			SELECT
