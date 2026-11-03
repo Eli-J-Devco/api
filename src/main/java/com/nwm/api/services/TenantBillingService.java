@@ -10,6 +10,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
@@ -271,7 +272,7 @@ public class TenantBillingService extends DB {
 
 	static class Period {
 		Map<String, Object> site;
-		ZoneOffset zone;
+		ZoneId zone;
 		LocalDate start;
 		LocalDate end;
 		LocalDate today;
@@ -289,7 +290,8 @@ public class TenantBillingService extends DB {
 
 		Period period = new Period();
 		period.site = site;
-		period.zone = ZoneOffset.of(Lib.str(site.get("timezone_offset")));
+		// period.zone = ZoneOffset.of(Lib.str(site.get("timezone_offset")));
+		period.zone = ZoneId.of(site.get("timezone") == null ? "UTC" : Lib.str(site.get("timezone")));
 		period.now = LocalDateTime.now(clock.withZone(period.zone));
 		period.today = period.now.toLocalDate();
 		try {
@@ -313,6 +315,12 @@ public class TenantBillingService extends DB {
 		obj.setExpected_days(lastDay.isBefore(period.start) ? 0 : (int) ChronoUnit.DAYS.between(period.start, lastDay) + 1);
 		obj.setTimezone_offset(Lib.str(site.get("timezone_offset")));
 		obj.setToday(period.today.toString());
+
+		log.info("preparePeriod: id_site=" + obj.getId_site() + ", id_device=" + obj.getId_device()
+				+ ", start_date=" + obj.getStart_date() + ", end_date=" + obj.getEnd_date()
+				+ ", expected_days=" + obj.getExpected_days() + ", today=" + obj.getToday()
+				+ ", timezone=" + period.zone + ", timezone_offset=" + obj.getTimezone_offset());
+
 		return period;
 	}
 }

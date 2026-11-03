@@ -101,6 +101,21 @@
 			)t ON DUPLICATE KEY UPDATE total_energy = VALUES(total_energy), last_time = VALUES(last_time), is_incomplete = VALUES(is_incomplete), avg_energy = VALUES(avg_energy),opening_reading = VALUES(opening_reading),closing_reading = VALUES(closing_reading), serial_number=VALUES(serial_number), meter_name=VALUES(meter_name);
 	</insert>
 
+	<select id="getPastIncompleteSummaries" parameterType="Map" resultType="Map">
+		SELECT 
+			sm.date,
+			sm.id_device,
+			d.datatablename AS data_table_name
+		FROM nextwavemonitoring_production.bems_tenant_billing_daily_summary  sm
+		INNER JOIN device d on d.id = sm.id_device
+		INNER JOIN site s on s.id = d.id_site
+		INNER JOIN time_zone tz ON tz.id = s.id_time_zone
+		WHERE 
+			date <![CDATA[>=]]> DATE_ADD(DATE_FORMAT(CONVERT_TZ(#{time_execute},'UTC',tz.`value`), '%Y-%m-%d'), INTERVAL - #{recover_past_days_size} DAY) AND date <![CDATA[<]]> DATE_FORMAT(CONVERT_TZ(#{time_execute},'UTC',tz.`value`), '%Y-%m-%d') 
+			AND last_time <![CDATA[<]]> '23:45:00'
+		ORDER BY sm.id_device, sm.date
+	</select>
+
 	<!-- Site name, code and time zone offset -->
 	<select id="getSiteInfo" resultType="Map" parameterType="com.nwm.api.entities.TenantBillingEntity">
 		SELECT
@@ -258,10 +273,9 @@
 	-->
 	<sql id="deviceDays">
 		WITH RECURSIVE range_date (local_date) AS (
-			SELECT CAST(#{start_date} AS DATE) FROM DUAL WHERE #{expected_days} > 0
+			SELECT CAST(#{start_date} AS DATE)
 			UNION ALL
-			SELECT local_date + INTERVAL 1 DAY FROM range_date
-			WHERE local_date <![CDATA[ < ]]> DATE_ADD(#{start_date}, INTERVAL #{expected_days} - 1 DAY)
+			SELECT local_date + INTERVAL 1 DAY FROM range_date WHERE local_date <![CDATA[ < ]]> #{end_date}
 		),
 		days AS (
 			SELECT

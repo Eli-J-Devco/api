@@ -40,6 +40,8 @@ public class CronJobBemsBillingDailySummaryService extends DB {
   private ThreadPoolExecutor deviceExecutor;
   private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
+	private final int RECOVER_PAST_DAYS_SIZE = 2;
+
 	private ThreadPoolExecutor createDeviceExecutor() {
 		ThreadPoolExecutor executor = new ThreadPoolExecutor(
 				MAX_SITE_THREADS, MAX_SITE_THREADS,
@@ -97,6 +99,54 @@ public class CronJobBemsBillingDailySummaryService extends DB {
 			isRunning.set(false);
 		}
 	}
+
+	/**
+	 * Execute job recover the past incomplete summaries for BEMS Billing Daily Summary.
+	 */
+	public void executePastDays() {
+		if (!isRunning.compareAndSet(false, true)) {
+			log.info("BEMS Billing Daily Summary Past Day is already running. Skipping this execution.");
+			return;
+		}
+		nowInstant = Instant.from(LocalDateTime.now(ZoneId.of("UTC")).toInstant(ZoneOffset.UTC));
+		try {
+      log.info("Executing BEMS Billing Daily Summary Past Day at " + nowInstant);
+      Map<String, Object> params = new HashMap<>();
+      params.put("list_sites", listSites);
+			params.put("time_execute", formatter.withZone(ZoneOffset.UTC).format(nowInstant));
+			params.put("recover_past_days_size", RECOVER_PAST_DAYS_SIZE);
+			List<Map<String, Object>> incompleteSummaries = queryForList("BemsTenantBilling.getPastIncompleteSummaries", params);
+      List<Future<?>> futures = new ArrayList<>();
+			for (Map device : incompleteSummaries) {
+				futures.add(deviceExecutor.submit(() -> {
+					Thread t = Thread.currentThread();
+					String tName = t.getName();
+					t.setName(tName + "-" + device.get("id_device"));
+					processForEachDevice(device, nowInstant);
+				}));
+			}
+
+			for (Future<?> f : futures) {
+				try {
+					f.get();
+				} catch (InterruptedException ie) {
+					Thread.currentThread().interrupt();
+					log.error("Site task interrupted: " + ie.getMessage(), ie);
+					break;
+				} catch (ExecutionException ee) {
+					log.error("Error executing site task: " + ee.getMessage(), ee);
+				}catch(Exception e) {
+					log.error("Unexpected error executing site task: " + e.getMessage(), e);
+				}
+			}
+    } catch (Exception e) {
+			log.error("Error in executePastDay: " + e.getMessage());
+			e.printStackTrace();
+		} finally {
+			isRunning.set(false);
+		}
+	}
+
   /**
    * Process each device for the BEMS Billing Daily Summary job.
    * @param device
@@ -106,7 +156,14 @@ public class CronJobBemsBillingDailySummaryService extends DB {
     log.info("Processing device: " + device.get("id_device") + " at " + jobStartInstant);
     try{
       Map<String, Object> params = new HashMap<>();
-      params.put("time_execute", formatter.withZone(ZoneOffset.UTC).format(jobStartInstant));
+			Object recoverDate = device.get("date");
+			// if there is a recover date, use it as the time_execute parameter and the job will recover that date; 
+			// otherwise, use the job start instant and process the current date
+			if(recoverDate != null) {
+				params.put("time_execute", recoverDate);
+			}else{
+				params.put("time_execute", formatter.withZone(ZoneOffset.UTC).format(jobStartInstant));
+			}
       params.put("id_device", device.get("id_device"));
       params.put("data_table_name", device.get("data_table_name"));
 			log.debug(params);
