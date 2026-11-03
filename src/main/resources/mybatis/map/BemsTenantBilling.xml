@@ -47,7 +47,7 @@
 					IFNULL(LAG(d.nvmActiveEnergy) OVER (ORDER BY d.time), d.nvmActiveEnergy) AS prev_nvmActiveEnergy,
 					d.nvmActiveEnergy,
 					r.`name` AS room,
-					CASE s.data_send_time WHEN 1 THEN 5 WHEN 2 THEN 15 WHEN 3 THEN 1 END data_send_time,
+					CASE s.data_send_time WHEN 1 THEN 6 WHEN 2 THEN 16 WHEN 3 THEN 1 END data_send_time,
 					tz.`value` AS time_zone
 				FROM ${data_table_name} d
 				INNER JOIN device dv ON d.id_device = dv.id
@@ -55,10 +55,7 @@
 				INNER JOIN site_area_building_floor_room r ON map.id_room = r.id
 				INNER JOIN site s ON s.id = dv.id_site 
 				INNER JOIN time_zone tz ON tz.id = s.id_time_zone
-				WHERE d.time <![CDATA[>=]]> CONVERT_TZ(DATE_ADD(DATE_FORMAT(CONVERT_TZ(#{time_execute},'UTC',tz.`value`), '%Y-%m-%d'), INTERVAL - (CASE s.data_send_time WHEN 1 THEN 5 WHEN 2 THEN 15 WHEN 3 THEN 1 END) MINUTE), tz.`value`,'UTC') AND d.time <![CDATA[<=]]> CONVERT_TZ(CONCAT(DATE_FORMAT(CONVERT_TZ(#{time_execute},'UTC',tz.`value`), '%Y-%m-%d'),' 23:59:59'), tz.`value`,'UTC')
-<!--                WHERE -->
-<!--                    d.time <![CDATA[>=]]> CONVERT_TZ(CONCAT(DATE_FORMAT(CONVERT_TZ(NOW(),'UTC',tz.`value`), '%Y-%m-%d'), ' 00:00:00'), tz.`value`, 'UTC')-->
-<!--                    AND d.time <![CDATA[<=]]> CONVERT_TZ(CONCAT(DATE_FORMAT(CONVERT_TZ(NOW(),'UTC',tz.`value`), '%Y-%m-%d'), ' 23:59:59'), tz.`value`, 'UTC')-->
+				WHERE d.time <![CDATA[>=]]> CONVERT_TZ(DATE_ADD(DATE_FORMAT(CONVERT_TZ(#{time_execute},'UTC',tz.`value`), '%Y-%m-%d'), INTERVAL - (CASE s.data_send_time WHEN 1 THEN 6 WHEN 2 THEN 16 WHEN 3 THEN 1 END) MINUTE), tz.`value`,'UTC') AND d.time <![CDATA[<=]]> CONVERT_TZ(CONCAT(DATE_FORMAT(CONVERT_TZ(#{time_execute},'UTC',tz.`value`), '%Y-%m-%d'),' 23:59:59'), tz.`value`,'UTC')
 			),
 			marked AS (
 				SELECT 
@@ -96,7 +93,7 @@
 				ROUND(AVG(energy),3) AS avg_energy,
 				time(MAX(time)) AS last_time,
 				CASE 
-					WHEN time(MAX(time)) <![CDATA[<]]> time( DATE_ADD(CONVERT_TZ(CURRENT_TIMESTAMP(), 'UTC', time_zone), INTERVAL - data_send_time MINUTE)) THEN 1 
+					WHEN time(MAX(time)) <![CDATA[<]]> time( DATE_ADD(CONVERT_TZ(#{time_execute}, 'UTC', time_zone), INTERVAL - data_send_time MINUTE)) THEN 1 
 					ELSE 0 
 				END AS is_incomplete
 			FROM grouped

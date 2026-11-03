@@ -42,4 +42,14 @@ public class BatchConfig_BemsBillingDailiSummary {
     batchJobBemsBillingDailySummary.runBemsBillingDailySummary();
   }
 
+  @Scheduled(cron = "${cron.bems.billing.daily.summary.endday.scheduler}")
+  public void runBemsBillingDailySummaryEndDay() {
+    if (!bemsBillingDailySummaryActive) {
+      log.info("BEMS Billing Daily Summary job is disabled.");
+      return;
+    }
+    log.info("Running BEMS Billing Daily Summary End Day job...");
+    batchJobBemsBillingDailySummary.runBemsBillingDailySummary();
+  }
+
 }
