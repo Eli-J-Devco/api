@@ -93,6 +93,7 @@ public class StringMonitoringService extends DB {
 														.forEach(stringParameter -> {
 															Optional.ofNullable((Double) lastValue.get(stringParameter.getSlug())).ifPresent(value -> {
 																stringParameter.setValue(BigDecimal.valueOf(value).setScale(2, RoundingMode.HALF_UP).doubleValue());
+																stringParameter.setRounding_decimals(stringParameter.getRounding_decimals() != null ? stringParameter.getRounding_decimals() : 2);
 																if (stringParameter.getParameter_type() == ParameterType.CURRENT.getValue()) stringsCurrent.add(value);
 															});
 														});
