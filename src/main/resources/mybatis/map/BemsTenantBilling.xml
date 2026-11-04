@@ -117,6 +117,29 @@
 		ORDER BY sm.id_device, sm.date
 	</select>
 
+	<!-- Send job: every tenant billing setting with a receive type (0: none), with the site time zone for the receive date -->
+	<select id="getSendSettings" resultType="Map">
+		SELECT
+			tbs.id,
+			tbs.id_site,
+			tbs.type,
+			tbs.ftp_host,
+			tbs.ftp_port,
+			tbs.ftp_user_name,
+			tbs.ftp_password,
+			tbs.receive_email,
+			DATE_FORMAT(tbs.receive_date, '%Y-%m-%d') AS receive_date,
+			s.`name` AS site_name,
+			tz.`value` AS timezone
+		FROM
+			tenant_billing_setting tbs
+			INNER JOIN site s ON s.id = tbs.id_site AND s.is_delete = 0
+			LEFT JOIN time_zone tz ON tz.id = s.id_time_zone
+		WHERE
+			tbs.type <![CDATA[<>]]> 0
+		ORDER BY tbs.id
+	</select>
+
 	<!-- Site name, code and time zone offset -->
 	<select id="getSiteInfo" resultType="Map" parameterType="com.nwm.api.entities.TenantBillingEntity">
 		SELECT
@@ -312,7 +335,7 @@
 
 	<!--
 		API 6: the meter, its banner and its peak day.
-		Banner: consecutive days with the same issue become one range, e.g. "Missing data on Sep 14–15, Sep 20; partial data on Sep 25."
+		Banner: a day with no data or partial data is missing; consecutive missing days become one range, e.g. "Missing data on Sep 14–15, Sep 20."
 		TODO: banner wording is only defined for "no data received this period."
 		TODO: on a tie the earliest day is the peak.
 	-->
@@ -320,27 +343,23 @@
 		<include refid="deviceDays"/>,
 		islands AS (
 			SELECT
-				issue,
 				MIN(local_date) AS date_from,
 				MAX(local_date) AS date_to
 			FROM (
 				SELECT
 					local_date,
-					issue,
 					<!-- day number (from 1) - row number: the same for consecutive days; never below 0 (ROW_NUMBER is unsigned) -->
-					DATEDIFF(local_date, #{start_date}) + 1 - ROW_NUMBER() OVER (PARTITION BY issue ORDER BY local_date) AS grp
+					DATEDIFF(local_date, #{start_date}) + 1 - ROW_NUMBER() OVER (ORDER BY local_date) AS grp
 				FROM days
 				WHERE issue IS NOT NULL
 			) d
-			GROUP BY issue, grp
+			GROUP BY grp
 		),
 		labels AS (
 			SELECT
-				GROUP_CONCAT(IF(issue = 'missing', label, NULL) ORDER BY date_from SEPARATOR ', ') AS missing_days,
-				GROUP_CONCAT(IF(issue = 'partial', label, NULL) ORDER BY date_from SEPARATOR ', ') AS partial_days
+				GROUP_CONCAT(label ORDER BY date_from SEPARATOR ', ') AS missing_days
 			FROM (
 				SELECT
-					issue,
 					date_from,
 					<!-- Sep 14 | Sep 14–15 | Sep 30–Oct 1 -->
 					CONCAT(
@@ -370,9 +389,8 @@
 			CASE
 				WHEN m.status = 'ready' THEN NULL
 				WHEN m.kwh IS NULL THEN 'No data received this period.'
-				WHEN l.missing_days IS NULL AND l.partial_days IS NULL THEN 'Some readings are missing.'
-				WHEN l.missing_days IS NULL THEN CONCAT('Partial data on ', l.partial_days, '.')
-				ELSE CONCAT('Missing data on ', l.missing_days, IFNULL(CONCAT('; partial data on ', l.partial_days), ''), '.')
+				WHEN l.missing_days IS NULL THEN 'Some readings are missing.'
+				ELSE CONCAT('Missing data on ', l.missing_days, '.')
 			END AS missing_message,
 			p.date AS peak_date,
 			p.kwh AS peak_kwh
@@ -466,7 +484,7 @@
 
 	<!--
 		API 4 chart: one row per local day from start_date until end_date (days after today: kwh NULL, no issue), from bems_tenant_billing_daily_summary.
-		missing = no row for the day, incomplete = is_incomplete (today never, the day is not over).
+		incomplete = no row for the day or is_incomplete (today never, the day is not over).
 	-->
 	<!-- API 4: the tenant meter of the site (no row: meter not found) with its raw data table, for the 15-minute chart -->
 	<select id="getChartMeter" resultType="Map" parameterType="com.nwm.api.entities.TenantBillingEntity">
@@ -522,8 +540,8 @@
 		SELECT
 			DATE_FORMAT(local_date, '%Y-%m-%d') AS date,
 			ROUND(total_energy, 2) AS kwh,
-			issue <![CDATA[ <=> ]]> 'missing' AS missing,
-			issue <![CDATA[ <=> ]]> 'partial' AS incomplete
+			<!-- incomplete = no data or partial data -->
+			issue IS NOT NULL AS incomplete
 		FROM days
 		ORDER BY local_date
 	</select>

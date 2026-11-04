@@ -166,7 +166,6 @@ public class TenantBillingService extends DB {
 			Map<String, Object> day = new LinkedHashMap<>();
 			day.put("date", row.get("date"));
 			day.put("kwh", kwh);
-			day.put("missing", ((Number) row.get("missing")).intValue() == 1);
 			day.put("incomplete", ((Number) row.get("incomplete")).intValue() == 1);
 			if (kwh != null && (peak == null || kwh > peak)) peak = kwh;
 			data.add(day);
