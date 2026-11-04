@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -192,7 +193,7 @@ public class StringMonitoringService extends DB {
 		
 		// 3 = 7days
 	    if (time_interval == 3) {
-	        siteStartDate = siteEndDate.minusDays(7);
+	        siteStartDate = siteStartDate = siteEndDate.minusDays(6).truncatedTo(ChronoUnit.DAYS);
 	    } else {
 	        siteStartDate = siteEndDate.minusDays(1);
 	    }
