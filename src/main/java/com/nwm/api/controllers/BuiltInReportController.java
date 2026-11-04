@@ -7,6 +7,7 @@ package com.nwm.api.controllers;
 
 import java.util.List;
 
+import com.nwm.api.entities.report.ReportDetail;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -36,14 +37,12 @@ public class BuiltInReportController extends BaseController {
 	 * @return data (status, message, array, total_row
 	 */
 	@PostMapping("/annual-production-trend-report")
-	public Object annualProductionTrendReport(@RequestBody ViewReportEntity obj) {
+	public Object annualProductionTrendReport(@RequestBody ViewReportEntity req) {
 		try {
-			List<ViewReportEntity> dataObjList = service.getReportDataList(obj);
-			List<ViewReportEntity> summarizedList = service.summarizeReport(dataObjList, WeeklyDateEntity.class);
-			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, summarizedList, summarizedList.size());
-
+			ReportDetail reportDetail = service.getReportDataList(req);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, reportDetail);
 		} catch (Exception e) {
-			return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
 		}
 	}
 	
@@ -71,14 +70,13 @@ public class BuiltInReportController extends BaseController {
 	 * @return data (status, message, array, total_row
 	 */
 	@PostMapping("/monthly-production-trend-report")
-	public Object monthlyProductionTrendReport(@RequestBody ViewReportEntity obj) {
+	public Object monthlyProductionTrendReport(@RequestBody ViewReportEntity req) {
 		try {
-			List<ViewReportEntity> dataObjList = service.getReportDataList(obj);
-			List<ViewReportEntity> summarizedList = service.summarizeReport(dataObjList, MonthlyProductionTrendReportEntity.class);
-			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, summarizedList, summarizedList.size());
+			ReportDetail reportDetail = service.getReportDataList(req);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, reportDetail);
 
 		} catch (Exception e) {
-			return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
 		}
 	}
 	
@@ -108,14 +106,12 @@ public class BuiltInReportController extends BaseController {
 	 * @return data (status, message, array, total_row
 	 */
 	@PostMapping("/weekly-production-trend-report")
-	public Object weeklyProductionTrendReport(@RequestBody ViewReportEntity obj) {
+	public Object weeklyProductionTrendReport(@RequestBody ViewReportEntity req) {
 		try {
-			List<ViewReportEntity> dataObjList = service.getReportDataList(obj);
-			List<ViewReportEntity> summarizedList = service.summarizeReport(dataObjList, WeeklyDateEntity.class);
-			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, summarizedList, summarizedList.size());
+			ReportDetail reportDetail = service.getReportDataList(req);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, reportDetail);
 		} catch (Exception e) {
-			log.error(e);
-			return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
 		}
 	}
 	

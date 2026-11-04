@@ -32,22 +32,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.OptionalDouble;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
@@ -491,6 +476,17 @@ public class ReportsService extends DB {
 		
 		return reportDetail;
 	}
+
+	public void filterSiteOnRequest(ReportDetail reportDetail, int siteId) {
+		if (siteId == 0) return;
+
+		Optional.ofNullable(reportDetail.getSites()).ifPresent(sites -> {
+			reportDetail.setSites(sites.stream()
+					.filter(site -> site.getId() == siteId)
+					.collect(Collectors.toList())
+			);
+		});
+	}
 	
 	/**
 	 * @description Get data list in multi threads
@@ -659,9 +655,10 @@ public class ReportsService extends DB {
 			LocalDateTime endDate = LocalDateTime.parse(req.getEnd_date(), inputDTF);
 			ChartingGranularity granularity = ChartingGranularity.fromValue(reportDetail.getData_intervals());
 			ChartingFilter filter = ChartingFilter._3_DAYS;
+
+			filterSiteOnRequest(reportDetail, req.getId_site());
 			
 			List<CompletableFuture<Void>> futures = Optional.ofNullable(reportDetail.getSites()).orElse(new ArrayList<>()).stream()
-					.filter(site -> req.getId_site() > 0 ? site.getId() == req.getId_site() : true)
 					.map(site -> CompletableFuture.runAsync(() -> {
 						try {
 							DevicesByTypeEntity devices = deviceService.getDevicesBySite(site.getId(), req.getDomain());
@@ -738,9 +735,10 @@ public class ReportsService extends DB {
 			ReportRange range = ReportRange.fromValue(reportDetail.getCadence_range());
 			ChartingGranularity granularity = ChartingGranularity._1_MONTH;
 			ChartingFilter filter = ChartingFilter.YEAR_TO_DATE;
-			
+
+			filterSiteOnRequest(reportDetail, req.getId_site());
+
 			List<CompletableFuture<Void>> futures = Optional.ofNullable(reportDetail.getSites()).orElse(new ArrayList<>()).stream()
-					.filter(site -> req.getId_site() > 0 ? site.getId() == req.getId_site() : true)
 					.map(site -> CompletableFuture.runAsync(() -> {
 						try {
 							UploadingDataIntervals siteUploadingInterval = UploadingDataIntervals.fromValue(site.getData_send_time());
@@ -841,9 +839,10 @@ public class ReportsService extends DB {
 			LocalDateTime endDate = LocalDateTime.parse(req.getEnd_date(), inputDTF);
 			ChartingGranularity granularity = ChartingGranularity._1_DAY;
 			ChartingFilter filter = ChartingFilter.YEAR_TO_DATE;
-			
+
+			filterSiteOnRequest(reportDetail, req.getId_site());
+
 			List<CompletableFuture<Void>> futures = Optional.ofNullable(reportDetail.getSites()).orElse(new ArrayList<>()).stream()
-					.filter(site -> req.getId_site() > 0 ? site.getId() == req.getId_site() : true)
 					.map(site -> CompletableFuture.runAsync(() -> {
 						try {
 							DevicesByTypeEntity devices = deviceService.getDevicesBySite(site.getId(), req.getDomain());
@@ -1152,7 +1151,7 @@ public class ReportsService extends DB {
 			for (AlertEntity alert : alertCountList) alertCountMap.put(alert.getId(), alert.getTotalError());
 			
 			List<CompletableFuture<Void>> futures = Optional.ofNullable(reportDetail.getSites()).orElse(new ArrayList<>()).stream()
-					.sorted((a,b) -> a.getName().compareTo(b.getName()))
+					.sorted(Comparator.comparing(SiteByReport::getName))
 					.map(site -> CompletableFuture.runAsync(() -> {
 						try {
 							SanityCheckReportEntity sanityCheckReport = new SanityCheckReportEntity();
@@ -1528,9 +1527,10 @@ public class ReportsService extends DB {
 			LocalDateTime endDate = LocalDateTime.parse(req.getEnd_date(), inputDTF);
 			ChartingGranularity granularity = ChartingGranularity._1_DAY;
 			ChartingFilter filter = ChartingFilter.THIS_MONTH;
+
+			filterSiteOnRequest(reportDetail, req.getId_site());
 			
 			List<CompletableFuture<Void>> futures = Optional.ofNullable(reportDetail.getSites()).orElse(new ArrayList<>()).stream()
-					.filter(site -> req.getId_site() > 0 ? site.getId() == req.getId_site() : true)
 					.map(site -> CompletableFuture.runAsync(() -> {
 						try {
 							UploadingDataIntervals siteUploadingInterval = UploadingDataIntervals.fromValue(site.getData_send_time());
@@ -1611,9 +1611,10 @@ public class ReportsService extends DB {
 			ReportIntervals intervals = ReportIntervals.fromValue(req.getData_intervals());
 			ChartingGranularity granularity = ReportIntervals.toChartingGranularity(intervals);
 			ChartingFilter filter = ChartingFilter.CUSTOM;
-			
+
+			filterSiteOnRequest(reportDetail, req.getId_site());
+
 			List<CompletableFuture<Void>> futures = Optional.ofNullable(reportDetail.getSites()).orElse(new ArrayList<>()).stream()
-					.filter(site -> req.getId_site() > 0 ? site.getId() == req.getId_site() : true)
 					.map(site -> CompletableFuture.runAsync(() -> {
 						try {
 							DevicesByTypeEntity devices = deviceService.getDevicesBySite(site.getId(), req.getDomain());
@@ -1694,9 +1695,10 @@ public class ReportsService extends DB {
 			LocalDateTime endDate = LocalDateTime.parse(req.getEnd_date(), inputDTF);
 			ChartingGranularity granularity = ChartingGranularity._1_MONTH;
 			ChartingFilter filter = ChartingFilter.LAST_12_MONTHS;
+
+			filterSiteOnRequest(reportDetail, req.getId_site());
 			
 			List<CompletableFuture<Void>> futures = Optional.ofNullable(reportDetail.getSites()).orElse(new ArrayList<>()).stream()
-					.filter(site -> req.getId_site() > 0 ? site.getId() == req.getId_site() : true)
 					.map(site -> CompletableFuture.runAsync(() -> {
 						try {
 							LocalDateTime commissioningDate = LocalDateTime.parse(site.getCommissioning(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
@@ -1903,9 +1905,10 @@ public class ReportsService extends DB {
 			ReportIntervals intervals = ReportIntervals.fromValue(reportDetail.getData_intervals());
 			ChartingGranularity granularity = ReportIntervals.toChartingGranularity(intervals);
 			ChartingFilter filter = ChartingFilter.CUSTOM;
+
+			filterSiteOnRequest(reportDetail, req.getId_site());
 			
 			List<CompletableFuture<Void>> futures = Optional.ofNullable(reportDetail.getSites()).orElse(new ArrayList<>()).stream()
-					.filter(site -> req.getId_site() > 0 ? site.getId() == req.getId_site() : true)
 					.map(site -> CompletableFuture.runAsync(() -> {
 						try {
 							UploadingDataIntervals siteUploadingInterval = UploadingDataIntervals.fromValue(site.getData_send_time());
