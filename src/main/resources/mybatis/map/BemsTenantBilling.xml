@@ -38,18 +38,23 @@
 		SELECT * FROM (
 			WITH base AS (
 				SELECT 
-					CONVERT_TZ(d.time,'UTC',tz.`value`) AS time,
+					CONVERT_TZ(CONCAT(DATE_FORMAT(d.time,'%Y-%m-%d %H:'), LPAD(CASE s.data_send_time 
+						WHEN 1 THEN ROUND(FLOOR(MINUTE(d.time)/5) * 5)
+						WHEN 2 THEN ROUND(FLOOR(MINUTE(d.time)/15) * 15)
+						WHEN 3 THEN ROUND(MINUTE(d.time))
+					END, 2, '0')), 'UTC', tz.value) AS time,
 					dv.id AS id_device,
 					dv.id_site,
 					dv.devicename AS device_name,
 					dv.serialnumber AS serial_number,
-					CONCAT(dv.devicename, '・', dv.serialnumber) AS meter_name,
+					CONCAT(dv.devicename, '・', dv.serial_number) AS meter_name,
 					IFNULL(LAG(d.nvmActiveEnergy) OVER (ORDER BY d.time), d.nvmActiveEnergy) AS prev_nvmActiveEnergy,
 					d.nvmActiveEnergy,
 					r.`name` AS room,
-					CASE s.data_send_time WHEN 1 THEN 4 WHEN 2 THEN 4 WHEN 3 THEN 1 END data_send_time,
-					tz.`value` AS time_zone
-				FROM ${data_table_name} d
+					CASE s.data_send_time WHEN 1 THEN 5 WHEN 2 THEN 15 WHEN 3 THEN 1 END data_send_time,
+					tz.value AS time_zone
+				FROM 
+				${data_table_name} d
 				INNER JOIN device dv ON d.id_device = dv.id
 				INNER JOIN site_area_building_floor_room_device_map map ON map.id_device = dv.id
 				INNER JOIN site_area_building_floor_room r ON map.id_room = r.id
@@ -57,7 +62,7 @@
 				INNER JOIN time_zone tz ON tz.id = s.id_time_zone
 				WHERE d.time <![CDATA[>=]]> CONVERT_TZ(DATE_FORMAT(CONVERT_TZ(#{time_execute},'UTC',tz.`value`), '%Y-%m-%d'), tz.`value`,'UTC') 
 				AND d.time <![CDATA[<=]]> CONVERT_TZ(DATE_ADD(DATE_ADD(DATE_FORMAT(CONVERT_TZ(#{time_execute},'UTC',tz.`value`), '%Y-%m-%d'), INTERVAL 1 DAY), INTERVAL (CASE s.data_send_time WHEN 1 THEN 3 WHEN 2 THEN 9 WHEN 3 THEN 1 END) MINUTE ), tz.`value`,'UTC')
-			),
+				),
 			marked AS (
 				SELECT 
 					id_device,
@@ -65,7 +70,8 @@
 					device_name,
 					serial_number,
 					meter_name,
-					time,
+					DATE_FORMAT(time,'%Y-%m-%d %H:%i') AS time,
+					DATE_FORMAT(IFNULL(LAG(time) OVER (ORDER BY time),time),'%Y-%m-%d %H:%i') AS prev_time,
 					IFNULL(prev_nvmActiveEnergy, IFNULL(LAG(nvmActiveEnergy) OVER (ORDER BY id_device, time), nvmActiveEnergy)) AS prev_nvmActiveEnergy,
 					IFNULL(nvmActiveEnergy, prev_nvmActiveEnergy) AS nvmActiveEnergy,
 					room,
@@ -76,9 +82,22 @@
 			),
 			grouped AS (
 				SELECT 
-					*, 
-					ROUND(nvmActiveEnergy - prev_nvmActiveEnergy, 4) AS energy
+					id_device,
+					id_site,
+					device_name,
+					serial_number,
+					meter_name,
+					time,
+					prev_time,
+					IFNULL(MAX(prev_nvmActiveEnergy), IFNULL(LAG(MAX(nvmActiveEnergy)) OVER (ORDER BY id_device, time), MAX(nvmActiveEnergy))) AS prev_nvmActiveEnergy,
+					IFNULL(MAX(nvmActiveEnergy), MAX(prev_nvmActiveEnergy)) AS nvmActiveEnergy,
+					room,
+					data_send_time,
+					time_zone,
+					CASE WHEN TIMESTAMPDIFF(MINUTE,prev_time,time) <![CDATA[>]]> data_send_time THEN 1 ELSE 0 END AS incomplete,
+					ROUND(MAX(nvmActiveEnergy) - MAX(prev_nvmActiveEnergy), 4) AS energy
 				FROM marked
+				GROUP BY id_device, `time`
 			)
 			SELECT 
 				id_device,
@@ -93,13 +112,11 @@
 				ROUND(MAX(nvmActiveEnergy) - MIN(nvmActiveEnergy),3) AS total_energy,
 				ROUND(AVG(energy),3) AS avg_energy,
 				time(MAX(time)) AS last_time,
-				CASE 
-					WHEN MAX(time) <![CDATA[<]]> DATE_ADD(CONVERT_TZ(#{time_execute}, 'UTC', time_zone), INTERVAL data_send_time MINUTE) THEN 1 
-					ELSE 0 
-				END AS is_incomplete
+				CASE WHEN SUM(incomplete) <![CDATA[>]]> 0 THEN 1 ELSE 0 END AS is_incomplete
 			FROM grouped
-			GROUP BY id_device
-			)t ON DUPLICATE KEY UPDATE total_energy = VALUES(total_energy), last_time = VALUES(last_time), is_incomplete = VALUES(is_incomplete), avg_energy = VALUES(avg_energy),opening_reading = VALUES(opening_reading),closing_reading = VALUES(closing_reading), serial_number=VALUES(serial_number), meter_name=VALUES(meter_name);
+			GROUP BY id_device	
+		)t ON DUPLICATE KEY UPDATE total_energy = VALUES(total_energy), last_time = VALUES(last_time), is_incomplete = VALUES(is_incomplete), 
+			avg_energy = VALUES(avg_energy),opening_reading = VALUES(opening_reading),closing_reading = VALUES(closing_reading), serial_number=VALUES(serial_number), meter_name=VALUES(meter_name);
 	</insert>
 
 	<select id="getPastIncompleteSummaries" parameterType="Map" resultType="Map">
