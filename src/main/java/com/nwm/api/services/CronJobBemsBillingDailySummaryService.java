@@ -1,5 +1,6 @@
 package com.nwm.api.services;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -40,7 +41,7 @@ public class CronJobBemsBillingDailySummaryService extends DB {
   private ThreadPoolExecutor deviceExecutor;
   private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-	private final int RECOVER_PAST_DAYS_SIZE = 2;
+	private final int RECOVER_PAST_DAYS_SIZE = 3;
 
 	private ThreadPoolExecutor createDeviceExecutor() {
 		ThreadPoolExecutor executor = new ThreadPoolExecutor(
@@ -162,7 +163,7 @@ public class CronJobBemsBillingDailySummaryService extends DB {
 			if(recoverDate != null) {
 				params.put("time_execute", recoverDate);
 			}else{
-				params.put("time_execute", formatter.withZone(ZoneOffset.UTC).format(jobStartInstant));
+				params.put("time_execute", formatter.withZone(ZoneOffset.UTC).format(jobStartInstant.minus(Duration.ofMinutes(16))));
 			}
       params.put("id_device", device.get("id_device"));
       params.put("data_table_name", device.get("data_table_name"));

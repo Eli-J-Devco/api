@@ -13,7 +13,7 @@ public class SiteAreaBuildingFloorRoomEntity {
 	private int status;
 	private double total_area;
 	private String description;
-	
+	private int id_floor;
 	
 	public int getId() {
 		return id;
@@ -58,6 +58,12 @@ public class SiteAreaBuildingFloorRoomEntity {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	
-	
+
+  public int getId_floor() {
+    return id_floor;
+  }
+
+  public void setId_floor(int id_floor) {
+    this.id_floor = id_floor;
+  }
 }
