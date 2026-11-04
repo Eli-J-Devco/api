@@ -10,16 +10,16 @@ import java.nio.charset.StandardCharsets;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeParseException;
-import java.time.format.TextStyle;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
+import com.nwm.api.entities.SiteAreaBuildingFloorRoomEntity;
 import org.springframework.stereotype.Service;
 
 import com.nwm.api.DBManagers.DB;
@@ -29,8 +29,7 @@ import com.opencsv.CSVWriter;
 
 /**
  * Tenant Billing (WEBDEV-5686).
- * Data comes from bems_tenant_billing_daily_summary (one row per meter per local day),
- * except the chart (API 4) and the opening / closing readings of API 3, which read the raw meter table.
+ * Data comes from bems_tenant_billing_daily_summary (one row per meter per local day).
  */
 @Service
 @SuppressWarnings("unchecked")
@@ -54,7 +53,7 @@ public class TenantBillingService extends DB {
 	 * @return { data, total_row }
 	 */
 	public Map<String, Object> getListDevice(TenantBillingEntity obj) throws Exception {
-		preparePeriod(obj);
+		preparePeriod(obj, true);
 		if (obj.getLimit() <= 0) obj.setLimit(DEFAULT_LIMIT);
 		if (obj.getOffset() < 0) obj.setOffset(0);
 
@@ -68,7 +67,7 @@ public class TenantBillingService extends DB {
 	 * @description API 2: Ready, Incomplete, Period usage
 	 */
 	public Map<String, Object> getSummary(TenantBillingEntity obj) throws Exception {
-		Period period = preparePeriod(obj);
+		Period period = preparePeriod(obj, true);
 
 		// start_date and end_date one month back, e.g. Dec 1-15 -> Nov 1-15, Sep 5 - Oct 4 -> Aug 5 - Sep 4
 		obj.setPrevious_start_date(period.start.minusMonths(1).toString());
@@ -83,14 +82,10 @@ public class TenantBillingService extends DB {
 	 * @return { site_code, site_name, timezone, start_date, end_date, meters }
 	 */
 	public Map<String, Object> getExportAllData(TenantBillingEntity obj) throws Exception {
-		Period period = preparePeriod(obj);
-		// a period that is not over yet (e.g. This month) is exported after it closes
-		if (!period.end.isBefore(period.today)) {
-			throw new IllegalStateException(period.end.getMonth().getDisplayName(TextStyle.FULL, Locale.ENGLISH)
-					+ " can be exported after the month closes");
-		}
+		// no period rules for the export, the FE checks them
+		Period period = preparePeriod(obj, false);
 
-		// every meter, no search / filter / paging from the list
+		// every meter matching the search keyword and location of the list, no status filter / paging
 		obj.setId_device(0);
 		Map<String, Object> data = new LinkedHashMap<>();
 		data.put("site_code", period.site.get("site_code"));
@@ -98,7 +93,7 @@ public class TenantBillingService extends DB {
 		data.put("timezone", period.site.get("timezone"));
 		data.put("start_date", obj.getStart_date());
 		data.put("end_date", obj.getEnd_date());
-		data.put("meters", exportMeters(obj));
+		data.put("meters", queryForList("BemsTenantBilling.getExportAll", obj));
 		return data;
 	}
 
@@ -156,39 +151,58 @@ public class TenantBillingService extends DB {
 	 */
 	public List<Map<String, Object>> getChart(TenantBillingEntity obj) throws Exception {
 		if (obj.getId_device() <= 0) throw new IllegalArgumentException("id_device is required");
-		preparePeriod(obj);
-		if ((Integer) queryForObject("BemsTenantBilling.getListMeterTotal", obj) == 0) throw new IllegalArgumentException("Meter not found");
+		preparePeriod(obj, true);
+		Map<String, Object> meter = (Map<String, Object>) queryForObject("BemsTenantBilling.getChartMeter", obj);
+		if (meter == null) throw new IllegalArgumentException("Meter not found");
+		if (obj.isIs_15min()) {
+			obj.setDatatablename(Lib.str(meter.get("datatablename")));
+			return getChart15Min(obj);
+		}
 
 		List<Map<String, Object>> data = new ArrayList<>();
-		Map<String, Object> peak = null;
+		Double peak = null;
 		for (Map<String, Object> row : (List<Map<String, Object>>) queryForList("BemsTenantBilling.getChartData", obj)) {
 			Double kwh = row.get("kwh") == null ? null : ((Number) row.get("kwh")).doubleValue();
 			Map<String, Object> day = new LinkedHashMap<>();
 			day.put("date", row.get("date"));
 			day.put("kwh", kwh);
-			day.put("missing", ((Number) row.get("missing")).intValue() == 1);
 			day.put("incomplete", ((Number) row.get("incomplete")).intValue() == 1);
-			day.put("is_peak", false);
-			// TODO: on a tie the earliest day is the peak.
-			if (kwh != null && (peak == null || kwh > (Double) peak.get("kwh"))) peak = day;
+			if (kwh != null && (peak == null || kwh > peak)) peak = kwh;
 			data.add(day);
 		}
 		// no data in the period (e.g. a meter that is not sending): null, so the chart draws no missing days
 		if (peak == null) return null;
-		peak.put("is_peak", true);
+		// every day tied with the max is a peak
+		for (Map<String, Object> day : data) day.put("is_peak", peak.equals(day.get("kwh")));
+		return data;
+	}
+
+	/**
+	 * API 4 with is_15min: kWh of each 15-minute slot, from the raw data table of the meter (BemsTenantBilling.getChart15MinData).
+	 * @return [{ time (site time, yyyy-MM-dd HH:mm), kwh, is_peak }], null when the meter has no readings in the period
+	 */
+	private List<Map<String, Object>> getChart15Min(TenantBillingEntity obj) throws Exception {
+		// a meter without a raw table has no readings
+		if (obj.getDatatablename() == null || obj.getDatatablename().isEmpty()) return null;
+
+		List<Map<String, Object>> data = queryForList("BemsTenantBilling.getChart15MinData", obj);
+		if (data.isEmpty()) return null;
+		Object peak = data.stream().map(row -> row.get("kwh")).filter(kwh -> kwh != null)
+				.max((a, b) -> Double.compare(((Number) a).doubleValue(), ((Number) b).doubleValue())).orElse(null);
+		for (Map<String, Object> row : data) row.put("is_peak", peak != null && peak.equals(row.get("kwh")));
 		return data;
 	}
 
 	/**
 	 * @description API 5 (data): one meter with its readings and daily kWh, for the FE to build the Excel file
-	 * TODO: spec only blocks Download all for an open period; single meter is allowed here.
 	 * TODO: Note text is not defined yet.
 	 * @return { site_code, site_name, timezone, start_date, end_date, meter, days: [{ date, kwh, note }] }
 	 */
 	public Map<String, Object> getExportDeviceData(TenantBillingEntity obj) throws Exception {
 		if (obj.getId_device() <= 0) throw new IllegalArgumentException("id_device is required");
-		Period period = preparePeriod(obj);
-		List<Map<String, Object>> meters = exportMeters(obj);
+		// no period rules for the export, the FE checks them
+		Period period = preparePeriod(obj, false);
+		List<Map<String, Object>> meters = queryForList("BemsTenantBilling.getExportAll", obj);
 		if (meters.isEmpty()) throw new IllegalArgumentException("Meter not found");
 
 		Map<String, Object> data = new LinkedHashMap<>();
@@ -243,7 +257,7 @@ public class TenantBillingService extends DB {
 	 */
 	public Map<String, Object> getSummaryDevice(TenantBillingEntity obj) throws Exception {
 		if (obj.getId_device() <= 0) throw new IllegalArgumentException("id_device is required");
-		preparePeriod(obj);
+		preparePeriod(obj, true);
 		Map<String, Object> summary = (Map<String, Object>) queryForObject("BemsTenantBilling.getSummaryDevice", obj);
 		if (summary == null) throw new IllegalArgumentException("Meter not found");
 
@@ -262,7 +276,7 @@ public class TenantBillingService extends DB {
 	 */
 	public Map<String, Object> getAvgDaily(TenantBillingEntity obj) throws Exception {
 		if (obj.getId_device() <= 0) throw new IllegalArgumentException("id_device is required");
-		preparePeriod(obj);
+		preparePeriod(obj, true);
 		Map<String, Object> avg = (Map<String, Object>) queryForObject("BemsTenantBilling.getAvgDaily", obj);
 
 		// peak_date, peak_kwh -> peak_day: { date, kwh }
@@ -275,34 +289,11 @@ public class TenantBillingService extends DB {
 		return avg;
 	}
 
-
-	/**
-	 * Rows of API 3 / 5: every meter of the site (or obj.id_device) with its opening and closing readings.
-	 * Needs preparePeriod(obj) first.
-	 */
-	private List<Map<String, Object>> exportMeters(TenantBillingEntity obj) throws Exception {
-		TenantBillingEntity query = new TenantBillingEntity();
-		query.setId_site(obj.getId_site());
-		query.setId_device(obj.getId_device());
-		query.setStart_date(obj.getStart_date());
-		query.setEnd_date(obj.getEnd_date());
-		query.setTimezone_offset(obj.getTimezone_offset());
-		query.setExpected_days(obj.getExpected_days());
-		query.setDevices(queryForList("BemsTenantBilling.getDataTables", query));
-		if (query.getDevices().isEmpty()) return new ArrayList<>();
-
-		List<Map<String, Object>> meters = queryForList("BemsTenantBilling.getExportAll", query);
-		// TODO: multiplier source is not confirmed; 1 like the FE mock.
-		for (Map<String, Object> m : meters) m.put("multiplier", 1);
-		return meters;
-	}
-
-
 	// ---------------------------------------------------------------- period
 
 	static class Period {
 		Map<String, Object> site;
-		ZoneOffset zone;
+		ZoneId zone;
 		LocalDate start;
 		LocalDate end;
 		LocalDate today;
@@ -311,15 +302,17 @@ public class TenantBillingService extends DB {
 
 	/**
 	 * Validates the period and fills obj.timezone_offset, obj.expected_days and obj.today.
+	 * checkRange false (the Excel export): only the date format, no past 6 months / 3 months / current month rules.
 	 */
-	private Period preparePeriod(TenantBillingEntity obj) throws Exception {
+	private Period preparePeriod(TenantBillingEntity obj, boolean checkRange) throws Exception {
 		if (obj.getId_site() <= 0) throw new IllegalArgumentException("id_site is required");
 		Map<String, Object> site = (Map<String, Object>) queryForObject("BemsTenantBilling.getSiteInfo", obj);
 		if (site == null) throw new IllegalArgumentException("Site not found");
 
 		Period period = new Period();
 		period.site = site;
-		period.zone = ZoneOffset.of(Lib.str(site.get("timezone_offset")));
+		// period.zone = ZoneOffset.of(Lib.str(site.get("timezone_offset")));
+		period.zone = ZoneId.of(site.get("timezone") == null ? "UTC" : Lib.str(site.get("timezone")));
 		period.now = LocalDateTime.now(clock.withZone(period.zone));
 		period.today = period.now.toLocalDate();
 		try {
@@ -329,18 +322,39 @@ public class TenantBillingService extends DB {
 			throw new IllegalArgumentException("start_date and end_date must be YYYY-MM-DD");
 		}
 
-		if (period.end.isBefore(period.start)) throw new IllegalArgumentException("end_date must not be before start_date");
-		// TODO: "within the past 6 months" is read as today minus 6 months.
-		if (period.start.isBefore(period.today.minusMonths(6))) throw new IllegalArgumentException("start_date must be within the past 6 months");
-		if (period.end.isAfter(period.start.plusMonths(3).minusDays(1))) throw new IllegalArgumentException("The range can be up to 3 months long");
-		// This month is sent as the whole month, so the end may be in the future, but not past the current month.
-		if (period.end.isAfter(period.today.withDayOfMonth(period.today.lengthOfMonth()))) throw new IllegalArgumentException("end_date must not be after the current month");
+		if (checkRange) {
+			if (period.end.isBefore(period.start)) throw new IllegalArgumentException("end_date must not be before start_date");
+			// TODO: "within the past 6 months" is read as today minus 6 months.
+			if (period.start.isBefore(period.today.minusMonths(6))) throw new IllegalArgumentException("start_date must be within the past 6 months");
+			if (period.end.isAfter(period.start.plusMonths(3))) throw new IllegalArgumentException("The range can be up to 3 months long");
+			// This month is sent as the whole month, so the end may be in the future, but not past the current month.
+			if (period.end.isAfter(period.today.withDayOfMonth(period.today.lengthOfMonth()))) throw new IllegalArgumentException("end_date must not be after the current month");
+		}
 
 		// days that need a complete row to be Ready: start until the end of the period or today, whichever is first
 		LocalDate lastDay = period.end.isAfter(period.today) ? period.today : period.end;
 		obj.setExpected_days(lastDay.isBefore(period.start) ? 0 : (int) ChronoUnit.DAYS.between(period.start, lastDay) + 1);
 		obj.setTimezone_offset(Lib.str(site.get("timezone_offset")));
 		obj.setToday(period.today.toString());
+
+		log.info("preparePeriod: id_site=" + obj.getId_site() + ", id_device=" + obj.getId_device()
+				+ ", start_date=" + obj.getStart_date() + ", end_date=" + obj.getEnd_date()
+				+ ", expected_days=" + obj.getExpected_days() + ", today=" + obj.getToday()
+				+ ", timezone=" + period.zone + ", timezone_offset=" + obj.getTimezone_offset());
+
 		return period;
 	}
+
+  public List<SiteAreaBuildingFloorRoomEntity> getLocationList(TenantBillingEntity obj) {
+    try {
+      List<SiteAreaBuildingFloorRoomEntity> dataList = (List<SiteAreaBuildingFloorRoomEntity>) queryForList("BemsTenantBilling.getLocationList", obj);
+      if (dataList == null || dataList.isEmpty()) {
+        return new ArrayList<>();
+      }
+      return dataList;
+    } catch (Exception e) {
+      log.error("TenantBillingService.getLocationList", e);
+    }
+    return new ArrayList<>();
+  }
 }

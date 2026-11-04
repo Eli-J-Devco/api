@@ -5,9 +5,6 @@
 *********************************************************/
 package com.nwm.api.entities;
 
-import java.util.List;
-import java.util.Map;
-
 public class TenantBillingEntity {
 
 	private int id_site;
@@ -20,6 +17,8 @@ public class TenantBillingEntity {
 	private String sort_direction;
 	private int limit;
 	private int offset;
+	// true for the 15-minute chart from the raw data table, false (default) for daily
+	private boolean is_15min;
 
 	// filled by the service, not by the client
 	private String timezone_offset;
@@ -30,7 +29,7 @@ public class TenantBillingEntity {
 	private String timezone;
 	private Integer data_send_time;
 	private String datatablename;
-	private List<Map<String, Object>> devices;
+	private int id_location;
 
 	public int getId_site() {
 		return id_site;
@@ -94,6 +93,14 @@ public class TenantBillingEntity {
 
 	public void setSort_direction(String sort_direction) {
 		this.sort_direction = sort_direction;
+	}
+
+	public boolean isIs_15min() {
+		return is_15min;
+	}
+
+	public void setIs_15min(boolean is_15min) {
+		this.is_15min = is_15min;
 	}
 
 	public int getLimit() {
@@ -176,11 +183,11 @@ public class TenantBillingEntity {
 		this.datatablename = datatablename;
 	}
 
-	public List<Map<String, Object>> getDevices() {
-		return devices;
-	}
+  public int getId_location() {
+    return id_location;
+  }
 
-	public void setDevices(List<Map<String, Object>> devices) {
-		this.devices = devices;
-	}
+  public void setId_location(int id_location) {
+    this.id_location = id_location;
+  }
 }

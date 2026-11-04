@@ -38,25 +38,31 @@
 		SELECT * FROM (
 			WITH base AS (
 				SELECT 
-					CONVERT_TZ(d.time,'UTC',tz.`value`) AS time,
+					CONVERT_TZ(CONCAT(DATE_FORMAT(d.time,'%Y-%m-%d %H:'), LPAD(CASE s.data_send_time 
+						WHEN 1 THEN ROUND(FLOOR(MINUTE(d.time)/5) * 5)
+						WHEN 2 THEN ROUND(FLOOR(MINUTE(d.time)/15) * 15)
+						WHEN 3 THEN ROUND(MINUTE(d.time))
+					END, 2, '0')), 'UTC', tz.value) AS time,
 					dv.id AS id_device,
 					dv.id_site,
 					dv.devicename AS device_name,
 					dv.serialnumber AS serial_number,
-					CONCAT(dv.devicename, '・', dv.serialnumber) AS meter_name,
+					CONCAT(dv.devicename, '・', dv.serial_number) AS meter_name,
 					IFNULL(LAG(d.nvmActiveEnergy) OVER (ORDER BY d.time), d.nvmActiveEnergy) AS prev_nvmActiveEnergy,
 					d.nvmActiveEnergy,
 					r.`name` AS room,
 					CASE s.data_send_time WHEN 1 THEN 5 WHEN 2 THEN 15 WHEN 3 THEN 1 END data_send_time,
-					tz.`value` AS time_zone
-				FROM ${data_table_name} d
+					tz.value AS time_zone
+				FROM 
+				${data_table_name} d
 				INNER JOIN device dv ON d.id_device = dv.id
 				INNER JOIN site_area_building_floor_room_device_map map ON map.id_device = dv.id
 				INNER JOIN site_area_building_floor_room r ON map.id_room = r.id
 				INNER JOIN site s ON s.id = dv.id_site 
 				INNER JOIN time_zone tz ON tz.id = s.id_time_zone
-				WHERE d.time <![CDATA[>=]]> CONVERT_TZ(DATE_ADD(DATE_FORMAT(CONVERT_TZ(#{time_execute},'UTC',tz.`value`), '%Y-%m-%d'), INTERVAL - (CASE s.data_send_time WHEN 1 THEN 5 WHEN 2 THEN 15 WHEN 3 THEN 1 END) MINUTE), tz.`value`,'UTC') AND d.time <![CDATA[<=]]> CONVERT_TZ(CONCAT(DATE_FORMAT(CONVERT_TZ(#{time_execute},'UTC',tz.`value`), '%Y-%m-%d'),' 23:59:59'), tz.`value`,'UTC')
-			),
+				WHERE d.time <![CDATA[>=]]> CONVERT_TZ(DATE_FORMAT(CONVERT_TZ(#{time_execute},'UTC',tz.`value`), '%Y-%m-%d'), tz.`value`,'UTC') 
+				AND d.time <![CDATA[<=]]> CONVERT_TZ(DATE_ADD(DATE_ADD(DATE_FORMAT(CONVERT_TZ(#{time_execute},'UTC',tz.`value`), '%Y-%m-%d'), INTERVAL 1 DAY), INTERVAL (CASE s.data_send_time WHEN 1 THEN 3 WHEN 2 THEN 9 WHEN 3 THEN 1 END) MINUTE ), tz.`value`,'UTC')
+				),
 			marked AS (
 				SELECT 
 					id_device,
@@ -64,9 +70,10 @@
 					device_name,
 					serial_number,
 					meter_name,
-					time,
-					IFNULL(prev_nvmActiveEnergy, IFNULL(LAG(nvmActiveEnergy) OVER (ORDER BY id_device, time), nvmActiveEnergy)) AS prev_nvmActiveEnergy,
-					IFNULL(nvmActiveEnergy, prev_nvmActiveEnergy) AS nvmActiveEnergy,
+					DATE_FORMAT(time,'%Y-%m-%d %H:%i') AS time,
+					DATE_FORMAT(IFNULL(LAG(time) OVER (ORDER BY time),time),'%Y-%m-%d %H:%i') AS prev_time,
+					prev_nvmActiveEnergy,
+					nvmActiveEnergy,
 					room,
 					data_send_time,
 					time_zone
@@ -75,14 +82,31 @@
 			),
 			grouped AS (
 				SELECT 
-					*, 
-					ROUND(nvmActiveEnergy - prev_nvmActiveEnergy, 4) AS energy
+					id_device,
+					id_site,
+					device_name,
+					serial_number,
+					meter_name,
+					time,
+					prev_time,
+					MAX(prev_nvmActiveEnergy) AS prev_nvmActiveEnergy,
+					MAX(nvmActiveEnergy) AS nvmActiveEnergy,
+					room,
+					data_send_time,
+					time_zone,
+					CASE 
+						WHEN TIMESTAMPDIFF(MINUTE,prev_time,time) <![CDATA[>]]> data_send_time THEN 1 
+						WHEN MAX(nvmActiveEnergy) IS NULL THEN 1 
+						ELSE 0 
+					END AS incomplete,
+					ROUND(MAX(nvmActiveEnergy) - MAX(prev_nvmActiveEnergy), 4) AS energy
 				FROM marked
+				GROUP BY id_device, `time`
 			)
 			SELECT 
 				id_device,
 				id_site,
-				DATE_FORMAT(MAX(time),'%Y-%m-%d') AS `date`,
+				DATE_FORMAT(MIN(time),'%Y-%m-%d') AS `date`,
 				device_name AS tenant_name,
 				serial_number,
 				meter_name,
@@ -91,15 +115,51 @@
 				MAX(nvmActiveEnergy) AS closing_reading,
 				ROUND(MAX(nvmActiveEnergy) - MIN(nvmActiveEnergy),3) AS total_energy,
 				ROUND(AVG(energy),3) AS avg_energy,
-				time(MAX(time)) AS last_time,
-				CASE 
-					WHEN time(MAX(time)) <![CDATA[<]]> time( DATE_ADD(CONVERT_TZ(CURRENT_TIMESTAMP(), 'UTC', time_zone), INTERVAL - data_send_time MINUTE)) THEN 1 
-					ELSE 0 
-				END AS is_incomplete
+				MAX(time) AS last_time,
+				CASE WHEN SUM(incomplete) <![CDATA[>]]> 0 THEN 1 ELSE 0 END AS is_incomplete
 			FROM grouped
-			GROUP BY id_device
-			)t ON DUPLICATE KEY UPDATE total_energy = VALUES(total_energy), last_time = VALUES(last_time), is_incomplete = VALUES(is_incomplete), avg_energy = VALUES(avg_energy),opening_reading = VALUES(opening_reading),closing_reading = VALUES(closing_reading), serial_number=VALUES(serial_number), meter_name=VALUES(meter_name);
+			GROUP BY id_device	
+		)t ON DUPLICATE KEY UPDATE total_energy = VALUES(total_energy), last_time = VALUES(last_time), is_incomplete = VALUES(is_incomplete), 
+			avg_energy = VALUES(avg_energy),opening_reading = VALUES(opening_reading),closing_reading = VALUES(closing_reading), serial_number=VALUES(serial_number), meter_name=VALUES(meter_name);
 	</insert>
+
+	<select id="getPastIncompleteSummaries" parameterType="Map" resultType="Map">
+		SELECT 
+			sm.date,
+			sm.id_device,
+			d.datatablename AS data_table_name
+		FROM nextwavemonitoring_production.bems_tenant_billing_daily_summary  sm
+		INNER JOIN device d on d.id = sm.id_device
+		INNER JOIN site s on s.id = d.id_site
+		INNER JOIN time_zone tz ON tz.id = s.id_time_zone
+		WHERE 
+			is_incomplete = 1 
+			AND date <![CDATA[>=]]> DATE_ADD(DATE_FORMAT(CONVERT_TZ(#{time_execute},'UTC',tz.`value`), '%Y-%m-%d'), INTERVAL - #{recover_past_days_size} DAY) AND date <![CDATA[<]]> DATE_FORMAT(CONVERT_TZ(#{time_execute},'UTC',tz.`value`), '%Y-%m-%d') 
+		ORDER BY sm.id_device, sm.date
+	</select>
+
+	<!-- Send job: every tenant billing setting with a receive type (0: none), with the site time zone for the receive date -->
+	<select id="getSendSettings" resultType="Map">
+		SELECT
+			tbs.id,
+			tbs.id_site,
+			tbs.type,
+			tbs.ftp_host,
+			tbs.ftp_port,
+			tbs.ftp_user_name,
+			tbs.ftp_password,
+			tbs.receive_email,
+			DATE_FORMAT(tbs.receive_date, '%Y-%m-%d') AS receive_date,
+			s.`name` AS site_name,
+			tz.`value` AS timezone
+		FROM
+			tenant_billing_setting tbs
+			INNER JOIN site s ON s.id = tbs.id_site AND s.is_delete = 0
+			LEFT JOIN time_zone tz ON tz.id = s.id_time_zone
+		WHERE
+			tbs.type <![CDATA[<>]]> 0
+		ORDER BY tbs.id
+	</select>
 
 	<!-- Site name, code and time zone offset -->
 	<select id="getSiteInfo" resultType="Map" parameterType="com.nwm.api.entities.TenantBillingEntity">
@@ -126,7 +186,6 @@
 		Name, serial and location are the current values of the device.
 		Ready = a complete row for every day from start_date until min(end_date, today) (expected_days, set by the service).
 		Wrapped in a derived table: device.status would hide the status alias in ORDER BY / HAVING.
-		TODO: confirm total_energy already has the multiplier applied.
 	-->
 	<sql id="meterPeriod">
 		SELECT * FROM (
@@ -137,6 +196,8 @@
 				CONCAT(d.devicename, '・', d.serialnumber) AS meter_name,
 				<!-- device.status: 0 = not active (the chart draws no missing / incomplete days) -->
 				d.status AS device_status,
+				<!-- no multiplier on the device: 1 -->
+				IFNULL(d.multiplier, 1) AS multiplier,
 				<!-- subquery, not a JOIN: a device mapped to 2 rooms would count its rows twice -->
 				(
 					SELECT r.`name`
@@ -151,13 +212,15 @@
 					AND COUNT(s.id) = #{expected_days}
 					AND IFNULL(SUM(s.is_incomplete), 0) = 0,
 					'ready', 'incomplete'
-				) AS status
+				) AS status,
+                r.id as id_location
 			FROM
 				device d
 				LEFT JOIN bems_tenant_billing_daily_summary s
 					ON s.id_device = d.id
 					AND s.id_site = d.id_site
 					AND s.`date` BETWEEN #{start_date} AND #{end_date}
+                LEFT JOIN site_area_building_floor_room r on r.id_site = d.id_site
 			WHERE
 				d.id_site = #{id_site}
 				AND d.meter_type = 14
@@ -185,6 +248,9 @@
 		<if test="status == 'ready' or status == 'incomplete'">
 			AND status = #{status}
 		</if>
+        <if test="id_location > 0">
+            AND id_location = #{id_location}
+        </if>
 	</sql>
 
 	<!-- API 1 list, and the meter of API 5, 6. Ready first, then sort_column (serial | tenant_name | location | kwh) in sort_direction (asc | desc). -->
@@ -220,24 +286,6 @@
 		) t
 	</select>
 
-	<!-- Raw data table of each tenant meter of the site (or of id_device), for the opening / closing readings; also checks the meter exists -->
-	<select id="getDataTables" resultType="Map" parameterType="com.nwm.api.entities.TenantBillingEntity">
-		SELECT
-			d.id AS id_device,
-			d.datatablename
-		FROM
-			device d
-		WHERE
-			d.id_site = #{id_site}
-			AND d.meter_type = 14
-			AND d.is_delete = 0
-			<!-- a meter without a raw table has no readings -->
-			AND d.datatablename IS NOT NULL AND d.datatablename != ''
-			<if test="id_device != 0">
-				AND d.id = #{id_device}
-			</if>
-	</select>
-
 	<!--
 		API 2: Ready, Incomplete, Period usage and % vs the previous period (previous_start_date..previous_end_date, set by the service).
 		TODO: counts ignore the search keyword until PO confirms.
@@ -270,22 +318,22 @@
 	</select>
 
 	<!--
-		API 5, 6: every local day of one meter from start_date until min(end_date, today) (expected_days days),
-		issue = 'missing' (no row) or 'partial' (is_incomplete, except today, which is always incomplete).
+		API 4, 5, 6: every local day of one meter from start_date until end_date,
+		issue = 'missing' (no row, until today; a day after today has no data yet, so no issue)
+		or 'partial' (is_incomplete, except today, which is always incomplete).
 	-->
 	<sql id="deviceDays">
 		WITH RECURSIVE range_date (local_date) AS (
-			SELECT CAST(#{start_date} AS DATE) FROM DUAL WHERE #{expected_days} > 0
+			SELECT CAST(#{start_date} AS DATE)
 			UNION ALL
-			SELECT local_date + INTERVAL 1 DAY FROM range_date
-			WHERE local_date <![CDATA[ < ]]> DATE_ADD(#{start_date}, INTERVAL #{expected_days} - 1 DAY)
+			SELECT local_date + INTERVAL 1 DAY FROM range_date WHERE local_date <![CDATA[ < ]]> #{end_date}
 		),
 		days AS (
 			SELECT
 				r.local_date,
 				s.total_energy,
 				CASE
-					WHEN s.id IS NULL THEN 'missing'
+					WHEN s.id IS NULL AND r.local_date <![CDATA[ <= ]]> #{today} THEN 'missing'
 					WHEN s.is_incomplete = 1 AND r.local_date <![CDATA[ < ]]> #{today} THEN 'partial'
 				END AS issue
 			FROM
@@ -308,7 +356,7 @@
 
 	<!--
 		API 6: the meter, its banner and its peak day.
-		Banner: consecutive days with the same issue become one range, e.g. "Missing data on Sep 14–15, Sep 20; partial data on Sep 25."
+		Banner: a day with no data or partial data is missing; consecutive missing days become one range, e.g. "Missing data on Sep 14–15, Sep 20."
 		TODO: banner wording is only defined for "no data received this period."
 		TODO: on a tie the earliest day is the peak.
 	-->
@@ -316,27 +364,23 @@
 		<include refid="deviceDays"/>,
 		islands AS (
 			SELECT
-				issue,
 				MIN(local_date) AS date_from,
 				MAX(local_date) AS date_to
 			FROM (
 				SELECT
 					local_date,
-					issue,
 					<!-- day number (from 1) - row number: the same for consecutive days; never below 0 (ROW_NUMBER is unsigned) -->
-					DATEDIFF(local_date, #{start_date}) + 1 - ROW_NUMBER() OVER (PARTITION BY issue ORDER BY local_date) AS grp
+					DATEDIFF(local_date, #{start_date}) + 1 - ROW_NUMBER() OVER (ORDER BY local_date) AS grp
 				FROM days
 				WHERE issue IS NOT NULL
 			) d
-			GROUP BY issue, grp
+			GROUP BY grp
 		),
 		labels AS (
 			SELECT
-				GROUP_CONCAT(IF(issue = 'missing', label, NULL) ORDER BY date_from SEPARATOR ', ') AS missing_days,
-				GROUP_CONCAT(IF(issue = 'partial', label, NULL) ORDER BY date_from SEPARATOR ', ') AS partial_days
+				GROUP_CONCAT(label ORDER BY date_from SEPARATOR ', ') AS missing_days
 			FROM (
 				SELECT
-					issue,
 					date_from,
 					<!-- Sep 14 | Sep 14–15 | Sep 30–Oct 1 -->
 					CONCAT(
@@ -366,9 +410,8 @@
 			CASE
 				WHEN m.status = 'ready' THEN NULL
 				WHEN m.kwh IS NULL THEN 'No data received this period.'
-				WHEN l.missing_days IS NULL AND l.partial_days IS NULL THEN 'Some readings are missing.'
-				WHEN l.missing_days IS NULL THEN CONCAT('Partial data on ', l.partial_days, '.')
-				ELSE CONCAT('Missing data on ', l.missing_days, IFNULL(CONCAT('; partial data on ', l.partial_days), ''), '.')
+				WHEN l.missing_days IS NULL THEN 'Some readings are missing.'
+				ELSE CONCAT('Missing data on ', l.missing_days, '.')
 			END AS missing_message,
 			p.date AS peak_date,
 			p.kwh AS peak_kwh
@@ -381,7 +424,7 @@
 
 	<!--
 		API 7: the 3 tiles of the side panel for one meter in [start_date, end_date]:
-		This period (period_kwh), Peak day (peak_date, peak_kwh), Average daily (avg_daily = period_kwh / days with data).
+		This period (period_kwh), Peak day (peak_date, peak_kwh), Average daily (avg_daily = period_kwh / days with kWh > 0, a 0 kWh day is not counted).
 		No data: days_with_data = 0, the other values NULL.
 		TODO: a day with some readings counts as a day with data.
 		TODO: on a tie the earliest day is the peak.
@@ -419,64 +462,41 @@
 
 
 	<!--
-		API 3: one row per tenant meter with its opening and closing reading (first and last raw reading of the period).
-		The readings are in the raw table of each meter (devices = getDataTables), so they are built per meter and joined to the list.
-		TODO: drop the readings part if the summary table gets first/last reading columns.
+		API 3: one row per tenant meter with its opening and closing reading, from bems_tenant_billing_daily_summary:
+		opening = opening_reading of the first day with a row in the period, closing = closing_reading of the last one.
+		kwh (Consumption) = (closing - opening) * multiplier.
+		TODO: the summary has no time for the opening reading, so opening_time is the date only.
 	-->
 	<select id="getExportAll" resultType="Map" parameterType="com.nwm.api.entities.TenantBillingEntity">
 		SELECT
 			t.serial,
 			t.tenant_name,
 			t.location,
-			r.opening_reading,
-			r.opening_time,
-			r.closing_reading,
-			r.closing_time,
-			t.kwh,
+			t.multiplier,
+			o.opening_reading,
+			o.`date` AS opening_time,
+			c.closing_reading,
+			CONCAT(c.`date`, ' ', LEFT(c.last_time, 5)) AS closing_time,
+			ROUND((c.closing_reading - o.opening_reading) * t.multiplier, 2) AS kwh,
 			t.status
 		FROM (
 			<include refid="meterPeriod"/>
+			WHERE 1 = 1
+			<include refid="keywordMatch"/>
+			<if test="id_location > 0">
+				AND id_location = #{id_location}
+			</if>
 		) t
-		LEFT JOIN (
-			<foreach collection="devices" item="item" separator="UNION ALL">
-				SELECT
-					o.id_device,
-					o.reading AS opening_reading,
-					o.time AS opening_time,
-					c.reading AS closing_reading,
-					c.time AS closing_time
-				FROM (
-					SELECT
-						#{item.id_device} AS id_device,
-						DATE_FORMAT(CONVERT_TZ(dv.time, '+00:00', #{timezone_offset}), '%Y-%m-%d %H:%i') AS time,
-						dv.nvmActiveEnergy AS reading
-					FROM
-						${item.datatablename} dv
-					WHERE
-						dv.id_device = #{item.id_device}
-						AND dv.nvmActiveEnergy IS NOT NULL
-						AND dv.time <![CDATA[ >= ]]> CONVERT_TZ(#{start_date}, #{timezone_offset}, '+00:00')
-						AND dv.time <![CDATA[ < ]]> CONVERT_TZ(DATE_ADD(#{end_date}, INTERVAL 1 DAY), #{timezone_offset}, '+00:00')
-					ORDER BY dv.time ASC
-					LIMIT 1
-				) o
-				INNER JOIN (
-					SELECT
-						dv.id_device,
-						DATE_FORMAT(CONVERT_TZ(dv.time, '+00:00', #{timezone_offset}), '%Y-%m-%d %H:%i') AS time,
-						dv.nvmActiveEnergy AS reading
-					FROM
-						${item.datatablename} dv
-					WHERE
-						dv.id_device = #{item.id_device}
-						AND dv.nvmActiveEnergy IS NOT NULL
-						AND dv.time <![CDATA[ >= ]]> CONVERT_TZ(#{start_date}, #{timezone_offset}, '+00:00')
-						AND dv.time <![CDATA[ < ]]> CONVERT_TZ(DATE_ADD(#{end_date}, INTERVAL 1 DAY), #{timezone_offset}, '+00:00')
-					ORDER BY dv.time DESC
-					LIMIT 1
-				) c ON c.id_device = o.id_device
-			</foreach>
-		) r ON r.id_device = t.id_device
+		LEFT JOIN bems_tenant_billing_daily_summary o ON o.id = (
+			SELECT s.id FROM bems_tenant_billing_daily_summary s
+			WHERE s.id_device = t.id_device AND s.id_site = #{id_site} AND s.`date` BETWEEN #{start_date} AND #{end_date}
+			ORDER BY s.`date` ASC LIMIT 1
+		)
+		LEFT JOIN bems_tenant_billing_daily_summary c ON c.id = (
+			SELECT s.id FROM bems_tenant_billing_daily_summary s
+			WHERE s.id_device = t.id_device AND s.id_site = #{id_site} AND s.`date` BETWEEN #{start_date} AND #{end_date}
+			ORDER BY s.`date` DESC LIMIT 1
+		)
 		ORDER BY
 			t.status = 'incomplete',
 			CAST(t.serial AS UNSIGNED)
@@ -484,18 +504,78 @@
 
 
 	<!--
-		API 4 chart: one row per local day from start_date until min(end_date, today), from bems_tenant_billing_daily_summary.
-		missing = no row for the day, incomplete = is_incomplete (today never, the day is not over).
+		API 4 chart: one row per local day from start_date until end_date (days after today: kwh NULL, no issue), from bems_tenant_billing_daily_summary.
+		incomplete = no row for the day or is_incomplete (today never, the day is not over).
 	-->
+	<!-- API 4: the tenant meter of the site (no row: meter not found) with its raw data table, for the 15-minute chart -->
+	<select id="getChartMeter" resultType="Map" parameterType="com.nwm.api.entities.TenantBillingEntity">
+		SELECT
+			d.id AS id_device,
+			d.datatablename
+		FROM
+			device d
+		WHERE
+			d.id = #{id_device}
+			AND d.id_site = #{id_site}
+			AND d.meter_type = 14
+			AND d.is_delete = 0
+	</select>
+
+	<!--
+		API 4, is_15min: kWh of each 15-minute slot (site time) in [start_date, end_date], from the raw data table of the meter.
+		slot = the reading time floored to 15 minutes, reading = last (max) reading of the slot; kWh = reading - reading of the previous slot with data.
+		The 15 minutes before start_date are read as the baseline of the first slot (not returned), so the slots of a day add up to its daily kWh.
+		A slot without readings is not returned.
+		TODO: missing / incomplete slots are not marked.
+	-->
+	<select id="getChart15MinData" resultType="Map" parameterType="com.nwm.api.entities.TenantBillingEntity">
+		WITH slots AS (
+			SELECT
+				FROM_UNIXTIME(FLOOR(UNIX_TIMESTAMP(CONVERT_TZ(dv.time, '+00:00', tz.`value`)) / 900) * 900) AS slot,
+				MAX(dv.nvmActiveEnergy) AS reading
+			FROM
+				${datatablename} dv
+				JOIN device d ON d.id = dv.id_device
+				JOIN site s ON s.id = d.id_site
+				JOIN time_zone tz ON tz.id = s.id_time_zone
+			WHERE
+				dv.id_device = #{id_device}
+				AND dv.time <![CDATA[ >= ]]> CONVERT_TZ(#{start_date}, tz.`value`, '+00:00') - INTERVAL 15 MINUTE
+				AND dv.time <![CDATA[ < ]]> CONVERT_TZ(DATE_ADD(#{end_date}, INTERVAL 1 DAY), tz.`value`, '+00:00')
+			GROUP BY slot
+			ORDER BY slot
+		)
+		SELECT *
+		FROM (
+			SELECT
+				DATE_FORMAT(slot, '%Y-%m-%d %H:%i') AS time,
+				ROUND(reading - LAG(reading) OVER (ORDER BY slot), 3) AS kwh
+			FROM slots
+		) t
+		WHERE t.time <![CDATA[ >= ]]> #{start_date}
+		ORDER BY t.time
+	</select>
+
 	<select id="getChartData" resultType="Map" parameterType="com.nwm.api.entities.TenantBillingEntity">
 		<include refid="deviceDays"/>
 		SELECT
 			DATE_FORMAT(local_date, '%Y-%m-%d') AS date,
 			ROUND(total_energy, 2) AS kwh,
-			issue <![CDATA[ <=> ]]> 'missing' AS missing,
-			issue <![CDATA[ <=> ]]> 'partial' AS incomplete
+			<!-- incomplete = no data or partial data -->
+			issue IS NOT NULL AS incomplete
 		FROM days
 		ORDER BY local_date
 	</select>
 
+    <select id="getLocationList" resultType="com.nwm.api.entities.SiteAreaBuildingFloorRoomEntity">
+        SELECT
+            id,
+            id_site,
+            id_floor,
+            name
+        FROM
+            site_area_building_floor_room
+        WHERE
+            status = 1 AND id_site = #{id_site}
+    </select>
 </mapper>
