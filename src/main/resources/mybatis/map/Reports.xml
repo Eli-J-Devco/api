@@ -13,6 +13,15 @@
 		<result property="type_option" column="type_option" />
 		<result property="cadence_range" column="cadence_range" />
 		<result property="report_date" column="report_date" />
+		<result property="file_type" column="file_type" />
+		<result property="date_from" column="date_from" />
+		<result property="date_to" column="date_to" />
+		<result property="schedule_enable" column="schedule_enable" />
+		<result property="time_schedule" column="time_schedule" />
+		<result property="periodicity" column="periodicity" />
+		<result property="days_week" column="days_week" />
+		<result property="offset_timezone" column="offset_timezone" />
+		<result property="id_employee" column="id_employee" />
 
 		<collection property="sites" ofType="com.nwm.api.entities.report.SiteByReport">
 			<id property="id" column="id_site" />
@@ -511,6 +520,15 @@
 			r.type_report,
 			r.type_option,
 			r.cadence_range,
+			r.file_type,
+			r.date_from,
+			r.date_to,
+			r.schedule_enable,
+			DATE_FORMAT(r.time_schedule, '%Y-%m-%d %H:%i:%s') AS time_schedule,
+			r.periodicity,
+			r.days_week,
+			r.offset_timezone,
+			r.id_employee,
 			c.logo,
 			c.name AS company_name,
 			IF(v.enable_virtual_device > 0 , 1, 0) AS enable_virtual_device,

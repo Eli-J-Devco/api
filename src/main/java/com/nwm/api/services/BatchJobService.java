@@ -1114,22 +1114,6 @@ public class BatchJobService extends DB {
 	}
 	
 	/**
-	 * @description get report detail
-	 * @author Hung.Bui
-	 * @since 2024-05-14
-	 */
-	
-	public ViewReportEntity getReportDetail(ViewReportEntity obj) {
-		try {
-			ViewReportEntity report = (ViewReportEntity) queryForObject("BatchJob.getReportDetail", obj);
-			return report;
-		} catch (Exception ex) {
-			log.error("BatchJob.getReportDetail", ex);
-			return null;
-		}
-	}
-	
-	/**
 	 * @description update next run time for report schedule
 	 * @author Hung.Bui
 	 * @since 2024-05-14
