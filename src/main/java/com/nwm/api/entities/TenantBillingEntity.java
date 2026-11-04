@@ -17,6 +17,8 @@ public class TenantBillingEntity {
 	private String sort_direction;
 	private int limit;
 	private int offset;
+	// true for the 15-minute chart from the raw data table, false (default) for daily
+	private boolean is_15min;
 
 	// filled by the service, not by the client
 	private String timezone_offset;
@@ -90,6 +92,14 @@ public class TenantBillingEntity {
 
 	public void setSort_direction(String sort_direction) {
 		this.sort_direction = sort_direction;
+	}
+
+	public boolean isIs_15min() {
+		return is_15min;
+	}
+
+	public void setIs_15min(boolean is_15min) {
+		this.is_15min = is_15min;
 	}
 
 	public int getLimit() {

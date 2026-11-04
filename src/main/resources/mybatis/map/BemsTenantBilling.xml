@@ -457,6 +457,55 @@
 		API 4 chart: one row per local day from start_date until end_date (days after today: kwh NULL, no issue), from bems_tenant_billing_daily_summary.
 		missing = no row for the day, incomplete = is_incomplete (today never, the day is not over).
 	-->
+	<!-- API 4: the tenant meter of the site (no row: meter not found) with its raw data table, for the 15-minute chart -->
+	<select id="getChartMeter" resultType="Map" parameterType="com.nwm.api.entities.TenantBillingEntity">
+		SELECT
+			d.id AS id_device,
+			d.datatablename
+		FROM
+			device d
+		WHERE
+			d.id = #{id_device}
+			AND d.id_site = #{id_site}
+			AND d.meter_type = 14
+			AND d.is_delete = 0
+	</select>
+
+	<!--
+		API 4, is_15min: kWh of each 15-minute slot (site time) in [start_date, end_date], from the raw data table of the meter.
+		slot = the reading time floored to 15 minutes, reading = last (max) reading of the slot; kWh = reading - reading of the previous slot with data.
+		The 15 minutes before start_date are read as the baseline of the first slot (not returned), so the slots of a day add up to its daily kWh.
+		A slot without readings is not returned.
+		TODO: missing / incomplete slots are not marked.
+	-->
+	<select id="getChart15MinData" resultType="Map" parameterType="com.nwm.api.entities.TenantBillingEntity">
+		WITH slots AS (
+			SELECT
+				FROM_UNIXTIME(FLOOR(UNIX_TIMESTAMP(CONVERT_TZ(dv.time, '+00:00', tz.`value`)) / 900) * 900) AS slot,
+				MAX(dv.nvmActiveEnergy) AS reading
+			FROM
+				${datatablename} dv
+				JOIN device d ON d.id = dv.id_device
+				JOIN site s ON s.id = d.id_site
+				JOIN time_zone tz ON tz.id = s.id_time_zone
+			WHERE
+				dv.id_device = #{id_device}
+				AND dv.time <![CDATA[ >= ]]> CONVERT_TZ(#{start_date}, tz.`value`, '+00:00') - INTERVAL 15 MINUTE
+				AND dv.time <![CDATA[ < ]]> CONVERT_TZ(DATE_ADD(#{end_date}, INTERVAL 1 DAY), tz.`value`, '+00:00')
+			GROUP BY slot
+			ORDER BY slot
+		)
+		SELECT *
+		FROM (
+			SELECT
+				DATE_FORMAT(slot, '%Y-%m-%d %H:%i') AS time,
+				ROUND(reading - LAG(reading) OVER (ORDER BY slot), 3) AS kwh
+			FROM slots
+		) t
+		WHERE t.time <![CDATA[ >= ]]> #{start_date}
+		ORDER BY t.time
+	</select>
+
 	<select id="getChartData" resultType="Map" parameterType="com.nwm.api.entities.TenantBillingEntity">
 		<include refid="deviceDays"/>
 		SELECT

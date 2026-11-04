@@ -151,7 +151,12 @@ public class TenantBillingService extends DB {
 	public List<Map<String, Object>> getChart(TenantBillingEntity obj) throws Exception {
 		if (obj.getId_device() <= 0) throw new IllegalArgumentException("id_device is required");
 		preparePeriod(obj, true);
-		if ((Integer) queryForObject("BemsTenantBilling.getListMeterTotal", obj) == 0) throw new IllegalArgumentException("Meter not found");
+		Map<String, Object> meter = (Map<String, Object>) queryForObject("BemsTenantBilling.getChartMeter", obj);
+		if (meter == null) throw new IllegalArgumentException("Meter not found");
+		if (obj.isIs_15min()) {
+			obj.setDatatablename(Lib.str(meter.get("datatablename")));
+			return getChart15Min(obj);
+		}
 
 		List<Map<String, Object>> data = new ArrayList<>();
 		Double peak = null;
@@ -169,6 +174,22 @@ public class TenantBillingService extends DB {
 		if (peak == null) return null;
 		// every day tied with the max is a peak
 		for (Map<String, Object> day : data) day.put("is_peak", peak.equals(day.get("kwh")));
+		return data;
+	}
+
+	/**
+	 * API 4 with is_15min: kWh of each 15-minute slot, from the raw data table of the meter (BemsTenantBilling.getChart15MinData).
+	 * @return [{ time (site time, yyyy-MM-dd HH:mm), kwh, is_peak }], null when the meter has no readings in the period
+	 */
+	private List<Map<String, Object>> getChart15Min(TenantBillingEntity obj) throws Exception {
+		// a meter without a raw table has no readings
+		if (obj.getDatatablename() == null || obj.getDatatablename().isEmpty()) return null;
+
+		List<Map<String, Object>> data = queryForList("BemsTenantBilling.getChart15MinData", obj);
+		if (data.isEmpty()) return null;
+		Object peak = data.stream().map(row -> row.get("kwh")).filter(kwh -> kwh != null)
+				.max((a, b) -> Double.compare(((Number) a).doubleValue(), ((Number) b).doubleValue())).orElse(null);
+		for (Map<String, Object> row : data) row.put("is_peak", peak != null && peak.equals(row.get("kwh")));
 		return data;
 	}
 
