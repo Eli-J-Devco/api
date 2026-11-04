@@ -85,7 +85,7 @@ public class TenantBillingService extends DB {
 		// no period rules for the export, the FE checks them
 		Period period = preparePeriod(obj, false);
 
-		// every meter, no search / filter / paging from the list
+		// every meter matching the search keyword and location of the list, no status filter / paging
 		obj.setId_device(0);
 		Map<String, Object> data = new LinkedHashMap<>();
 		data.put("site_code", period.site.get("site_code"));

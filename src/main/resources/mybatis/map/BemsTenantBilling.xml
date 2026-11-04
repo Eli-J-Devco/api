@@ -442,6 +442,11 @@
 			t.status
 		FROM (
 			<include refid="meterPeriod"/>
+			WHERE 1 = 1
+			<include refid="keywordMatch"/>
+			<if test="id_location > 0">
+				AND id_location = #{id_location}
+			</if>
 		) t
 		LEFT JOIN bems_tenant_billing_daily_summary o ON o.id = (
 			SELECT s.id FROM bems_tenant_billing_daily_summary s

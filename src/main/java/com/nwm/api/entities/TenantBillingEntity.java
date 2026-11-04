@@ -29,7 +29,7 @@ public class TenantBillingEntity {
 	private String timezone;
 	private Integer data_send_time;
 	private String datatablename;
-  private int id_location;
+	private int id_location;
 
 	public int getId_site() {
 		return id_site;
