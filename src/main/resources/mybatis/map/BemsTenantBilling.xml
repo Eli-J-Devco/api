@@ -167,13 +167,15 @@
 					AND COUNT(s.id) = #{expected_days}
 					AND IFNULL(SUM(s.is_incomplete), 0) = 0,
 					'ready', 'incomplete'
-				) AS status
+				) AS status,
+                r.id as id_location
 			FROM
 				device d
 				LEFT JOIN bems_tenant_billing_daily_summary s
 					ON s.id_device = d.id
 					AND s.id_site = d.id_site
 					AND s.`date` BETWEEN #{start_date} AND #{end_date}
+                LEFT JOIN site_area_building_floor_room r on r.id_site = d.id_site
 			WHERE
 				d.id_site = #{id_site}
 				AND d.meter_type = 14
@@ -201,6 +203,9 @@
 		<if test="status == 'ready' or status == 'incomplete'">
 			AND status = #{status}
 		</if>
+        <if test="id_location > 0">
+            AND id_location = #{id_location}
+        </if>
 	</sql>
 
 	<!-- API 1 list, and the meter of API 5, 6. Ready first, then sort_column (serial | tenant_name | location | kwh) in sort_direction (asc | desc). -->
@@ -468,4 +473,15 @@
 		ORDER BY local_date
 	</select>
 
+    <select id="getLocationList" resultType="com.nwm.api.entities.SiteAreaBuildingFloorRoomEntity">
+        SELECT
+            id,
+            id_site,
+            id_floor,
+            name
+        FROM
+            site_area_building_floor_room
+        WHERE
+            status = 1 AND id_site = #{id_site}
+    </select>
 </mapper>

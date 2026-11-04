@@ -8,6 +8,7 @@ package com.nwm.api.controllers;
 import java.util.List;
 import java.util.Map;
 
+import com.nwm.api.entities.SiteAreaBuildingFloorRoomEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -210,4 +211,20 @@ public class TenantBillingController extends BaseController {
 		}
 	}
 
+  /**
+   * @description API 8: get location list for filter
+   * @param id_site
+   */
+  @PostMapping("/location-list")
+  public Object getLocationList(@RequestBody TenantBillingEntity obj) {
+    try {
+      List<SiteAreaBuildingFloorRoomEntity> dataList = service.getLocationList(obj);
+      return this.jsonResult(true, Constants.GET_SUCCESS_MSG, dataList, dataList.size());
+    } catch (IllegalArgumentException | IllegalStateException e) {
+      return this.jsonResult(false, e.getMessage(), null, 0);
+    } catch (Exception e) {
+      log.error(e);
+      return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+    }
+  }
 }
