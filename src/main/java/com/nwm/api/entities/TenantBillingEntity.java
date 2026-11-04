@@ -29,6 +29,7 @@ public class TenantBillingEntity {
 	private String timezone;
 	private Integer data_send_time;
 	private String datatablename;
+  private int id_location;
 
 	public int getId_site() {
 		return id_site;
@@ -181,4 +182,12 @@ public class TenantBillingEntity {
 	public void setDatatablename(String datatablename) {
 		this.datatablename = datatablename;
 	}
+
+  public int getId_location() {
+    return id_location;
+  }
+
+  public void setId_location(int id_location) {
+    this.id_location = id_location;
+  }
 }

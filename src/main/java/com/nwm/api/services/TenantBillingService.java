@@ -19,6 +19,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.nwm.api.entities.SiteAreaBuildingFloorRoomEntity;
 import org.springframework.stereotype.Service;
 
 import com.nwm.api.DBManagers.DB;
@@ -344,4 +345,17 @@ public class TenantBillingService extends DB {
 
 		return period;
 	}
+
+  public List<SiteAreaBuildingFloorRoomEntity> getLocationList(TenantBillingEntity obj) {
+    try {
+      List<SiteAreaBuildingFloorRoomEntity> dataList = (List<SiteAreaBuildingFloorRoomEntity>) queryForList("BemsTenantBilling.getLocationList", obj);
+      if (dataList == null || dataList.isEmpty()) {
+        return new ArrayList<>();
+      }
+      return dataList;
+    } catch (Exception e) {
+      log.error("TenantBillingService.getLocationList", e);
+    }
+    return new ArrayList<>();
+  }
 }
