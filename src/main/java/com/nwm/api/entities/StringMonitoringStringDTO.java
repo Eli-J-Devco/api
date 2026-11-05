@@ -10,6 +10,7 @@ import java.util.List;
 public class StringMonitoringStringDTO {
 	private int id;
 	private Double deviation;
+	private Double threshold;
 	private List<StringMonitoringParameterDTO> parameters;
 	
 	public int getId() {
@@ -23,6 +24,12 @@ public class StringMonitoringStringDTO {
 	}
 	public void setDeviation(Double deviation) {
 		this.deviation = deviation;
+	}
+	public Double getThreshold() {
+		return threshold;
+	}
+	public void setThreshold(Double threshold) {
+		this.threshold = threshold;
 	}
 	public List<StringMonitoringParameterDTO> getParameters() {
 		return parameters;
