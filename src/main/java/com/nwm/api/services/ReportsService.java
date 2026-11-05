@@ -941,16 +941,10 @@ public class ReportsService extends DB {
 			LocalDateTime endDate = LocalDateTime.parse(req.getEnd_date(), inputDateFormat).withHour(23).withMinute(59).withSecond(59);
 			AssetManagementAndOperationPerformanceReportEntity dataObj = new AssetManagementAndOperationPerformanceReportEntity();
 			dataObj.setReportDetail(reportDetail);
-			
-			String id_sites = req.getId_sites() != null ? req.getId_sites() : (req.getIds_site() != null ? req.getIds_site() : null);
-			String[] idSiteArr = id_sites != null ? id_sites.split(",") : new String[0];
-			if (idSiteArr.length == 0) return dataObj;
-			req.setId_site(Integer.parseInt(idSiteArr[0]));
-			
+
 			SiteByReport site = Optional.ofNullable(reportDetail.getSites())
 					.orElse(new ArrayList<>())
 					.stream()
-					.filter(item -> item.getId() == req.getId_site())
 					.findFirst()
 					.orElse(null);
 			if (Objects.isNull(site)) return dataObj;
@@ -4876,7 +4870,6 @@ public class ReportsService extends DB {
 			SiteByReport site = Optional.ofNullable(reportDetail.getSites())
 					.orElse(new ArrayList<>())
 					.stream()
-					.filter(item -> item.getId() == req.getId_site())
 					.findFirst()
 					.orElse(null);
 			
