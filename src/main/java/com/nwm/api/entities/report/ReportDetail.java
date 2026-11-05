@@ -13,6 +13,15 @@ public class ReportDetail {
 	private int type_option;
 	private int cadence_range;
 	private String report_date;
+	private int file_type;
+	private String date_from;
+	private String date_to;
+	private int schedule_enable;
+	private String time_schedule;
+	private int periodicity;
+	private String days_week;
+	private String offset_timezone;
+	private int id_employee;
 	private List<SiteByReport> sites = new ArrayList<>();
 	
 	public int getId() {
@@ -68,6 +77,60 @@ public class ReportDetail {
 	}
 	public void setReport_date(String report_date) {
 		this.report_date = report_date;
+	}
+	public int getFile_type() {
+		return file_type;
+	}
+	public void setFile_type(int file_type) {
+		this.file_type = file_type;
+	}
+	public String getDate_from() {
+		return date_from;
+	}
+	public void setDate_from(String date_from) {
+		this.date_from = date_from;
+	}
+	public String getDate_to() {
+		return date_to;
+	}
+	public void setDate_to(String date_to) {
+		this.date_to = date_to;
+	}
+	public int getSchedule_enable() {
+		return schedule_enable;
+	}
+	public void setSchedule_enable(int schedule_enable) {
+		this.schedule_enable = schedule_enable;
+	}
+	public String getTime_schedule() {
+		return time_schedule;
+	}
+	public void setTime_schedule(String time_schedule) {
+		this.time_schedule = time_schedule;
+	}
+	public int getPeriodicity() {
+		return periodicity;
+	}
+	public void setPeriodicity(int periodicity) {
+		this.periodicity = periodicity;
+	}
+	public String getDays_week() {
+		return days_week;
+	}
+	public void setDays_week(String days_week) {
+		this.days_week = days_week;
+	}
+	public String getOffset_timezone() {
+		return offset_timezone;
+	}
+	public void setOffset_timezone(String offset_timezone) {
+		this.offset_timezone = offset_timezone;
+	}
+	public int getId_employee() {
+		return id_employee;
+	}
+	public void setId_employee(int id_employee) {
+		this.id_employee = id_employee;
 	}
 	public List<SiteByReport> getSites() {
 		return sites;

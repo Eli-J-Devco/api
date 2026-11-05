@@ -10,7 +10,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -32,8 +31,10 @@ import org.springframework.stereotype.Component;
 import com.nwm.api.batchjob.BatchJob;
 import com.nwm.api.entities.AnalyticalReportTrackerEntity;
 import com.nwm.api.entities.ViewReportEntity;
+import com.nwm.api.entities.report.ReportDetail;
 import com.nwm.api.services.AnalyticalReportTrackerService;
 import com.nwm.api.services.BatchJobService;
+import com.nwm.api.services.ReportsService;
 
 @Component
 public class ReportTaskScheduler {
@@ -79,6 +80,8 @@ public class ReportTaskScheduler {
     private BatchJobService service;
     @Autowired
     private BatchJob batchJob;
+	@Autowired
+	private ReportsService reportsService;
     @Autowired
     private AnalyticalReportTrackerService analyticalReportTrackerService;
     
@@ -229,7 +232,7 @@ public class ReportTaskScheduler {
 		@Override
 		public void run() {
 			try {
-				ViewReportEntity currentReport = service.getReportDetail(prevReport);
+				ReportDetail currentReport = reportsService.getReportDetail(prevReport);
 				if (
 					currentReport == null ||
 					(currentReport.getPeriodicity() == 2 && !currentReport.getDays_week().equals(prevReport.getDays_week())) ||
@@ -241,11 +244,25 @@ public class ReportTaskScheduler {
 				}
 				
 				List<String> cronExps = timeScheduleToCronExpConverter(currentReport.getPeriodicity(), currentReport.getTime_schedule(), currentReport.getDays_week(), currentReport.getOffset_timezone());
-				runTaskIfNotRunYet(cronExps, currentReport.getId(), req -> service.updateReportScheduleNextRunTime(req), () -> batchJob.sentMailReportOnSchedule(currentReport));
+				ViewReportEntity reportReq = getReportRequest(currentReport);
+				runTaskIfNotRunYet(cronExps, currentReport.getId(), req -> service.updateReportScheduleNextRunTime(req), () -> batchJob.sentMailReportOnSchedule(reportReq));
 			} catch (Exception e) {
 			}
 		}
-		
+
+		private ViewReportEntity getReportRequest(ReportDetail reportDetail) {
+			ViewReportEntity report = new ViewReportEntity();
+			report.setId(reportDetail.getId());
+			report.setCadence_range(reportDetail.getCadence_range());
+			report.setType_report(reportDetail.getType_report());
+			report.setDate_from(reportDetail.getDate_from());
+			report.setDate_to(reportDetail.getDate_to());
+			report.setOffset_timezone(reportDetail.getOffset_timezone());
+			report.setId_employee(prevReport.getId_employee());
+			report.setIs_supper_admin(prevReport.getIs_supper_admin());
+			return report;
+		}
+
 		public ScheduledReportRunnable(ViewReportEntity report) {
 			this.prevReport = report;
 		}

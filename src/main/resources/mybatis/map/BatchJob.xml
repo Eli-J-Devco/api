@@ -1492,75 +1492,21 @@
 			DATE_FORMAT(r.time_schedule, '%Y-%m-%d %H:%i:%s') AS time_schedule,
 			r.periodicity,
 			r.days_week,
-			r.offset_timezone
+			r.offset_timezone,
+			r.id_employee,
+			IF(MIN(erm.id_role) = 1, 1, 0) AS is_supper_admin
 		FROM
 			report r
-			LEFT JOIN site s ON s.id = r.id_site
-			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+			JOIN employee_role_map erm ON erm.id_employee = r.id_employee
 		WHERE
 			r.`status` = 1
-			AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 			<if test="id > 0">
 				AND r.id = #{id}
 			</if>
-	</select>
-  	
-  	<select id="getReportDetail" resultType="com.nwm.api.entities.ViewReportEntity" >
-		SELECT
-			<include refid="Reports.reportName"/> AS report_name,
-			r.id,
-			r.data_intervals,
-			r.type_report,
-			r.cadence_range,
-			r.file_type,
-			r.date_from,
-			r.date_to,
-			r.schedule_enable,
-			DATE_FORMAT(r.time_schedule, '%Y-%m-%d %H:%i:%s') AS time_schedule,
-			r.periodicity,
-			r.days_week,
-			r.offset_timezone,
-			r.subscribers,
-			r.id_employee,
-			CASE
-		    	WHEN r.cadence_range = 1 THEN "Daily"
-				WHEN r.cadence_range = 2 THEN "Month-to-Date"
-				WHEN r.cadence_range = 3 THEN "Last Full Quarter"
-				WHEN r.cadence_range = 4 THEN "Year-to-Date"
-				WHEN r.cadence_range = 5 THEN "Custom"
-				WHEN r.cadence_range = 6 THEN "Week-to-Date"
-				WHEN r.cadence_range = 7 THEN "Last Month"
-				WHEN r.cadence_range = 8 THEN "Last Week"
-		    	ELSE ""
-			END	AS cadence_range_name,
-			GROUP_CONCAT(s.id SEPARATOR ',') AS id_sites
-		FROM
-			report r
-			JOIN site_employee_map sem ON sem.id_employee = r.id_employee
-			JOIN site s ON s.id = sem.id_site
-			JOIN time_zone tz ON tz.id = s.id_time_zone
-			LEFT JOIN site_sub_group ssg ON ssg.id = s.id_site_sub_group
-			LEFT JOIN report_site_map rsm ON r.type_option = 2 AND rsm.id_site = s.id AND rsm.id_report = r.id
-		WHERE
-			r.id = #{id}
-			AND r.status = 1
-			AND r.schedule_enable = 1
-			AND s.`status` = 1
-			AND s.is_delete = 0
-			AND (CONVERT_TZ(NOW(), 'UTC', tz.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
-			AND (
-				CASE r.type_option
-					WHEN 1 THEN TRUE
-			    	WHEN 2 THEN rsm.id_report IS NOT NULL
-			    	WHEN 3 THEN r.id_sub_group = ssg.id
-					WHEN 4 THEN s.is_rec_report = 1
-			    	ELSE TRUE
-				END
-			)
 		GROUP BY
 			r.id
 	</select>
-	
+  	
 	<update id="updateReportScheduleNextRunTime">
 		UPDATE report
 		SET

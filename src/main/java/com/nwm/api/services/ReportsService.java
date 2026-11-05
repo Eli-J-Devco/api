@@ -32,22 +32,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.OptionalDouble;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
@@ -491,6 +476,17 @@ public class ReportsService extends DB {
 		
 		return reportDetail;
 	}
+
+	public void filterSiteOnRequest(ReportDetail reportDetail, int siteId) {
+		if (siteId == 0) return;
+
+		Optional.ofNullable(reportDetail.getSites()).ifPresent(sites -> {
+			reportDetail.setSites(sites.stream()
+					.filter(site -> site.getId() == siteId)
+					.collect(Collectors.toList())
+			);
+		});
+	}
 	
 	/**
 	 * @description Get data list in multi threads
@@ -517,12 +513,15 @@ public class ReportsService extends DB {
 		}
 	}
 	
-	public ReportDetail getReportDetail(ViewReportEntity obj) {
+	public ReportDetail getReportDetail(ViewReportEntity obj) throws Exception {
 		try {
-			return (ReportDetail) queryForObject("Reports.getDetailReport", obj);
+			ReportDetail reportDetail = (ReportDetail) queryForObject("Reports.getDetailReport", obj);
+			if (Objects.isNull(reportDetail)) throw new Exception("Report not found");
+
+			return reportDetail;
 		} catch (Exception ex) {
 			log.error("Reports.getReportDetail", ex);
-			return null;
+			throw ex;
 		}
 	}
 	
@@ -653,15 +652,15 @@ public class ReportsService extends DB {
 	public ReportDetail getDailyReport(ViewReportEntity req) throws Exception {
 		try {
 			ReportDetail reportDetail = getReportDetail(req);
-			if (Objects.isNull(reportDetail)) throw new Exception("Report not found");
-			
+
 			LocalDateTime startDate = LocalDateTime.parse(req.getStart_date(), inputDTF);
 			LocalDateTime endDate = LocalDateTime.parse(req.getEnd_date(), inputDTF);
 			ChartingGranularity granularity = ChartingGranularity.fromValue(reportDetail.getData_intervals());
 			ChartingFilter filter = ChartingFilter._3_DAYS;
+
+			filterSiteOnRequest(reportDetail, req.getId_site());
 			
 			List<CompletableFuture<Void>> futures = Optional.ofNullable(reportDetail.getSites()).orElse(new ArrayList<>()).stream()
-					.filter(site -> req.getId_site() > 0 ? site.getId() == req.getId_site() : true)
 					.map(site -> CompletableFuture.runAsync(() -> {
 						try {
 							DevicesByTypeEntity devices = deviceService.getDevicesBySite(site.getId(), req.getDomain());
@@ -731,16 +730,16 @@ public class ReportsService extends DB {
 	public ReportDetail getAnnuallyReport(ViewReportEntity req) throws Exception {
 		try {
 			ReportDetail reportDetail = getReportDetail(req);
-			if (Objects.isNull(reportDetail)) throw new Exception("Report not found");
-			
+
 			LocalDateTime startDate = LocalDateTime.parse(req.getStart_date(), inputDTF);
 			LocalDateTime endDate = LocalDateTime.parse(req.getEnd_date(), inputDTF);
 			ReportRange range = ReportRange.fromValue(reportDetail.getCadence_range());
 			ChartingGranularity granularity = ChartingGranularity._1_MONTH;
 			ChartingFilter filter = ChartingFilter.YEAR_TO_DATE;
-			
+
+			filterSiteOnRequest(reportDetail, req.getId_site());
+
 			List<CompletableFuture<Void>> futures = Optional.ofNullable(reportDetail.getSites()).orElse(new ArrayList<>()).stream()
-					.filter(site -> req.getId_site() > 0 ? site.getId() == req.getId_site() : true)
 					.map(site -> CompletableFuture.runAsync(() -> {
 						try {
 							UploadingDataIntervals siteUploadingInterval = UploadingDataIntervals.fromValue(site.getData_send_time());
@@ -830,8 +829,7 @@ public class ReportsService extends DB {
 	public ReportDetail getQuarterlyReport(ViewReportEntity req) throws Exception {
 		try {
 			ReportDetail reportDetail = getReportDetail(req);
-			if (Objects.isNull(reportDetail)) throw new Exception("Report not found");
-			
+
 			ReportIntervals interval = ReportIntervals.fromValue(reportDetail.getData_intervals());
 			// quarterly report by month
 			if (interval == ReportIntervals.MONTHLY) return getAnnuallyReport(req);
@@ -841,9 +839,10 @@ public class ReportsService extends DB {
 			LocalDateTime endDate = LocalDateTime.parse(req.getEnd_date(), inputDTF);
 			ChartingGranularity granularity = ChartingGranularity._1_DAY;
 			ChartingFilter filter = ChartingFilter.YEAR_TO_DATE;
-			
+
+			filterSiteOnRequest(reportDetail, req.getId_site());
+
 			List<CompletableFuture<Void>> futures = Optional.ofNullable(reportDetail.getSites()).orElse(new ArrayList<>()).stream()
-					.filter(site -> req.getId_site() > 0 ? site.getId() == req.getId_site() : true)
 					.map(site -> CompletableFuture.runAsync(() -> {
 						try {
 							DevicesByTypeEntity devices = deviceService.getDevicesBySite(site.getId(), req.getDomain());
@@ -934,8 +933,7 @@ public class ReportsService extends DB {
 	public AssetManagementAndOperationPerformanceReportEntity getAssetManagementAndOperationPerformanceReport(ViewReportEntity req) throws Exception {
 		try {
 			ReportDetail reportDetail = getReportDetail(req);
-			if (Objects.isNull(reportDetail)) throw new Exception("Report not found");
-			
+
 			DateTimeFormatter inputDateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 			DateTimeFormatter mmm_yyFormat = DateTimeFormatter.ofPattern("MMM-yy");
 			DateTimeFormatter mm_dd_yyyyFormat = DateTimeFormatter.ofPattern("MM/dd/yyyy");
@@ -943,16 +941,10 @@ public class ReportsService extends DB {
 			LocalDateTime endDate = LocalDateTime.parse(req.getEnd_date(), inputDateFormat).withHour(23).withMinute(59).withSecond(59);
 			AssetManagementAndOperationPerformanceReportEntity dataObj = new AssetManagementAndOperationPerformanceReportEntity();
 			dataObj.setReportDetail(reportDetail);
-			
-			String id_sites = req.getId_sites() != null ? req.getId_sites() : (req.getIds_site() != null ? req.getIds_site() : null);
-			String[] idSiteArr = id_sites != null ? id_sites.split(",") : new String[0];
-			if (idSiteArr.length == 0) return dataObj;
-			req.setId_site(Integer.parseInt(idSiteArr[0]));
-			
+
 			SiteByReport site = Optional.ofNullable(reportDetail.getSites())
 					.orElse(new ArrayList<>())
 					.stream()
-					.filter(item -> item.getId() == req.getId_site())
 					.findFirst()
 					.orElse(null);
 			if (Objects.isNull(site)) return dataObj;
@@ -1136,7 +1128,6 @@ public class ReportsService extends DB {
 	public ReportDetail getSanityCheckReport(ViewReportEntity req) throws Exception {
 		try {
 			ReportDetail reportDetail = getReportDetail(req);
-			if (Objects.isNull(reportDetail)) throw new Exception("Report not found");
 			if (Optional.ofNullable(reportDetail.getSites()).orElse(new ArrayList<>()).isEmpty()) return reportDetail;
 			
 			AlertEntity alertObj = new AlertEntity();
@@ -1152,7 +1143,7 @@ public class ReportsService extends DB {
 			for (AlertEntity alert : alertCountList) alertCountMap.put(alert.getId(), alert.getTotalError());
 			
 			List<CompletableFuture<Void>> futures = Optional.ofNullable(reportDetail.getSites()).orElse(new ArrayList<>()).stream()
-					.sorted((a,b) -> a.getName().compareTo(b.getName()))
+					.sorted(Comparator.comparing(SiteByReport::getName))
 					.map(site -> CompletableFuture.runAsync(() -> {
 						try {
 							SanityCheckReportEntity sanityCheckReport = new SanityCheckReportEntity();
@@ -1522,15 +1513,15 @@ public class ReportsService extends DB {
 	public ReportDetail getMonthlyReport(ViewReportEntity req) throws Exception {
 		try {
 			ReportDetail reportDetail = getReportDetail(req);
-			if (Objects.isNull(reportDetail)) throw new Exception("Report not found");
-			
+
 			LocalDateTime startDate = LocalDateTime.parse(req.getStart_date(), inputDTF);
 			LocalDateTime endDate = LocalDateTime.parse(req.getEnd_date(), inputDTF);
 			ChartingGranularity granularity = ChartingGranularity._1_DAY;
 			ChartingFilter filter = ChartingFilter.THIS_MONTH;
+
+			filterSiteOnRequest(reportDetail, req.getId_site());
 			
 			List<CompletableFuture<Void>> futures = Optional.ofNullable(reportDetail.getSites()).orElse(new ArrayList<>()).stream()
-					.filter(site -> req.getId_site() > 0 ? site.getId() == req.getId_site() : true)
 					.map(site -> CompletableFuture.runAsync(() -> {
 						try {
 							UploadingDataIntervals siteUploadingInterval = UploadingDataIntervals.fromValue(site.getData_send_time());
@@ -1604,16 +1595,16 @@ public class ReportsService extends DB {
 	public ReportDetail getCustomReport(ViewReportEntity req) throws Exception {
 		try {
 			ReportDetail reportDetail = getReportDetail(req);
-			if (Objects.isNull(reportDetail)) throw new Exception("Report not found");
-			
+
 			LocalDateTime startDate = LocalDateTime.parse(req.getStart_date(), inputDTF);
 			LocalDateTime endDate = LocalDateTime.parse(req.getEnd_date(), inputDTF);
-			ReportIntervals intervals = ReportIntervals.fromValue(req.getData_intervals());
+			ReportIntervals intervals = ReportIntervals.fromValue(reportDetail.getData_intervals());
 			ChartingGranularity granularity = ReportIntervals.toChartingGranularity(intervals);
 			ChartingFilter filter = ChartingFilter.CUSTOM;
-			
+
+			filterSiteOnRequest(reportDetail, req.getId_site());
+
 			List<CompletableFuture<Void>> futures = Optional.ofNullable(reportDetail.getSites()).orElse(new ArrayList<>()).stream()
-					.filter(site -> req.getId_site() > 0 ? site.getId() == req.getId_site() : true)
 					.map(site -> CompletableFuture.runAsync(() -> {
 						try {
 							DevicesByTypeEntity devices = deviceService.getDevicesBySite(site.getId(), req.getDomain());
@@ -1684,19 +1675,15 @@ public class ReportsService extends DB {
 	
 	public ReportDetail getPerformanceReport(ViewReportEntity req) throws Exception {
 		try {
-			req.setId_site(Integer.parseInt(Optional.ofNullable(req.getId_sites()).orElse(Optional.ofNullable(req.getIds_site()).orElse("0"))));
-			
 			ReportDetail reportDetail = getReportDetail(req);
-			if (Objects.isNull(reportDetail)) throw new Exception("Report not found");
-			
+
 			int totalMonths = 12;
 			LocalDateTime startDate = LocalDateTime.parse(req.getStart_date(), inputDTF);
 			LocalDateTime endDate = LocalDateTime.parse(req.getEnd_date(), inputDTF);
 			ChartingGranularity granularity = ChartingGranularity._1_MONTH;
 			ChartingFilter filter = ChartingFilter.LAST_12_MONTHS;
-			
+
 			List<CompletableFuture<Void>> futures = Optional.ofNullable(reportDetail.getSites()).orElse(new ArrayList<>()).stream()
-					.filter(site -> req.getId_site() > 0 ? site.getId() == req.getId_site() : true)
 					.map(site -> CompletableFuture.runAsync(() -> {
 						try {
 							LocalDateTime commissioningDate = LocalDateTime.parse(site.getCommissioning(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
@@ -1896,16 +1883,16 @@ public class ReportsService extends DB {
 	public ReportDetail getMeterInverterProductionReport(ViewReportEntity req) throws Exception {
 		try {
 			ReportDetail reportDetail = getReportDetail(req);
-			if (Objects.isNull(reportDetail)) throw new Exception("Report not found");
-			
+
 			LocalDateTime startDate = LocalDateTime.parse(req.getStart_date(), inputDTF);
 			LocalDateTime endDate = LocalDateTime.parse(req.getEnd_date(), inputDTF);
 			ReportIntervals intervals = ReportIntervals.fromValue(reportDetail.getData_intervals());
 			ChartingGranularity granularity = ReportIntervals.toChartingGranularity(intervals);
 			ChartingFilter filter = ChartingFilter.CUSTOM;
+
+			filterSiteOnRequest(reportDetail, req.getId_site());
 			
 			List<CompletableFuture<Void>> futures = Optional.ofNullable(reportDetail.getSites()).orElse(new ArrayList<>()).stream()
-					.filter(site -> req.getId_site() > 0 ? site.getId() == req.getId_site() : true)
 					.map(site -> CompletableFuture.runAsync(() -> {
 						try {
 							UploadingDataIntervals siteUploadingInterval = UploadingDataIntervals.fromValue(site.getData_send_time());
@@ -2170,26 +2157,26 @@ public class ReportsService extends DB {
 			if (Objects.isNull(reportDetail)) return false;
 			String filePath = null;
 			
-			switch (ReportRange.fromValue(obj.getCadence_range())) {
+			switch (ReportRange.fromValue(reportDetail.getCadence_range())) {
 				case DAILY: 
-					filePath = obj.getFile_type() == ReportFileType.PDF.getValue() ? createDailyReportPdfFile(obj, reportDetail) : createDailyReportSheetFile(obj, reportDetail);
+					filePath = reportDetail.getFile_type() == ReportFileType.PDF.getValue() ? createDailyReportPdfFile(obj, reportDetail) : createDailyReportSheetFile(obj, reportDetail);
 					break;
 					
 				case LAST_MONTH:
 				case MONTHLY:
-					filePath = obj.getFile_type() == ReportFileType.PDF.getValue() ? createMonthlyReportPdfFile(obj, reportDetail) : createMonthlyReportSheetFile(obj, reportDetail);
+					filePath = reportDetail.getFile_type() == ReportFileType.PDF.getValue() ? createMonthlyReportPdfFile(obj, reportDetail) : createMonthlyReportSheetFile(obj, reportDetail);
 					break;
 					
 				case LAST_QUARTER:
-					filePath = obj.getFile_type() == ReportFileType.PDF.getValue() ? createQuarterlyReportPdfFile(obj, reportDetail) : createQuarterlyReportSheetFile(obj, reportDetail);
+					filePath = reportDetail.getFile_type() == ReportFileType.PDF.getValue() ? createQuarterlyReportPdfFile(obj, reportDetail) : createQuarterlyReportSheetFile(obj, reportDetail);
 					break;
 					
 				case ANNUALLY:
-					filePath = obj.getFile_type() == ReportFileType.PDF.getValue() ? createAnnuallyReportPdfFile(obj, reportDetail) : createAnnuallyReportSheetFile(obj, reportDetail);
+					filePath = reportDetail.getFile_type() == ReportFileType.PDF.getValue() ? createAnnuallyReportPdfFile(obj, reportDetail) : createAnnuallyReportSheetFile(obj, reportDetail);
 					break;
 					
 				case CUSTOM:
-					filePath = obj.getFile_type() == ReportFileType.PDF.getValue() ? createCustomReportPdfFile(obj, reportDetail) : createCustomReportSheetFile(obj, reportDetail);
+					filePath = reportDetail.getFile_type() == ReportFileType.PDF.getValue() ? createCustomReportPdfFile(obj, reportDetail) : createCustomReportSheetFile(obj, reportDetail);
 					break;
 					
 				default:
@@ -2198,7 +2185,7 @@ public class ReportsService extends DB {
 			
 			if (filePath == null) return false;
 			
-			sentReportByMail(filePath, reportDetail.getSubscribers(), obj.getCadence_range_name(), 16, "Customer", obj.getCadence_range_name());
+			sentReportByMail(filePath, reportDetail.getSubscribers(), reportDetail.getCadence_range_name(), 16, "Customer", reportDetail.getCadence_range_name());
 			return true;
 		} catch (Exception e) {
 			return false;
@@ -2209,24 +2196,24 @@ public class ReportsService extends DB {
 	 * @description download report
 	 * @author Hung.Bui
 	 * @since 2025-08-08
-	 * @param obj
+	 * @param req
 	 */
-	public String downloadReport(ViewReportEntity obj) {
+	public String downloadReport(ViewReportEntity req) {
 		try {
-			ReportDetail reportDetail = getReportDataList(obj);
+			ReportDetail reportDetail = getReportDataList(req);
 			if (Objects.isNull(reportDetail)) return null;
 			
-			switch (ReportRange.fromValue(obj.getCadence_range())) {
-				case DAILY: return obj.getFile_type() == ReportFileType.PDF.getValue() ? createDailyReportPdfFile(obj, reportDetail) : createDailyReportSheetFile(obj, reportDetail);
+			switch (ReportRange.fromValue(reportDetail.getCadence_range())) {
+				case DAILY: return reportDetail.getFile_type() == ReportFileType.PDF.getValue() ? createDailyReportPdfFile(req, reportDetail) : createDailyReportSheetFile(req, reportDetail);
 				
 				case LAST_MONTH:
-				case MONTHLY: return obj.getFile_type() == ReportFileType.PDF.getValue() ? createMonthlyReportPdfFile(obj, reportDetail) : createMonthlyReportSheetFile(obj, reportDetail);
+				case MONTHLY: return reportDetail.getFile_type() == ReportFileType.PDF.getValue() ? createMonthlyReportPdfFile(req, reportDetail) : createMonthlyReportSheetFile(req, reportDetail);
 				
-				case LAST_QUARTER: return obj.getFile_type() == ReportFileType.PDF.getValue() ? createQuarterlyReportPdfFile(obj, reportDetail) : createQuarterlyReportSheetFile(obj, reportDetail);
+				case LAST_QUARTER: return reportDetail.getFile_type() == ReportFileType.PDF.getValue() ? createQuarterlyReportPdfFile(req, reportDetail) : createQuarterlyReportSheetFile(req, reportDetail);
 				
-				case ANNUALLY: return obj.getFile_type() == ReportFileType.PDF.getValue() ? createAnnuallyReportPdfFile(obj, reportDetail) : createAnnuallyReportSheetFile(obj, reportDetail);
+				case ANNUALLY: return reportDetail.getFile_type() == ReportFileType.PDF.getValue() ? createAnnuallyReportPdfFile(req, reportDetail) : createAnnuallyReportSheetFile(req, reportDetail);
 				
-				case CUSTOM: return obj.getFile_type() == ReportFileType.PDF.getValue() ? createCustomReportPdfFile(obj, reportDetail) : createCustomReportSheetFile(obj, reportDetail);
+				case CUSTOM: return reportDetail.getFile_type() == ReportFileType.PDF.getValue() ? createCustomReportPdfFile(req, reportDetail) : createCustomReportSheetFile(req, reportDetail);
 				
 				default: return null;
 			}
@@ -3361,7 +3348,7 @@ public class ReportsService extends DB {
 				}
 			});
 			
-			return writeToSheetFile(document, req.getReport_name());
+			return writeToSheetFile(document, reportDetail.getName());
 		} catch (Exception e) {
 			return null;
 		}
@@ -3999,7 +3986,7 @@ public class ReportsService extends DB {
 				}
 			});
 			
-			return writeToSheetFile(document, req.getReport_name());
+			return writeToSheetFile(document, reportDetail.getName());
 		} catch (Exception e) {
 			return null;
 		}
@@ -4454,7 +4441,7 @@ public class ReportsService extends DB {
 				} catch (Exception e) {}
 			}
 			
-			return writeToSheetFile(document, req.getReport_name());
+			return writeToSheetFile(document, reportDetail.getName());
 		} catch (Exception e) {
 			return null;
 		}
@@ -4879,7 +4866,6 @@ public class ReportsService extends DB {
 			SiteByReport site = Optional.ofNullable(reportDetail.getSites())
 					.orElse(new ArrayList<>())
 					.stream()
-					.filter(item -> item.getId() == req.getId_site())
 					.findFirst()
 					.orElse(null);
 			
@@ -5711,9 +5697,6 @@ public class ReportsService extends DB {
 	
 	private void writeHeaderSanityCheckReport(Sheet sheet, ReportDetail reportDetail, String startDate, String endDate) {
 		try {
-			SiteByReport site = Optional.ofNullable(reportDetail.getSites()).map(item -> item.stream().findFirst().get()).orElse(null);
-			if (Objects.isNull(site)) return;
-			
 			sheet.setDefaultColumnWidth(16);
 			sheet.setColumnWidth(0, 15 * 256);
 			sheet.setColumnWidth(1, 15 * 256);
@@ -5942,19 +5925,17 @@ public class ReportsService extends DB {
 			cell = row.createCell(20);
 			cell.setCellStyle(tableHeaderCellStyle);
 			sheet.addMergedRegion(new CellRangeAddress(5, 5, 19, 20));
+
+			List<SiteByReport> sites = Optional.ofNullable(reportDetail.getSites()).orElse(new ArrayList<>());
+			int accumulatedRowCount = 0;
 				
-			List<SanityCheckReportEntity> dataExports = (List<SanityCheckReportEntity>) Optional.ofNullable(reportDetail.getSites())
-					.orElse(new ArrayList<>())
-					.stream()
-					.map(item -> (SanityCheckReportEntity) item.getDataReports().get(0))
-					.collect(Collectors.toList());
-			
-			if(Objects.nonNull(dataExports) && dataExports.size() > 0) {
-				int accumulatedRowCount = 0;
-				
-				for(int i = 0; i < dataExports.size(); i++) {
+			for (int i = 0; i < sites.size(); i++) {
 				try {
-					SanityCheckReportEntity item = dataExports.get(i);
+					SiteByReport site = sites.get(i);
+					SanityCheckReportEntity item = site.getDataReports().stream()
+							.findFirst()
+							.map(data -> (SanityCheckReportEntity) data)
+							.orElse(new SanityCheckReportEntity());
 					int firstRow = 6 + accumulatedRowCount + i;
 					int countFromFirstRow = Collections.max(Arrays.asList(item.getRecDifference1().size(), item.getRecDifference2().size(), item.getAccumulatedEnergyBOMByMeter().size(), item.getAccumulatedEnergyEOMByMeter().size(), item.getAccumulatedEnergyBOMByInverter().size(), item.getAccumulatedEnergyEOMByInverter().size(), 1)) - 1;
 					
@@ -6021,7 +6002,6 @@ public class ReportsService extends DB {
 					
 					accumulatedRowCount += countFromFirstRow;
 				} catch (Exception e) {}
-				}
 			}
 		} catch (Exception e) {
 		}
@@ -6691,44 +6671,36 @@ public class ReportsService extends DB {
 	   * @return {}
 	   */
 	  
-	  public ViewReportEntity getMeterLevelProductionIrradianceTempReport(ViewReportEntity obj) throws Exception {
+	  public ViewReportEntity getMeterLevelProductionIrradianceTempReport(ViewReportEntity req) throws Exception {
 	    try {
-	    	Integer id = (Integer) obj.getIds().get(0);
-	    	
-	    	if (id == null || id < 0) {
-	    		return obj;
-	    	}
-	    	obj.setId_site(id);
-	    	
-	    	ReportDetail reportDetail = getReportDetail(obj);
-	    	if (Objects.isNull(reportDetail)) throw new Exception("Report not found");
-	    	
+	    	ReportDetail reportDetail = getReportDetail(req);
+
 	    	SiteByReport site = Optional.ofNullable(reportDetail.getSites())
 	    			.orElse(new ArrayList<>())
 	    			.stream()
-	    			.filter(item -> item.getId() == obj.getId_site())
 	    			.findFirst()
 	    			.orElse(null);
-	    	if (Objects.isNull(site)) return obj;
+	    	if (Objects.isNull(site)) return req;
 	    	
-	    	obj.setSite_name(site.getName()); 
-	    	
+			req.setId_site(site.getId());
+	    	req.setSite_name(site.getName());
+
 	    	List<String> headerPower = new ArrayList<>();
 			List<String> headerEnergy = new ArrayList<>();
 			List<String> headerIrradiance = new ArrayList<>();
 			List<String> headerTemp = new ArrayList<>();
 			
-			DevicesByTypeEntity devices = deviceService.getDevicesBySite(site.getId(), obj.getDomain());
+			DevicesByTypeEntity devices = deviceService.getDevicesBySite(site.getId(), req.getDomain());
 			List<DeviceEntity> meterDevices = devices.getMeter();
 			List<DeviceEntity> irradianceResersePOADevices = devices.getAll().stream().filter(item -> EnumSet.of(DeviceType.WEATHER_STATION,DeviceType.VIRTUAL_WEATHER_STATION).contains( DeviceType.fromValue(item.getId_device_type()))).collect(Collectors.toList());
 			
 			List<List<Map<String, Object>>> dataList = new ArrayList<>();			
-			LocalDateTime startDate = LocalDateTime.parse(obj.getStart_date(), inputDTF);
-			LocalDateTime endDate = LocalDateTime.parse(obj.getEnd_date(), inputDTF);
-			ChartingGranularity granularity = ChartingGranularity.fromValue(obj.getData_intervals());
+			LocalDateTime startDate = LocalDateTime.parse(req.getStart_date(), inputDTF);
+			LocalDateTime endDate = LocalDateTime.parse(req.getEnd_date(), inputDTF);
+			ChartingGranularity granularity = ChartingGranularity.fromValue(reportDetail.getData_intervals());
 					
 			ChartingFilter filter;
-			switch (obj.getCadence_range()) {
+			switch (reportDetail.getCadence_range()) {
 			    case 6:
 			        filter = ChartingFilter.THIS_WEEK;
 			        break;
@@ -6815,16 +6787,16 @@ public class ReportsService extends DB {
 	            dataList.add(group);
 	        });
 
-	        List<Map<String, Object>> dateTimeList = getDateTimeListMapObject(obj);
+	        List<Map<String, Object>> dateTimeList = getDateTimeListMapObject(req, reportDetail);
 	        if (dateTimeList == null || dateTimeList.isEmpty()) {
-	            return obj;
+	            return req;
 	        }
 
 	        if (!dataList.isEmpty()) {
 	            mergeDataGroups(dateTimeList, dataList);
 	        }
 
-	        obj.setDataReports(dateTimeList);
+	        req.setDataReports(dateTimeList);
 	        
 	        List<String> sortedHeaders = new ArrayList<>();
 	        sortedHeaders.add("Timestamp");
@@ -6832,9 +6804,9 @@ public class ReportsService extends DB {
 	        sortedHeaders.addAll(headerEnergy);
 	        sortedHeaders.addAll(headerIrradiance);
 	        sortedHeaders.addAll(headerTemp);
-	        obj.setSortedHeaders(sortedHeaders);
+	        req.setSortedHeaders(sortedHeaders);
 
-	        return obj;
+	        return req;
 	    } catch (Exception ex) {
 	    	log.error("Reports.getMeterLevelProductionIrradianceTempReport", ex);
 			throw ex;
@@ -6954,7 +6926,7 @@ public class ReportsService extends DB {
 		    }
 		}
 	  	  
-	  private List<Map<String, Object>> getDateTimeListMapObject(ViewReportEntity obj) {
+	  private List<Map<String, Object>> getDateTimeListMapObject(ViewReportEntity obj, ReportDetail reportDetail) {
 		  	List<Map<String, Object>> dateTimeList = new ArrayList<>();
 			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 			LocalDateTime start = LocalDateTime.parse(obj.getStart_date(), formatter).withHour(0).withMinute(0).withSecond(0);
@@ -6965,10 +6937,10 @@ public class ReportsService extends DB {
 				DateTimeFormatter categoryTimeFormat = DateTimeFormatter.ofPattern("HH:mm");
 				ChronoUnit timeUnit = ChronoUnit.MINUTES;
 			
-				switch (ReportRange.fromValue(obj.getCadence_range())) {
+				switch (ReportRange.fromValue(reportDetail.getCadence_range())) {
 					case DAILY:
 						categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd/yyy HH:mm");
-						switch (ReportIntervals.fromValue(obj.getData_intervals())) {
+						switch (ReportIntervals.fromValue(reportDetail.getData_intervals())) {
 							case _5_MINUTE:
 								interval = 5;
 								timeUnit = ChronoUnit.MINUTES;
@@ -6988,7 +6960,7 @@ public class ReportsService extends DB {
 					case WEEKLY:
 					case LAST_WEEK:
 						categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd/yyy HH:mm");
-						switch (ReportIntervals.fromValue(obj.getData_intervals())) {
+						switch (ReportIntervals.fromValue(reportDetail.getData_intervals())) {
 							case _5_MINUTE:
 								interval = 5;
 								timeUnit = ChronoUnit.MINUTES;
@@ -7015,7 +6987,7 @@ public class ReportsService extends DB {
 						timeUnit = ChronoUnit.DAYS;
 						break;
 					case LAST_QUARTER:
-						switch (ReportIntervals.fromValue(obj.getData_intervals())) {
+						switch (ReportIntervals.fromValue(reportDetail.getData_intervals())) {
 							case DAILY:
 								categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd/yyy");
 								timeUnit = ChronoUnit.DAYS;
@@ -7033,7 +7005,7 @@ public class ReportsService extends DB {
 						timeUnit = ChronoUnit.MONTHS;
 						break;
 					case CUSTOM:
-		                switch (ReportIntervals.fromValue(obj.getData_intervals())) {
+		                switch (ReportIntervals.fromValue(reportDetail.getData_intervals())) {
 			                case _15_MINUTES:
 			                	categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd/yyy HH:mm");
 								interval = 15;
@@ -7089,22 +7061,20 @@ public class ReportsService extends DB {
 		 * @since 2025-10-08
 		 * @param obj
 		 */
-		public boolean sentMailMeterLevelProductionIrradianceTempReport(ViewReportEntity obj) throws Exception {
+		public boolean sentMailMeterLevelProductionIrradianceTempReport(ViewReportEntity obj) {
 			try {
+				ReportDetail reportDetail = getReportDetail(obj);
+
 				ViewReportEntity dataObj = getMeterLevelProductionIrradianceTempReport(obj);
 				if (dataObj == null) return false;
-				
-				ReportDetail reportDetail = getReportDetail(obj);
-		    	if (Objects.isNull(reportDetail)) throw new Exception("Report not found");
-				
-				String filePath = createMeterLevelProductionIrradianceTempReportSheetFile(obj, dataObj);
+
+				String filePath = createMeterLevelProductionIrradianceTempReportSheetFile(obj, reportDetail, dataObj);
 				if (filePath == null) return false;
 				
 				sentReportByMail(filePath, reportDetail.getSubscribers(), "Meter-Level Production vs Irradiance/Temp", 26);
 				return true;
 			} catch (Exception ex) {
-				log.error("Reports.sentMailMeterLevelProductionIrradianceTempReport", ex);
-				throw ex;
+				return false;
 			}
 		}
 		
@@ -7113,10 +7083,10 @@ public class ReportsService extends DB {
 		 * @description Meter level production irradiance temp file
 		 * @author Duy.Phan
 		 * @since 2025-10-08
-		 * @param obj
+		 * @param req
 		 * @return file path
 		 */
-		public String createMeterLevelProductionIrradianceTempReportSheetFile(ViewReportEntity obj, ViewReportEntity dataObj) {
+		public String createMeterLevelProductionIrradianceTempReportSheetFile(ViewReportEntity req, ReportDetail reportDetail, ViewReportEntity dataObj) {
 			try (XSSFWorkbook document = new XSSFWorkbook()) {
 				int pictureIdx = DocumentHelper.readLogoImageFile(document);
 				
@@ -7126,20 +7096,20 @@ public class ReportsService extends DB {
 					List<Map<String, Object>> dataExports = dataObj.getDataReports();
 					int numOfPoints = dataExports != null ? dataExports.size() : 0;
 					
-					XSSFSheet sheet = document.createSheet(WorkbookUtil.createSafeSheetName((1) + "_" + dataObj.getReport_name()));
+					XSSFSheet sheet = document.createSheet(WorkbookUtil.createSafeSheetName((1) + "_" + reportDetail.getName()));
 					sheet.setZoom(85);
 					
 					// insert logo image
 					ClientAnchor logoAnchor = new XSSFClientAnchor(0, 0, 20 * Units.EMU_PER_PIXEL, 20 * Units.EMU_PER_PIXEL, 10, 1, 11, 4);
 					DocumentHelper.insertLogo(sheet, logoAnchor, pictureIdx);
 					
-					dataObj.setStart_date(obj.getStart_date());
-					dataObj.setEnd_date(obj.getEnd_date());
+					dataObj.setStart_date(req.getStart_date());
+					dataObj.setEnd_date(req.getEnd_date());
 					// report information and table
 					writeHeaderMeterLevelProductionIrradianceTempReport(sheet, dataObj);
 					
 				}
-				return writeToSheetFile(document, obj.getReport_name());
+				return writeToSheetFile(document, reportDetail.getName());
 			} catch (Exception e) {
 				return null;
 			}
@@ -7347,11 +7317,14 @@ public class ReportsService extends DB {
 		 */
 		public String downloadMeterLevelProductionIrradianceTempReport(ViewReportEntity obj) {
 			try {
+				ReportDetail reportDetail = getReportDetail(obj);
+
 				ViewReportEntity dataObj = getMeterLevelProductionIrradianceTempReport(obj);
 				if (dataObj == null) return null;
 				dataObj.setStart_date(obj.getStart_date());
 				dataObj.setEnd_date(obj.getEnd_date());
-				return createMeterLevelProductionIrradianceTempReportSheetFile(obj, dataObj);
+
+				return createMeterLevelProductionIrradianceTempReportSheetFile(obj, reportDetail, dataObj);
 			} catch (Exception e) {
 				return null;
 			}
@@ -7366,15 +7339,11 @@ public class ReportsService extends DB {
 	    
 	    public ViewReportEntity getCitiCorePhDailyReport(ViewReportEntity obj) {
 	      try {
- 	        obj.setId_site(Integer.parseInt(Optional.ofNullable(obj.getId_sites()).orElse(Optional.ofNullable(obj.getIds_site()).orElse("0"))));
-	        
 	        ReportDetail reportDetail = getReportDetail(obj);
-	        if (reportDetail == null) return null;
-	        
+
 	        SiteByReport site = Optional.ofNullable(reportDetail.getSites())
 	    			.orElse(new ArrayList<>())
 	    			.stream()
-	    			.filter(item -> item.getId() == obj.getId_site())
 	    			.findFirst()
 	    			.orElse(null);
 	    	if (Objects.isNull(site)) return obj;
@@ -7383,7 +7352,8 @@ public class ReportsService extends DB {
 	    	dataObj.setReport_name(reportDetail.getName());
 	    	dataObj.setmWh(true);
 	    	dataObj.setDc_capacity(site.getDc_capacity());
-	    	
+
+			obj.setId_site(site.getId());
 	        obj.setCadence_range(reportDetail.getCadence_range());
 	        obj.setData_intervals(reportDetail.getData_intervals());
 	        obj.setmWh(true);
@@ -7560,6 +7530,8 @@ public class ReportsService extends DB {
 	     */
 	    public boolean sentMailCitiCorePhDailyReport(ViewReportEntity obj) {
 	      try {
+			  ReportDetail reportDetail = getReportDetail(obj);
+
 	    	  ViewReportEntity reportData = obj;
 	          boolean hasReportData = obj.getDataInverters() != null && !obj.getDataInverters().isEmpty()
 	        		  				  && obj.getDataMeters() != null && !obj.getDataMeters().isEmpty()
@@ -7571,11 +7543,11 @@ public class ReportsService extends DB {
 	              reportData.setDate_from(obj.getDate_from());
 	          }
 	          
-	          String filePath = obj.getFile_type() == ReportFileType.PDF.getValue() ? createCiticoreDailyPdfFile(reportData) : createCitiCorePhDailyReportSheetFile(reportData);
+	          String filePath = reportDetail.getFile_type() == ReportFileType.PDF.getValue() ? createCiticoreDailyPdfFile(reportData) : createCitiCorePhDailyReportSheetFile(reportData);
 
 	          if (filePath == null) return false;
 
-	          sentReportByMail(filePath, reportData.getSubscribers(), "citicorephdaily", 30);
+	          sentReportByMail(filePath, reportDetail.getSubscribers(), "citicorephdaily", 30);
 	          return true;
 	      } catch (Exception e) {
 	        return false;

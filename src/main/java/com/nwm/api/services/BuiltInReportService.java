@@ -6,7 +6,6 @@
 package com.nwm.api.services;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
@@ -25,6 +24,8 @@ import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 import java.util.stream.Stream;
 
+import com.nwm.api.entities.report.ReportDetail;
+import com.nwm.api.entities.report.SiteByReport;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.ClientAnchor;
@@ -55,7 +56,6 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.google.gson.Gson;
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.DateTimeReportDataEntity;
 import com.nwm.api.entities.DeviceEntity;
@@ -80,7 +80,8 @@ public class BuiltInReportService extends DB {
 	@Autowired
 	CustomerViewService customerViewService;
 	
-	private DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+	private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+	private static final DateTimeFormatter reportDateRangeDTF = DateTimeFormatter.ofPattern("MM/dd/yyyy");
 	
 	/**
 	 * @description Get data list in multi threads
@@ -89,78 +90,60 @@ public class BuiltInReportService extends DB {
 	 * @param id, ids, start_date, end_date
 	 * @return data list
 	 */
-	public List<ViewReportEntity> getReportDataList(ViewReportEntity reportObj) {
-		try {
-			List<CompletableFuture<ViewReportEntity>> list = new ArrayList<CompletableFuture<ViewReportEntity>>();
-			
-			if (reportObj.getIds() != null && reportObj.getIds().size() > 0) {
-				List<ViewReportEntity> siteReportList = queryForList("BuiltInReport.getSiteReportMappingList", reportObj);
-				
-				for (int i = 0; i < siteReportList.size(); i++) {
-					ViewReportEntity siteObj = siteReportList.get(i);
-					
-					CompletableFuture<ViewReportEntity> future = CompletableFuture.supplyAsync(() -> {
-						try {
-							switch (ReportRange.fromValue(siteObj.getCadence_range())) {
-							case LAST_MONTH:
-							case MONTHLY:
-							case CUSTOM:
-								return this.getMonthlyTrendBuitInReport(siteObj);
-							case LAST_WEEK:
-							case WEEKLY:
-								return this.getWeeklyBuiltInReport(siteObj);
-							case ANNUALLY:
-								return this.getAnnuallyBuitInReport(siteObj);
-							default:
-								return null;
-							}
-						} catch (Exception ex) {
-							log.error(ex);
-							return null;
-						}
-					});
-					
-					list.add(future);
-				}
-			}
-			
-			return list.stream().map(future -> future.join()).filter(item -> item != null).collect(Collectors.toList());
-		} catch (Exception e) {
-			return new ArrayList<>();
+	public ReportDetail getReportDataList(ViewReportEntity req) throws Exception {
+		switch (ReportRange.fromValue(req.getCadence_range())) {
+			case LAST_MONTH:
+			case MONTHLY:
+			case CUSTOM:
+				return this.getMonthlyTrendBuiltInReport(req);
+			case LAST_WEEK:
+			case WEEKLY:
+				return this.getWeeklyBuiltInReport(req);
+			case ANNUALLY:
+				return this.getAnnuallyBuiltInReport(req);
+			default:
+				return null;
 		}
 	}
 	
-	public <K extends DateTimeReportDataEntity> List<ViewReportEntity> summarizeReport(List<ViewReportEntity> dataList, Class<K> clazz) {
-		if (dataList == null || dataList.size() == 0) return new ArrayList<ViewReportEntity>();
-		
+	public <K extends DateTimeReportDataEntity> void summarizeReport(ReportDetail reportDetail, Class<K> clazz) {
 		try {
-			ViewReportEntity findReport = dataList.stream().filter(item -> item.getDataReports() != null && item.getDataReports().size() > 0).findFirst().orElse(new ViewReportEntity());
-			List<K> summaryData = ((List<K>) findReport.getDataReports())
-					.stream()
-					.map(item -> {
-						try {
-							K target = clazz.getDeclaredConstructor().newInstance();
-							target.setCategories_time(item.getCategories_time());
-							return target;
-						} catch (Exception e) {
-							return null;
-						}
-					})
-					.collect(Collectors.toList());
-			
-			if (findReport.getCadence_range() == ReportRange.ANNUALLY.getValue() || findReport.getCadence_range() == ReportRange.WEEKLY.getValue() || findReport.getCadence_range() == ReportRange.LAST_WEEK.getValue()) {
+			List<SiteByReport> sites = reportDetail.getSites();
+			if (sites.isEmpty()) return;
+
+			List<K> summaryData = sites.stream()
+					.filter(item -> !item.getDataReports().isEmpty())
+					.findFirst()
+					.map(site -> (List<K>) site.getDataReports())
+					.map(list -> list.stream()
+							.map(item -> {
+								try {
+									K target = clazz.getDeclaredConstructor().newInstance();
+									target.setCategories_time(item.getCategories_time());
+									return target;
+								} catch (Exception e) {
+									return null;
+								}
+							})
+							.collect(Collectors.toList())
+					)
+					.orElse(new ArrayList<>());
+
+			if (	reportDetail.getCadence_range() == ReportRange.ANNUALLY.getValue() ||
+					reportDetail.getCadence_range() == ReportRange.WEEKLY.getValue() ||
+					reportDetail.getCadence_range() == ReportRange.LAST_WEEK.getValue()) {
 				for (int i = 0; i < summaryData.size(); i++) {
 					WeeklyDateEntity sum = (WeeklyDateEntity) summaryData.get(i);
-					List<Double> actualGeneration = new ArrayList<Double>();
-					List<Double> expectedGeneration = new ArrayList<Double>();
-					List<Double> modeledGeneration = new ArrayList<Double>();
-					List<Double> poa = new ArrayList<Double>();
-					
-					for (int j = 0; j < dataList.size(); j++) {
-						List<WeeklyDateEntity> dataReports = dataList.get(j).getDataReports();
-						if (dataReports == null || dataReports.size() == 0) continue;
+					List<Double> actualGeneration = new ArrayList<>();
+					List<Double> expectedGeneration = new ArrayList<>();
+					List<Double> modeledGeneration = new ArrayList<>();
+					List<Double> poa = new ArrayList<>();
+
+					for (int j = 0; j < sites.size(); j++) {
+						List<WeeklyDateEntity> dataReports = (List<WeeklyDateEntity>) sites.get(j).getDataReports();
+						if (dataReports.isEmpty()) continue;
 						WeeklyDateEntity item = dataReports.get(i);
-						
+
 						if (item != null && sum.getCategories_time().equals(item.getCategories_time())) {
 							actualGeneration.add(item.getActualGeneration());
 							expectedGeneration.add(item.getExpectedGeneration());
@@ -176,36 +159,36 @@ public class BuiltInReportService extends DB {
 					sum.setExpectedGenerationIndex(Optional.ofNullable(sum.getActualGeneration()).orElse(0.0) > 0 && Optional.ofNullable(sum.getExpectedGeneration()).orElse(0.0) > 0 ? BigDecimal.valueOf(sum.getActualGeneration() / sum.getExpectedGeneration() * 100).setScale(1, RoundingMode.HALF_UP).doubleValue() : null);
 					sum.setModeledGenerationIndex(Optional.ofNullable(sum.getActualGeneration()).orElse(0.0) > 0 && Optional.ofNullable(sum.getModeledGeneration()).orElse(0.0) > 0 ? BigDecimal.valueOf(sum.getActualGeneration() / sum.getModeledGeneration() * 100).setScale(1, RoundingMode.HALF_UP).doubleValue() : null);
 				}
-			} else if ((findReport.getCadence_range() == ReportRange.MONTHLY.getValue() || findReport.getCadence_range() == ReportRange.LAST_MONTH.getValue()) && findReport.getData_intervals() == ReportIntervals.MONTHLY.getValue()) {
+			} else if ((reportDetail.getCadence_range() == ReportRange.MONTHLY.getValue() || reportDetail.getCadence_range() == ReportRange.LAST_MONTH.getValue()) &&
+					reportDetail.getData_intervals() == ReportIntervals.MONTHLY.getValue()) {
 				for (int i = 0; i < summaryData.size(); i++) {
 					MonthlyProductionTrendReportEntity sum = (MonthlyProductionTrendReportEntity) summaryData.get(i);
-					
-					for (int j = 0; j < dataList.size(); j++) {
-						List<MonthlyProductionTrendReportEntity> dataReports = dataList.get(j).getDataReports();
-						if (dataReports == null || dataReports.size() == 0) continue;
+
+					for (int j = 0; j < sites.size(); j++) {
+						List<MonthlyProductionTrendReportEntity> dataReports = (List<MonthlyProductionTrendReportEntity>) sites.get(j).getDataReports();
+						if (dataReports == null || dataReports.isEmpty()) continue;
 						MonthlyProductionTrendReportEntity item = dataReports.get(i);
-						
+
 						if (item != null && sum.getCategories_time().equals(item.getCategories_time())) {
 							if (item.getMonthlyProduction() != null) sum.setMonthlyProduction((sum.getMonthlyProduction() != null ? sum.getMonthlyProduction() : 0) + item.getMonthlyProduction());
 						}
 					}
 				}
 			} else {
-				return dataList;
+				return;
 			}
 			
-			Gson gson = new Gson();
-			ViewReportEntity summaryReport = gson.fromJson(gson.toJson(findReport), ViewReportEntity.class);
+			SiteByReport summaryReport = new SiteByReport();
 			summaryReport.setDataReports(summaryData);
-			summaryReport.setSite_name("Summary");
-			summaryReport.setId_site(0);
-			
-			dataList.add(0, summaryReport);
+			summaryReport.setName("Summary");
+			summaryReport.setId(0);
+
+			sites.add(0, summaryReport);
 		} catch (Exception e) {
-			// TODO: handle exception
+			log.error(e);
 		}
 		
-		return dataList;
+		return;
 	}
 	
 	/**
@@ -215,8 +198,8 @@ public class BuiltInReportService extends DB {
 	 * @param id_site, date_from, data_to
 	 */
 	
-	public ViewReportEntity getAnnuallyBuitInReport(ViewReportEntity obj) {
-		return getWeeklyBuiltInReport(obj);
+	public ReportDetail getAnnuallyBuiltInReport(ViewReportEntity req) throws Exception {
+		return getWeeklyBuiltInReport(req);
 	}
 	
 	
@@ -227,32 +210,51 @@ public class BuiltInReportService extends DB {
 	 * @param id_site, date_from, data_to
 	 */
 	
-	public ViewReportEntity getMonthlyTrendBuitInReport(ViewReportEntity obj) {
+	public ReportDetail getMonthlyTrendBuiltInReport(ViewReportEntity req) throws Exception {
 		try {
-			LocalDateTime startDate = LocalDateTime.parse(obj.getStart_date(), dateTimeFormatter);
-			LocalDateTime endDate = LocalDateTime.parse(obj.getEnd_date(), dateTimeFormatter);
-			ReportIntervals interval = ReportIntervals.fromValue(obj.getData_intervals());
-			ReportRange range = ReportRange.fromValue(obj.getCadence_range());
+			ReportDetail reportDetail = reportsService.getReportDetail(req);
+			if (Objects.isNull(reportDetail)) throw new Exception("Report not found");
+
+			LocalDateTime startDate = LocalDateTime.parse(req.getStart_date(), dateTimeFormatter);
+			LocalDateTime endDate = LocalDateTime.parse(req.getEnd_date(), dateTimeFormatter);
+			ReportIntervals interval = ReportIntervals.fromValue(reportDetail.getData_intervals());
+			ReportRange range = ReportRange.fromValue(reportDetail.getCadence_range());
 			ChartingGranularity granularity = ReportIntervals.toChartingGranularity(interval);
 			ChartingFilter filter = ReportRange.toChartingFilter(range);
-			DevicesByTypeEntity devices = deviceService.getDevicesBySite(obj);
-			
-			List<MonthlyProductionTrendReportEntity> data = reportsService.getActualBySiteDevices(!devices.getMeter().isEmpty() ? devices.getMeter() : devices.getInverter(), startDate, endDate, granularity, filter)
-					.stream()
-					.map(item -> {
-						MonthlyProductionTrendReportEntity entity = new MonthlyProductionTrendReportEntity();
-						entity.setCategories_time(reportsService.dateTimeFormatConverter(granularity, item.getCategories_time(), DateTimeFormatter.ofPattern(interval == ReportIntervals._15_MINUTES ? "MM/dd/yyyy HH:mm:00" : "MMM-yy")));
-						entity.setMonthlyProduction(Optional.ofNullable(item.getEnergy()).map(value -> BigDecimal.valueOf(value).setScale(0, RoundingMode.HALF_UP).doubleValue()).orElse(null));
-						
-						return entity;
-					})
+
+			reportsService.filterSiteOnRequest(reportDetail, req.getId_site());
+
+			List<CompletableFuture<Void>> futures = Optional.ofNullable(reportDetail.getSites()).orElse(new ArrayList<>()).stream()
+					.map(site -> CompletableFuture.runAsync(() -> {
+						try {
+							DevicesByTypeEntity devices = deviceService.getDevicesBySite(site.getId(), req.getDomain());
+
+							List<MonthlyProductionTrendReportEntity> data = reportsService.getActualBySiteDevices(!devices.getMeter().isEmpty() ? devices.getMeter() : devices.getInverter(), startDate, endDate, granularity, filter)
+									.stream()
+									.map(item -> {
+										MonthlyProductionTrendReportEntity entity = new MonthlyProductionTrendReportEntity();
+										entity.setCategories_time(reportsService.dateTimeFormatConverter(granularity, item.getCategories_time(), DateTimeFormatter.ofPattern(interval == ReportIntervals._15_MINUTES ? "MM/dd/yyyy HH:mm:00" : "MMM-yy")));
+										entity.setMonthlyProduction(Optional.ofNullable(item.getEnergy()).map(value -> BigDecimal.valueOf(value).setScale(0, RoundingMode.HALF_UP).doubleValue()).orElse(null));
+
+										return entity;
+									})
+									.collect(Collectors.toList());
+
+							site.setDataReports(data);
+						} catch (Exception ex) {
+							log.error(ex);
+						}
+					}))
 					.collect(Collectors.toList());
-			
-			obj.setDataReports(data);
-			
-			return obj;
+
+			futures.forEach(CompletableFuture::join);
+
+			summarizeReport(reportDetail, MonthlyProductionTrendReportEntity.class);
+
+			return reportDetail;
 		} catch (Exception ex) {
-			return null;
+			log.error("BuiltInReport.getMonthlyTrendBuiltInReport", ex);
+			throw ex;
 		}
 	}
 	
@@ -263,163 +265,182 @@ public class BuiltInReportService extends DB {
 	 * @param id_site, date_from, date_to
 	 */
 	
-	public ViewReportEntity getWeeklyBuiltInReport(ViewReportEntity obj) {
+	public ReportDetail getWeeklyBuiltInReport(ViewReportEntity req) throws Exception {
 		try {
-			LocalDateTime startDate = LocalDateTime.parse(obj.getStart_date(), dateTimeFormatter);
-			LocalDateTime endDate = LocalDateTime.parse(obj.getEnd_date(), dateTimeFormatter);
-			ReportIntervals interval = ReportIntervals.fromValue(obj.getData_intervals());
-			ReportRange range = ReportRange.fromValue(obj.getCadence_range());
+			ReportDetail reportDetail = reportsService.getReportDetail(req);
+			if (Objects.isNull(reportDetail)) throw new Exception("Report not found");
+
+			LocalDateTime startDate = LocalDateTime.parse(req.getStart_date(), dateTimeFormatter);
+			LocalDateTime endDate = LocalDateTime.parse(req.getEnd_date(), dateTimeFormatter);
+			ReportIntervals interval = ReportIntervals.fromValue(reportDetail.getData_intervals());
+			ReportRange range = ReportRange.fromValue(reportDetail.getCadence_range());
 			ChartingGranularity granularity = ReportIntervals.toChartingGranularity(interval);
 			ChartingFilter filter = ReportRange.toChartingFilter(range);
-			UploadingDataIntervals siteUploadingInterval = UploadingDataIntervals.fromValue(obj.getData_send_time());
-			DevicesByTypeEntity devices = deviceService.getDevicesBySite(obj);
-			List<DeviceEntity> irradianceDevices = devices.getIrradiance();
-			DateTimeFormatter outputDateTimeFormatter = DateTimeFormatter.ofPattern(interval == ReportIntervals.DAILY ? "MM/dd/yyyy" : "MMM-yy");
-			
-			List<WeeklyDateEntity> actualGeneration = reportsService.getActualBySiteDevices(!devices.getMeter().isEmpty() ? devices.getMeter() : devices.getInverter(), startDate, endDate, granularity, filter)
-					.stream()
-					.map(item -> {
-						WeeklyDateEntity entity = new WeeklyDateEntity();
-						entity.setCategories_time(reportsService.dateTimeFormatConverter(granularity, item.getCategories_time(), outputDateTimeFormatter));
-						entity.setActualGeneration(item.getEnergy());
-						
-						return entity;
-					})
-					.collect(Collectors.toList());
-			
-			List<WeeklyDateEntity> mergedData = actualGeneration;
-			
-			if (irradianceDevices.size() == 1) {
-				List<WeeklyDateEntity> irradiance = customerViewService.getIrradianceByDevice(startDate, endDate, irradianceDevices.get(0), granularity, filter, false, siteUploadingInterval)
-						.stream()
-						.map(item -> {
-							WeeklyDateEntity entity = new WeeklyDateEntity();
-							entity.setCategories_time(reportsService.dateTimeFormatConverter(granularity, item.getTime_full(), outputDateTimeFormatter));
-							entity.setPoa(item.getNvm_irradiance());
-							entity.setExpectedGeneration(item.getExpected_energy());
-							
-							return entity;
-						})
-						.collect(Collectors.toList());
-				
-				mergedData = Stream.concat(actualGeneration.stream(), irradiance.stream())
-						.collect(Collectors.toMap(
-								WeeklyDateEntity::getCategories_time,
-								item -> item,
-								(s1, s2) -> {
-									s1.setPoa(s2.getPoa());
-									s1.setExpectedGeneration(s2.getExpectedGeneration());
-									
-									return s1;
-								},
-								LinkedHashMap::new
-								))
-						.values()
-						.stream()
-						.map(item -> {
-							return item;
-						})
-						.collect(Collectors.toList());
-			} else if (irradianceDevices.size() > 1) {
-				List<WeeklyDateEntity> poa = reportsService.getIrradianceBySiteDevices(irradianceDevices, startDate, endDate, granularity, filter)
-						.stream()
-						.map(item -> {
-							WeeklyDateEntity entity = new WeeklyDateEntity();
-							entity.setCategories_time(reportsService.dateTimeFormatConverter(granularity, item.getCategories_time(), outputDateTimeFormatter));
-							entity.setPoa(item.getIrradiance());
-							
-							return entity;
-						})
-						.collect(Collectors.toList());
-				
-				List<WeeklyDateEntity> expectedGeneration = customerViewService.getExpectedBySelectedPOA(startDate, endDate, obj.getId_site(), granularity, filter, irradianceDevices)
-						.stream()
-						.map(item -> {
-							WeeklyDateEntity entity = new WeeklyDateEntity();
-							entity.setCategories_time(reportsService.dateTimeFormatConverter(granularity, item.getTime_full(), outputDateTimeFormatter));
-							entity.setExpectedGeneration(item.getExpected_energy());
-							
-							return entity;
-						})
-						.collect(Collectors.toList());
-				
-				mergedData = Stream.concat(
-						Stream.concat(actualGeneration.stream(), poa.stream())
-							.collect(Collectors.toMap(
-									WeeklyDateEntity::getCategories_time,
-									item -> item,
-									(s1, s2) -> {
-										s1.setPoa(s2.getPoa());
-										
-										return s1;
-									},
-									LinkedHashMap::new
-									))
-							.values()
-							.stream(),
-						expectedGeneration.stream()
-				)
-						.collect(Collectors.toMap(
-								WeeklyDateEntity::getCategories_time,
-								item -> item,
-								(s1, s2) -> {
-									s1.setExpectedGeneration(s2.getExpectedGeneration());
-									
-									return s1;
-								},
-								LinkedHashMap::new
-								))
-						.values()
-						.stream()
-						.map(item -> {
-							return item;
-						})
-						.collect(Collectors.toList());
-			}
-			
-			Map<String, Double> modeledGeneration = reportsService.getEnergyExpectation(startDate, obj.getId_site());
-			
-			List<WeeklyDateEntity> data = mergedData.stream()
-					.map(item -> {
-						Double actualGenerationValue = item.getActualGeneration();
-						Double expectedGenerationValue = item.getExpectedGeneration();
-						Double poaValue = item.getPoa();
-						Double modeledGenerationValue = modeledGeneration.get(interval == ReportIntervals.DAILY ? LocalDate.parse(item.getCategories_time(), outputDateTimeFormatter).getMonth().getDisplayName(TextStyle.SHORT, Locale.ENGLISH).toLowerCase() : YearMonth.parse(item.getCategories_time(), outputDateTimeFormatter).getMonth().getDisplayName(TextStyle.SHORT, Locale.ENGLISH).toLowerCase());
-						
-						Optional.ofNullable(actualGenerationValue).ifPresent(value -> item.setActualGeneration(BigDecimal.valueOf(value).setScale(0, RoundingMode.HALF_UP).doubleValue()));
-						Optional.ofNullable(expectedGenerationValue).ifPresent(value -> item.setExpectedGeneration(BigDecimal.valueOf(value).setScale(0, RoundingMode.HALF_UP).doubleValue()));
-						Optional.ofNullable(poaValue).ifPresent(value -> item.setPoa(BigDecimal.valueOf(value).setScale(2, RoundingMode.HALF_UP).doubleValue()));
-						if (Objects.nonNull(actualGenerationValue) && Objects.nonNull(expectedGenerationValue) && expectedGenerationValue > 0) item.setExpectedGenerationIndex(BigDecimal.valueOf(actualGenerationValue / expectedGenerationValue * 100).setScale(1, RoundingMode.HALF_UP).doubleValue());
-						if (Objects.nonNull(actualGenerationValue) && Objects.nonNull(modeledGenerationValue)) {
-							modeledGenerationValue = interval == ReportIntervals.DAILY ? modeledGenerationValue / LocalDate.parse(item.getCategories_time(), outputDateTimeFormatter).lengthOfMonth() : modeledGenerationValue;
-							item.setModeledGeneration(BigDecimal.valueOf(modeledGenerationValue).setScale(0, RoundingMode.HALF_UP).doubleValue());
-							if (modeledGenerationValue > 0) item.setModeledGenerationIndex(BigDecimal.valueOf(actualGenerationValue / modeledGenerationValue * 100).setScale(1, RoundingMode.HALF_UP).doubleValue());
+
+			reportsService.filterSiteOnRequest(reportDetail, req.getId_site());
+
+			List<CompletableFuture<Void>> futures = Optional.ofNullable(reportDetail.getSites()).orElse(new ArrayList<>()).stream()
+					.map(site -> CompletableFuture.runAsync(() -> {
+						try {
+							UploadingDataIntervals siteUploadingInterval = UploadingDataIntervals.fromValue(site.getData_send_time());
+							DevicesByTypeEntity devices = deviceService.getDevicesBySite(site.getId(), req.getDomain());
+							List<DeviceEntity> irradianceDevices = devices.getIrradiance();
+							DateTimeFormatter outputDateTimeFormatter = DateTimeFormatter.ofPattern(interval == ReportIntervals.DAILY ? "MM/dd/yyyy" : "MMM-yy");
+
+							List<WeeklyDateEntity> actualGeneration = reportsService.getActualBySiteDevices(!devices.getMeter().isEmpty() ? devices.getMeter() : devices.getInverter(), startDate, endDate, granularity, filter)
+									.stream()
+									.map(item -> {
+										WeeklyDateEntity entity = new WeeklyDateEntity();
+										entity.setCategories_time(reportsService.dateTimeFormatConverter(granularity, item.getCategories_time(), outputDateTimeFormatter));
+										entity.setActualGeneration(item.getEnergy());
+
+										return entity;
+									})
+									.collect(Collectors.toList());
+
+							List<WeeklyDateEntity> mergedData = actualGeneration;
+
+							if (irradianceDevices.size() == 1) {
+								List<WeeklyDateEntity> irradiance = customerViewService.getIrradianceByDevice(startDate, endDate, irradianceDevices.get(0), granularity, filter, false, siteUploadingInterval)
+										.stream()
+										.map(item -> {
+											WeeklyDateEntity entity = new WeeklyDateEntity();
+											entity.setCategories_time(reportsService.dateTimeFormatConverter(granularity, item.getTime_full(), outputDateTimeFormatter));
+											entity.setPoa(item.getNvm_irradiance());
+											entity.setExpectedGeneration(item.getExpected_energy());
+
+											return entity;
+										})
+										.collect(Collectors.toList());
+
+								mergedData = Stream.concat(actualGeneration.stream(), irradiance.stream())
+										.collect(Collectors.toMap(
+												WeeklyDateEntity::getCategories_time,
+												item -> item,
+												(s1, s2) -> {
+													s1.setPoa(s2.getPoa());
+													s1.setExpectedGeneration(s2.getExpectedGeneration());
+
+													return s1;
+												},
+												LinkedHashMap::new
+										))
+										.values()
+										.stream()
+										.map(item -> {
+											return item;
+										})
+										.collect(Collectors.toList());
+							} else if (irradianceDevices.size() > 1) {
+								List<WeeklyDateEntity> poa = reportsService.getIrradianceBySiteDevices(irradianceDevices, startDate, endDate, granularity, filter)
+										.stream()
+										.map(item -> {
+											WeeklyDateEntity entity = new WeeklyDateEntity();
+											entity.setCategories_time(reportsService.dateTimeFormatConverter(granularity, item.getCategories_time(), outputDateTimeFormatter));
+											entity.setPoa(item.getIrradiance());
+
+											return entity;
+										})
+										.collect(Collectors.toList());
+
+								List<WeeklyDateEntity> expectedGeneration = customerViewService.getExpectedBySelectedPOA(startDate, endDate, site.getId(), granularity, filter, irradianceDevices)
+										.stream()
+										.map(item -> {
+											WeeklyDateEntity entity = new WeeklyDateEntity();
+											entity.setCategories_time(reportsService.dateTimeFormatConverter(granularity, item.getTime_full(), outputDateTimeFormatter));
+											entity.setExpectedGeneration(item.getExpected_energy());
+
+											return entity;
+										})
+										.collect(Collectors.toList());
+
+								mergedData = Stream.concat(
+												Stream.concat(actualGeneration.stream(), poa.stream())
+														.collect(Collectors.toMap(
+																WeeklyDateEntity::getCategories_time,
+																item -> item,
+																(s1, s2) -> {
+																	s1.setPoa(s2.getPoa());
+
+																	return s1;
+																},
+																LinkedHashMap::new
+														))
+														.values()
+														.stream(),
+												expectedGeneration.stream()
+										)
+										.collect(Collectors.toMap(
+												WeeklyDateEntity::getCategories_time,
+												item -> item,
+												(s1, s2) -> {
+													s1.setExpectedGeneration(s2.getExpectedGeneration());
+
+													return s1;
+												},
+												LinkedHashMap::new
+										))
+										.values()
+										.stream()
+										.map(item -> {
+											return item;
+										})
+										.collect(Collectors.toList());
+							}
+
+							Map<String, Double> modeledGeneration = reportsService.getEnergyExpectation(startDate, site.getId());
+
+							List<WeeklyDateEntity> data = mergedData.stream()
+									.map(item -> {
+										Double actualGenerationValue = item.getActualGeneration();
+										Double expectedGenerationValue = item.getExpectedGeneration();
+										Double poaValue = item.getPoa();
+										Double modeledGenerationValue = modeledGeneration.get(interval == ReportIntervals.DAILY ? LocalDate.parse(item.getCategories_time(), outputDateTimeFormatter).getMonth().getDisplayName(TextStyle.SHORT, Locale.ENGLISH).toLowerCase() : YearMonth.parse(item.getCategories_time(), outputDateTimeFormatter).getMonth().getDisplayName(TextStyle.SHORT, Locale.ENGLISH).toLowerCase());
+
+										Optional.ofNullable(actualGenerationValue).ifPresent(value -> item.setActualGeneration(BigDecimal.valueOf(value).setScale(0, RoundingMode.HALF_UP).doubleValue()));
+										Optional.ofNullable(expectedGenerationValue).ifPresent(value -> item.setExpectedGeneration(BigDecimal.valueOf(value).setScale(0, RoundingMode.HALF_UP).doubleValue()));
+										Optional.ofNullable(poaValue).ifPresent(value -> item.setPoa(BigDecimal.valueOf(value).setScale(2, RoundingMode.HALF_UP).doubleValue()));
+										if (Objects.nonNull(actualGenerationValue) && Objects.nonNull(expectedGenerationValue) && expectedGenerationValue > 0) item.setExpectedGenerationIndex(BigDecimal.valueOf(actualGenerationValue / expectedGenerationValue * 100).setScale(1, RoundingMode.HALF_UP).doubleValue());
+										if (Objects.nonNull(actualGenerationValue) && Objects.nonNull(modeledGenerationValue)) {
+											modeledGenerationValue = interval == ReportIntervals.DAILY ? modeledGenerationValue / LocalDate.parse(item.getCategories_time(), outputDateTimeFormatter).lengthOfMonth() : modeledGenerationValue;
+											item.setModeledGeneration(BigDecimal.valueOf(modeledGenerationValue).setScale(0, RoundingMode.HALF_UP).doubleValue());
+											if (modeledGenerationValue > 0) item.setModeledGenerationIndex(BigDecimal.valueOf(actualGenerationValue / modeledGenerationValue * 100).setScale(1, RoundingMode.HALF_UP).doubleValue());
+										}
+
+										return item;
+									})
+									.collect(Collectors.toList());
+
+							if (!data.isEmpty()) {
+								WeeklyDateEntity totalRow = new WeeklyDateEntity();
+								totalRow.setCategories_time("Total");
+								Supplier<DoubleStream> actualGenerationStream = () -> data.stream().map(WeeklyDateEntity::getActualGeneration).filter(Objects::nonNull).mapToDouble(Double::doubleValue);
+								actualGenerationStream.get().findAny().ifPresent(value -> totalRow.setActualGeneration(actualGenerationStream.get().sum()));
+								Supplier<DoubleStream> expectedGenerationStream = () -> data.stream().map(WeeklyDateEntity::getExpectedGeneration).filter(Objects::nonNull).mapToDouble(Double::doubleValue);
+								expectedGenerationStream.get().findAny().ifPresent(value -> totalRow.setExpectedGeneration(expectedGenerationStream.get().sum()));
+								Supplier<DoubleStream> modeledGenerationStream = () -> data.stream().map(WeeklyDateEntity::getModeledGeneration).filter(Objects::nonNull).mapToDouble(Double::doubleValue);
+								modeledGenerationStream.get().findAny().ifPresent(value -> totalRow.setModeledGeneration(modeledGenerationStream.get().sum()));
+								if (Objects.nonNull(totalRow.getActualGeneration()) && Objects.nonNull(totalRow.getExpectedGeneration()) && totalRow.getExpectedGeneration() > 0) totalRow.setExpectedGenerationIndex(BigDecimal.valueOf(totalRow.getActualGeneration() / totalRow.getExpectedGeneration() * 100).setScale(1, RoundingMode.HALF_UP).doubleValue());
+								if (Objects.nonNull(totalRow.getActualGeneration()) && Objects.nonNull(totalRow.getModeledGeneration()) && totalRow.getModeledGeneration() > 0) totalRow.setModeledGenerationIndex(BigDecimal.valueOf(totalRow.getActualGeneration() / totalRow.getModeledGeneration() * 100).setScale(1, RoundingMode.HALF_UP).doubleValue());
+
+								data.add(totalRow);
+							}
+
+							site.setDataReports(data);
+						} catch (Exception ex) {
+							log.error(ex);
 						}
-						
-						return item;
-					})
+					}))
 					.collect(Collectors.toList());
-			
-			if (!data.isEmpty()) {
-				WeeklyDateEntity totalRow = new WeeklyDateEntity();
-				totalRow.setCategories_time("Total");
-				Supplier<DoubleStream> actualGenerationStream = () -> data.stream().map(item -> item.getActualGeneration()).filter(Objects::nonNull).mapToDouble(Double::doubleValue);
-				actualGenerationStream.get().findAny().ifPresent(value -> totalRow.setActualGeneration(actualGenerationStream.get().sum()));
-				Supplier<DoubleStream> expectedGenerationStream = () -> data.stream().map(item -> item.getExpectedGeneration()).filter(Objects::nonNull).mapToDouble(Double::doubleValue);
-				expectedGenerationStream.get().findAny().ifPresent(value -> totalRow.setExpectedGeneration(expectedGenerationStream.get().sum()));
-				Supplier<DoubleStream> modeledGenerationStream = () -> data.stream().map(item -> item.getModeledGeneration()).filter(Objects::nonNull).mapToDouble(Double::doubleValue);
-				modeledGenerationStream.get().findAny().ifPresent(value -> totalRow.setModeledGeneration(modeledGenerationStream.get().sum()));
-				if (Objects.nonNull(totalRow.getActualGeneration()) && Objects.nonNull(totalRow.getExpectedGeneration()) && totalRow.getExpectedGeneration() > 0) totalRow.setExpectedGenerationIndex(BigDecimal.valueOf(totalRow.getActualGeneration() / totalRow.getExpectedGeneration() * 100).setScale(1, RoundingMode.HALF_UP).doubleValue());
-				if (Objects.nonNull(totalRow.getActualGeneration()) && Objects.nonNull(totalRow.getModeledGeneration()) && totalRow.getModeledGeneration() > 0) totalRow.setModeledGenerationIndex(BigDecimal.valueOf(totalRow.getActualGeneration() / totalRow.getModeledGeneration() * 100).setScale(1, RoundingMode.HALF_UP).doubleValue());
-				
-				data.add(totalRow);
-			}
-			
-			obj.setDataReports(data);
-			
-			return obj;
+
+			futures.forEach(CompletableFuture::join);
+
+			summarizeReport(reportDetail, WeeklyDateEntity.class);
+
+			return reportDetail;
 		} catch (Exception ex) {
-			return null;
+			log.error("BuiltInReport.getWeeklyBuiltInReport", ex);
+			throw ex;
 		}
 	}
 	
@@ -429,29 +450,29 @@ public class BuiltInReportService extends DB {
 	 * @since 2025-08-08
 	 * @param obj
 	 */
-	public boolean sentMailReport(ViewReportEntity obj) {
+	public boolean sentMailReport(ViewReportEntity req) {
 		try {
-			List<ViewReportEntity> dataObjList = getReportDataList(obj);
-			if (dataObjList == null || dataObjList.size() == 0) return false;
+			ReportDetail reportDetail = getReportDataList(req);
+			if (Objects.isNull(reportDetail)) return false;
+
 			String filePath = null;
 			String title = "";
 			
-			switch (ReportRange.fromValue(obj.getCadence_range())) {
+			switch (ReportRange.fromValue(reportDetail.getCadence_range())) {
 				case LAST_MONTH:
 				case MONTHLY:
 				case CUSTOM:
 					title = "Monthly Production Trend Report ";
-					if (dataObjList.get(0).getData_intervals() == ReportIntervals._15_MINUTES.getValue()) title = title.concat("(15-minute Interval)");
-					else if (dataObjList.get(0).getData_intervals() == ReportIntervals.MONTHLY.getValue()) title = title.concat("(Monthly Interval)");
-					filePath = createMonthlyTrendReportSheetFile(obj, dataObjList, obj.getReport_name());
+					if (reportDetail.getData_intervals() == ReportIntervals._15_MINUTES.getValue()) title = title.concat("(15-minute Interval)");
+					else if (reportDetail.getData_intervals() == ReportIntervals.MONTHLY.getValue()) title = title.concat("(Monthly Interval)");
+					filePath = createMonthlyTrendReportSheetFile(req, reportDetail);
 					break;
 					
 				case LAST_WEEK:
 				case WEEKLY:
 				case ANNUALLY:
-					title = ReportRange.fromValue(obj.getCadence_range()) == ReportRange.ANNUALLY ? "Annual Production Trend Report (Monthly Interval)" : "Weekly Production Trend Report (Daily Interval)";
-					List<ViewReportEntity> summarizedList = summarizeReport(dataObjList, WeeklyDateEntity.class);
-					filePath = createWeeklyTrendReportSheetFile(summarizedList, obj.getReport_name());
+					title = ReportRange.fromValue(reportDetail.getCadence_range()) == ReportRange.ANNUALLY ? "Annual Production Trend Report (Monthly Interval)" : "Weekly Production Trend Report (Daily Interval)";
+					filePath = createWeeklyTrendReportSheetFile(req, reportDetail);
 					break;
 					
 				default:
@@ -460,7 +481,7 @@ public class BuiltInReportService extends DB {
 			
 			if (filePath == null) return false;
 			
-			reportsService.sentReportByMail(filePath, dataObjList.get(0).getSubscribers(), title, 18, "Customer", title);
+			reportsService.sentReportByMail(filePath, reportDetail.getSubscribers(), title, 18, "Customer", title);
 			return true;
 		} catch (Exception e) {
 			return false;
@@ -473,22 +494,21 @@ public class BuiltInReportService extends DB {
 	 * @since 2025-08-08
 	 * @param obj
 	 */
-	public String downloadReport(ViewReportEntity obj) {
+	public String downloadReport(ViewReportEntity req) {
 		try {
-			List<ViewReportEntity> dataObjList = getReportDataList(obj);
-			if (dataObjList == null || dataObjList.size() == 0) return null;
-			
-			switch (ReportRange.fromValue(obj.getCadence_range())) {
+			ReportDetail reportDetail = getReportDataList(req);
+			if (Objects.isNull(reportDetail)) return null;
+
+			switch (ReportRange.fromValue(reportDetail.getCadence_range())) {
 				case LAST_MONTH:
 				case MONTHLY:
 				case CUSTOM:
-					return createMonthlyTrendReportSheetFile(obj, dataObjList, obj.getReport_name());
+					return createMonthlyTrendReportSheetFile(req, reportDetail);
 					
 				case LAST_WEEK:
 				case WEEKLY:
 				case ANNUALLY:
-					List<ViewReportEntity> summarizedList = summarizeReport(dataObjList, WeeklyDateEntity.class);
-					return createWeeklyTrendReportSheetFile(summarizedList, obj.getReport_name());
+					return createWeeklyTrendReportSheetFile(req, reportDetail);
 					
 				default:
 					return null;
@@ -505,30 +525,28 @@ public class BuiltInReportService extends DB {
 	 * @param obj
 	 * @return file path
 	 */
-	public String createWeeklyTrendReportSheetFile(List<ViewReportEntity> summarizedList, String title) {
+	public String createWeeklyTrendReportSheetFile(ViewReportEntity req, ReportDetail reportDetail) {
 		try (XSSFWorkbook document = new XSSFWorkbook()) {
 			// insert logo image
 			int pictureIdx = DocumentHelper.readLogoImageFile(document);
 			ClientAnchor logoAnchor = new XSSFClientAnchor(10 * Units.EMU_PER_PIXEL, -10 * Units.EMU_PER_PIXEL, 0, 10 * Units.EMU_PER_PIXEL, 7, 1, 8, 4);
-			
-			for (int s = 0; s < summarizedList.size(); s++) {
-				ViewReportEntity dataObj = summarizedList.get(s);
-				
-				if (dataObj != null) {
-					List<WeeklyDateEntity> dataExports = dataObj.getDataReports();
+
+			reportDetail.getSites()
+				.forEach(site -> {
+					List<WeeklyDateEntity> dataExports = (List<WeeklyDateEntity>) site.getDataReports();
 					int numOfPoints = dataExports != null ? dataExports.size() - 1 : 0; // exclude total row
-					
-					XSSFSheet sheet = document.createSheet(WorkbookUtil.createSafeSheetName(dataObj.getSite_name()));
+
+					XSSFSheet sheet = document.createSheet(WorkbookUtil.createSafeSheetName(site.getName()));
 					DocumentHelper.insertLogo(sheet, logoAnchor, pictureIdx);
-					
-					writeHeaderWeeklyReport(sheet, dataObj);
-					
+
+					writeHeaderWeeklyReport(sheet, reportDetail, site, req.getStart_date(), req.getEnd_date());
+
 					if (numOfPoints > 0) {
 						// chart
 						ClientAnchor chartAnchor = new XSSFClientAnchor(5 * Units.EMU_PER_PIXEL, 0, -5 * Units.EMU_PER_PIXEL, 0, 0, numOfPoints + 8, 8, numOfPoints + 8 + 24);
 						XDDFChart chart = DocumentHelper.insertChart(sheet, chartAnchor, "Performance");
 						chart.getCTChart().getTitle().getTx().getRich().getPArray(0).getRArray(0).getRPr().setSz(1400);
-						
+
 						// data sources
 						XDDFDataSource<String> categoriesData = XDDFDataSourcesFactory.fromStringCellRange(sheet, new CellRangeAddress(6, numOfPoints + 5, 0, 0));
 						XDDFNumericalDataSource<Double> valuesData1 = XDDFDataSourcesFactory.fromNumericCellRange(sheet, new CellRangeAddress(6, numOfPoints + 5, 1, 1));
@@ -536,42 +554,41 @@ public class BuiltInReportService extends DB {
 						XDDFNumericalDataSource<Double> valuesData3 = XDDFDataSourcesFactory.fromNumericCellRange(sheet, new CellRangeAddress(6, numOfPoints + 5, 3, 3));
 						XDDFNumericalDataSource<Double> valuesData4 = XDDFDataSourcesFactory.fromNumericCellRange(sheet, new CellRangeAddress(6, numOfPoints + 5, 5, 5));
 						XDDFNumericalDataSource<Double> valuesData5 = XDDFDataSourcesFactory.fromNumericCellRange(sheet, new CellRangeAddress(6, numOfPoints + 5, 6, 6));
-						
+
 						// category axis
 						XDDFCategoryAxis bottomAxis = DocumentHelper.createCategoryAxis(chart);
-						
+
 						// left value axis
 						XDDFValueAxis leftAxis = DocumentHelper.createLeftValueAxis(chart, "GENERATION (KWH)");
-						
+
 						XDDFChartData data = DocumentHelper.createChartData(chart, ChartTypes.BAR, bottomAxis, leftAxis);
 						Supplier<Stream<WeeklyDateEntity>> filteredDataExports = () -> dataExports.stream().filter(item -> !item.getCategories_time().equals("Total"));
 						DocumentHelper.addSeries(filteredDataExports.get().allMatch(item -> item.getActualGeneration() == null), data, categoriesData, valuesData1, "Actual Generation (kWh)", XDDFColor.from(new byte[] {(byte) 70, (byte) 130, (byte) 180}), null);
 						DocumentHelper.addSeries(filteredDataExports.get().allMatch(item -> item.getExpectedGeneration() == null), data, categoriesData, valuesData2, "Expected Generation (kWh)", XDDFColor.from(new byte[] {(byte) 166, (byte) 166, (byte) 166}), null);
 						DocumentHelper.addSeries(filteredDataExports.get().allMatch(item -> item.getModeledGeneration() == null), data, categoriesData, valuesData3, "Modeled Generation (kWh)", XDDFColor.from(new byte[] {(byte) 176, (byte) 196, (byte) 222}), null);
-						
+
 						chart.plot(data);
-						
+
 						// right value axis
 						XDDFValueAxis rightAxis = DocumentHelper.createRightValueAxis(chart, bottomAxis, "PERFORMANCE INDEX (%)");
-						
+
 						data = DocumentHelper.createChartData(chart, ChartTypes.LINE, bottomAxis, rightAxis);
 						Series lineSeries = DocumentHelper.addSeries(filteredDataExports.get().allMatch(item -> item.getExpectedGenerationIndex() == null), data, categoriesData, valuesData4, "Expected Generation Index (%)", XDDFColor.from(new byte[] {(byte) 112, (byte) 173, (byte) 71}), null);
 						DocumentHelper.solidFillLineMarker(chart, lineSeries, 0, MarkerStyle.CIRCLE, XDDFColor.from(new byte[] {(byte) 112, (byte) 173, (byte) 71}));
 						lineSeries = DocumentHelper.addSeries(filteredDataExports.get().allMatch(item -> item.getModeledGenerationIndex() == null), data, categoriesData, valuesData5, "Modeled Generation Index (%)", XDDFColor.from(new byte[] {(byte) 255, (byte) 192, (byte) 0}), null);
 						DocumentHelper.solidFillLineMarker(chart, lineSeries, 1, MarkerStyle.CIRCLE, XDDFColor.from(new byte[] {(byte) 255, (byte) 192, (byte) 0}));
-						
+
 						chart.plot(data);
 					}
-				}
-			}
-			
-			return reportsService.writeToSheetFile(document, title);
+				});
+
+			return reportsService.writeToSheetFile(document, reportDetail.getName());
 		} catch (Exception e) {
 			return null;
 		}
 	}
 	
-	private static void writeHeaderWeeklyReport(Sheet sheet, ViewReportEntity dataObj) {
+	private static void writeHeaderWeeklyReport(Sheet sheet, ReportDetail reportDetail, SiteByReport site, String startDate, String endDate) {
 		try {
 			setPrintAreaToFitOnePage(sheet);
 			
@@ -604,7 +621,7 @@ public class BuiltInReportService extends DB {
 			row.setHeight((short) 500);
 			Cell cell = row.createCell(1);
 			cell.setCellStyle(reportTitleCellStyle);
-			String title = dataObj.getCadence_range() == ReportRange.ANNUALLY.getValue() ? "ANNUAL PRODUCTION TREND REPORT (MONTHLY INTERVAL)" : "WEEKLY PRODUCTION TREND REPORT (DAILY INTERVAL)";
+			String title = reportDetail.getCadence_range() == ReportRange.ANNUALLY.getValue() ? "ANNUAL PRODUCTION TREND REPORT (MONTHLY INTERVAL)" : "WEEKLY PRODUCTION TREND REPORT (DAILY INTERVAL)";
 			cell.setCellValue(title);
 			sheet.addMergedRegion(new CellRangeAddress(1, 1, 1, 6));
 						
@@ -612,7 +629,7 @@ public class BuiltInReportService extends DB {
 			row.setHeight((short) 400);
 			cell = row.createCell(1);
 			cell.setCellStyle(reportSubTitleBoldCellStyle);
-			cell.setCellValue(dataObj.getSite_name().toUpperCase());
+			cell.setCellValue(site.getName().toUpperCase());
 			sheet.addMergedRegion(new CellRangeAddress(2, 2, 1, 6));
 
 			row = sheet.createRow(3);
@@ -620,15 +637,13 @@ public class BuiltInReportService extends DB {
 			cell = row.createCell(1);
 			cell.setCellStyle(reportSubTitleCelStyle);
 			
-			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-			SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
-			cell.setCellValue(format.format(dateFormat.parse(dataObj.getStart_date())) + " - " +  format.format(dateFormat.parse(dataObj.getEnd_date())));
+			cell.setCellValue(reportDateRangeDTF.format(dateTimeFormatter.parse(startDate)) + " - " +  reportDateRangeDTF.format(dateTimeFormatter.parse(endDate)));
 			sheet.addMergedRegion(new CellRangeAddress(3, 3, 1, 6));
 			
 			row = sheet.createRow(5);
 			cell = row.createCell(0);
 			cell.setCellStyle(tableHeaderCellStyle);
-			cell.setCellValue(dataObj.getCadence_range() == 4 ? "" : "Date");
+			cell.setCellValue(reportDetail.getCadence_range() == ReportRange.ANNUALLY.getValue() ? "" : "Date");
 
 			cell = row.createCell(1);
 			cell.setCellStyle(tableHeaderCellStyle);
@@ -657,9 +672,9 @@ public class BuiltInReportService extends DB {
 			cell.setCellStyle(tableHeaderCellStyle);
 			sheet.addMergedRegion(new CellRangeAddress(5, 5, 6, 7));
 			
-			List<WeeklyDateEntity> dataExports = dataObj.getDataReports();
+			List<WeeklyDateEntity> dataExports = (List<WeeklyDateEntity>) site.getDataReports();
 			
-			if(dataExports != null && dataExports.size() > 0) {
+			if(!dataExports.isEmpty()) {
 				for (int i = 0; i < dataExports.size(); i++) {
 					WeeklyDateEntity item = dataExports.get(i);
 					boolean isTotalRow = item.getCategories_time().equals("Total");
@@ -770,40 +785,36 @@ public class BuiltInReportService extends DB {
 	 * @param obj
 	 * @return file path
 	 */
-	public String createMonthlyTrendReportSheetFile(ViewReportEntity obj, List<ViewReportEntity> dataObjList, String title) {
+	public String createMonthlyTrendReportSheetFile(ViewReportEntity req, ReportDetail reportDetail) {
 		try (XSSFWorkbook document = new XSSFWorkbook()) {
-			List<ViewReportEntity> summarizedList = summarizeReport(dataObjList, MonthlyProductionTrendReportEntity.class);
-			
 			// insert logo image
 			int pictureIdx = DocumentHelper.readLogoImageFile(document);
 			
-			if(dataObjList.get(0).getData_intervals() == ReportIntervals._15_MINUTES.getValue()) {
+			if(reportDetail.getData_intervals() == ReportIntervals._15_MINUTES.getValue()) {
 				ClientAnchor logoAnchor = new XSSFClientAnchor(-140 * Units.EMU_PER_PIXEL, -20 * Units.EMU_PER_PIXEL, -20 * Units.EMU_PER_PIXEL, 10 * Units.EMU_PER_PIXEL, 2, 1, 2, 4);
-				for (int s = 0; s < summarizedList.size(); s++) {
-					ViewReportEntity dataObj = summarizedList.get(s);
-					
-					if (dataObj != null) {
-						XSSFSheet sheet = document.createSheet(WorkbookUtil.createSafeSheetName(dataObj.getSite_name()));
-						DocumentHelper.insertLogo(sheet, logoAnchor, pictureIdx);
-						
-						writeHeaderMonthTrendReport(sheet, dataObj);
-					}
-				}
+
+				reportDetail.getSites()
+						.forEach(site -> {
+							XSSFSheet sheet = document.createSheet(WorkbookUtil.createSafeSheetName(site.getName()));
+							DocumentHelper.insertLogo(sheet, logoAnchor, pictureIdx);
+
+							writeHeaderMonthTrendReport(sheet, site, req.getStart_date(), req.getEnd_date());
+						});
 			} else {
 				XSSFSheet sheet = document.createSheet(WorkbookUtil.createSafeSheetName("Monthly Interval"));
 				ClientAnchor logoAnchor = new XSSFClientAnchor(50 * Units.EMU_PER_PIXEL, -20 * Units.EMU_PER_PIXEL, 0, 20 * Units.EMU_PER_PIXEL, 4, 1, 5, 4);
 				DocumentHelper.insertLogo(sheet, logoAnchor, pictureIdx);
 				
-				writeHeaderMonthTrendReportMonthlyInterval(sheet, summarizedList);
+				writeHeaderMonthTrendReportMonthlyInterval(sheet, reportDetail, req.getStart_date(), req.getEnd_date());
 			}
 					
-			return reportsService.writeToSheetFile(document, title);
+			return reportsService.writeToSheetFile(document, reportDetail.getName());
 		} catch (Exception e) {
 			return null;
 		}
 	}
 	
-	private static void writeHeaderMonthTrendReportMonthlyInterval(Sheet sheet, List<ViewReportEntity> dataObjList) {
+	private static void writeHeaderMonthTrendReportMonthlyInterval(Sheet sheet, ReportDetail reportDetail, String startDate, String endDate) {
 		try {
 			sheet.setDefaultColumnWidth(16);
 			sheet.setColumnWidth(0, 25 * 256);
@@ -847,41 +858,43 @@ public class BuiltInReportService extends DB {
 			cell = row.createCell(4);
 			cell.setCellStyle(tableHeaderCellStyle);
 			cell.setCellValue("Monthly Production (kWh)");
-			
-			if(dataObjList.size() > 0) {
-				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-				SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
-				
-				for (int i = 0; i < dataObjList.size(); i++) {
-					ViewReportEntity item = dataObjList.get(i);
-					
-					Row row6f = sheet.createRow(6+i);
-					Cell cell60f = row6f.createCell(0);
-					cell60f.setCellStyle(tableRowLeftAlignCellStyle);
-					cell60f.setCellValue(item.getSite_name());
-					Cell cell61f = row6f.createCell(1);
-					cell61f.setCellStyle(tableRowLeftAlignCellStyle);
-					sheet.addMergedRegion(new CellRangeAddress(6+i, 6+i, 0, 1));
-					
-					Cell cell62f = row6f.createCell(2);
-					cell62f.setCellStyle(tableRowCellStyle);
-					cell62f.setCellValue(format.format(dateFormat.parse(item.getStart_date())));
-					
-					Cell cell63f = row6f.createCell(3);
-					cell63f.setCellStyle(tableRowCellStyle);
-					cell63f.setCellValue(format.format(dateFormat.parse(item.getEnd_date())));
-					
-					Cell cell64f = row6f.createCell(4);
-					cell64f.setCellStyle(tableRowNoDecimalCellStyle);
-					List<MonthlyProductionTrendReportEntity> dataReport = item.getDataReports();
-					if(dataReport != null && dataReport.size() > 0 && dataReport.get(0).getMonthlyProduction() != null) cell64f.setCellValue(dataReport.get(0).getMonthlyProduction());
-				}
+
+			List<SiteByReport> sites = reportDetail.getSites();
+			if (sites.isEmpty()) return;
+
+			for (int i = 0; i < sites.size(); i++) {
+				SiteByReport site = sites.get(i);
+
+				Row row6f = sheet.createRow(6+i);
+				Cell cell60f = row6f.createCell(0);
+				cell60f.setCellStyle(tableRowLeftAlignCellStyle);
+				cell60f.setCellValue(site.getName());
+				Cell cell61f = row6f.createCell(1);
+				cell61f.setCellStyle(tableRowLeftAlignCellStyle);
+				sheet.addMergedRegion(new CellRangeAddress(6+i, 6+i, 0, 1));
+
+				Cell cell62f = row6f.createCell(2);
+				cell62f.setCellStyle(tableRowCellStyle);
+				cell62f.setCellValue(reportDateRangeDTF.format(dateTimeFormatter.parse(startDate)));
+
+				Cell cell63f = row6f.createCell(3);
+				cell63f.setCellStyle(tableRowCellStyle);
+				cell63f.setCellValue(reportDateRangeDTF.format(dateTimeFormatter.parse(endDate)));
+
+				Cell cell64f = row6f.createCell(4);
+				cell64f.setCellStyle(tableRowNoDecimalCellStyle);
+				List<MonthlyProductionTrendReportEntity> dataReport = (List<MonthlyProductionTrendReportEntity>) site.getDataReports();
+				dataReport.stream()
+						.filter(item -> Objects.nonNull(item.getMonthlyProduction()))
+						.findFirst()
+						.map(MonthlyProductionTrendReportEntity::getMonthlyProduction)
+						.ifPresent(cell64f::setCellValue);
 			}
 		} catch (Exception e) {
 		}
 	}
 	
-	private static void writeHeaderMonthTrendReport(Sheet sheet, ViewReportEntity dataObj) {
+	private static void writeHeaderMonthTrendReport(Sheet sheet, SiteByReport site, String startDate, String endDate) {
 		try {
 			setPrintAreaToFitOnePage(sheet);
 			
@@ -909,16 +922,14 @@ public class BuiltInReportService extends DB {
 			row.setHeight((short) 450);
 			cell = row.createCell(0);
 			cell.setCellStyle(reportSubTitleBoldCellStyle);
-			cell.setCellValue(dataObj.getSite_name().toUpperCase());
+			cell.setCellValue(site.getName().toUpperCase());
 			
 			row = sheet.createRow(3);
 			row.setHeight((short) 450);
 			cell = row.createCell(0);
 			cell.setCellStyle(reportSubTitleCelStyle);
 			
-			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-			SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
-			cell.setCellValue(format.format(dateFormat.parse(dataObj.getStart_date())) + " - " +  format.format(dateFormat.parse(dataObj.getEnd_date())));
+			cell.setCellValue(reportDateRangeDTF.format(dateTimeFormatter.parse(startDate)) + " - " +  reportDateRangeDTF.format(dateTimeFormatter.parse(endDate)));
 			
 			row = sheet.createRow(5);
 			row.setHeight((short) 400);
@@ -930,9 +941,9 @@ public class BuiltInReportService extends DB {
 			cell.setCellStyle(tableHeaderCellStyle);
 			cell.setCellValue("Monthly Production (kWh)");
 			
-			List<MonthlyProductionTrendReportEntity> dataExports = dataObj.getDataReports();
+			List<MonthlyProductionTrendReportEntity> dataExports = (List<MonthlyProductionTrendReportEntity>) site.getDataReports();
 			
-			if(dataExports != null && dataExports.size() > 0) {
+			if (!dataExports.isEmpty()) {
 				for (int i = 0; i < dataExports.size(); i++) {
 					MonthlyProductionTrendReportEntity item = dataExports.get(i);
 					

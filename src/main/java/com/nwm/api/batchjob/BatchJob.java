@@ -1492,10 +1492,7 @@ public class BatchJob {
 			ZonedDateTime nowTimeZonedDateTime = nowLocalDateTime.withZoneSameInstant(ZoneId.of(objReport.getOffset_timezone()));
 			String startDateFormat = "yyyy-MM-dd 00:00:00";
 			String endDateFormat = "yyyy-MM-dd 23:59:59";
-	
-			String idSiteList = objReport.getId_sites() != null ? objReport.getId_sites() : (objReport.getIds_site() != null ? objReport.getIds_site() : null);
-			objReport.setIds(idSiteList != null ? Arrays.asList(idSiteList.split(",")).stream().map(Integer::parseInt).collect(Collectors.toList()) : null);
-			
+
 			switch (ReportRange.fromValue(objReport.getCadence_range())) {
 				case DAILY:
 				default:

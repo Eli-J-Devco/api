@@ -71,19 +71,17 @@ public class LevitonReportsService extends DB {
 	
 	public ReportDetail getDataReport(ViewReportEntity req) throws Exception {
 		try {
-			req.setId_site(Integer.parseInt(Optional.ofNullable(req.getId_sites()).orElse(Optional.ofNullable(req.getIds_site()).orElse("0"))));
-			
 			ReportDetail reportDetail = reportsService.getReportDetail(req);
-			if (Objects.isNull(reportDetail)) throw new Exception("Report not found");
-			
+
 			SiteByReport site = Optional.ofNullable(reportDetail.getSites())
 					.orElse(new ArrayList<>())
 					.stream()
-					.filter(item -> item.getId() == req.getId_site())
 					.findFirst()
 					.orElse(null);
 			if (Objects.isNull(site)) return reportDetail;
 			
+			req.setId_site(site.getId());
+
 			List data = new ArrayList();
 			List dataListDeviceMeter = queryForList("Reports.getListDeviceTypeMeter", req);
 			if(dataListDeviceMeter.size() > 0 ) {
@@ -115,7 +113,7 @@ public class LevitonReportsService extends DB {
 	public boolean sentMail(ViewReportEntity req) {
 		try {
 			ReportDetail reportDetail = getDataReport(req);
-			String filePath = req.getFile_type() == ReportFileType.PDF.getValue() ? createReportPdfFile(req, reportDetail) : createReportSheetFile(req, reportDetail);
+			String filePath = reportDetail.getFile_type() == ReportFileType.PDF.getValue() ? createReportPdfFile(req, reportDetail) : createReportSheetFile(req, reportDetail);
 			if (filePath == null) return false;
 			
 			reportsService.sentReportByMail(filePath, reportDetail.getSubscribers(), reportDetail.getCadence_range_name(), 16, "Customer", reportDetail.getCadence_range_name() + " ");
