@@ -149,17 +149,38 @@
 			tbs.ftp_user_name,
 			tbs.ftp_password,
 			tbs.receive_email,
-			DATE_FORMAT(tbs.receive_date, '%Y-%m-%d') AS receive_date,
+			tbs.receive_date,
 			s.`name` AS site_name,
 			tz.`value` AS timezone
 		FROM
-			tenant_billing_setting tbs
+			bems_tenant_billing_setting tbs
 			INNER JOIN site s ON s.id = tbs.id_site AND s.is_delete = 0
 			LEFT JOIN time_zone tz ON tz.id = s.id_time_zone
 		WHERE
 			tbs.type <![CDATA[<>]]> 0
 		ORDER BY tbs.id
 	</select>
+
+	<select id="getSetting" resultType="com.nwm.api.entities.TenantBillingSettingEntity" parameterType="com.nwm.api.entities.TenantBillingSettingEntity">
+		SELECT id, id_site, type, ftp_host, ftp_port, ftp_user_name, ftp_password, receive_email, receive_date
+		FROM bems_tenant_billing_setting
+		WHERE id_site = #{id_site}
+		ORDER BY id DESC
+		LIMIT 1
+	</select>
+
+	<insert id="insertSetting" parameterType="com.nwm.api.entities.TenantBillingSettingEntity">
+		INSERT INTO bems_tenant_billing_setting (id, id_site, type, ftp_host, ftp_port, ftp_user_name, ftp_password, receive_email, receive_date, created_at, updated_at)
+		SELECT IFNULL(MAX(id), 0) + 1, #{id_site}, #{type}, #{ftp_host}, #{ftp_port}, #{ftp_user_name}, #{ftp_password}, #{receive_email}, #{receive_date}, NOW(), NOW()
+		FROM bems_tenant_billing_setting
+	</insert>
+
+	<update id="updateSetting" parameterType="com.nwm.api.entities.TenantBillingSettingEntity">
+		UPDATE bems_tenant_billing_setting
+		SET type = #{type}, ftp_host = #{ftp_host}, ftp_port = #{ftp_port}, ftp_user_name = #{ftp_user_name}, ftp_password = #{ftp_password},
+			receive_email = #{receive_email}, receive_date = #{receive_date}, updated_at = NOW()
+		WHERE id = #{id}
+	</update>
 
 	<!-- Site name, code and time zone offset -->
 	<select id="getSiteInfo" resultType="Map" parameterType="com.nwm.api.entities.TenantBillingEntity">
@@ -184,7 +205,7 @@
 		A meter is a tenant meter device of the site (meter_type 14, as the summary job), active or not;
 		one without rows in the period (e.g. not sending) has kwh NULL and is incomplete.
 		Name, serial and location are the current values of the device.
-		Ready = a complete row for every day from start_date until min(end_date, today) (expected_days, set by the service).
+		Ready = the meter has rows in the period and none is flagged is_incomplete by the summary job.
 		Wrapped in a derived table: device.status would hide the status alias in ORDER BY / HAVING.
 	-->
 	<sql id="meterPeriod">
@@ -207,12 +228,7 @@
 					LIMIT 1
 				) AS location,
 				ROUND(SUM(s.total_energy), 2) AS kwh,
-				IF(
-					#{expected_days} <![CDATA[>]]> 0
-					AND COUNT(s.id) = #{expected_days}
-					AND IFNULL(SUM(s.is_incomplete), 0) = 0,
-					'ready', 'incomplete'
-				) AS status,
+				CASE WHEN MAX(s.is_incomplete) = 0 THEN 'ready' ELSE 'incomplete' END AS status,
                 r.id as id_location
 			FROM
 				device d
@@ -525,11 +541,23 @@
 		API 4, is_15min: kWh of each 15-minute slot (site time) in [start_date, end_date], from the raw data table of the meter.
 		slot = the reading time floored to 15 minutes, reading = last (max) reading of the slot; kWh = reading - reading of the previous slot with data.
 		The 15 minutes before start_date are read as the baseline of the first slot (not returned), so the slots of a day add up to its daily kWh.
-		A slot without readings is not returned.
-		TODO: missing / incomplete slots are not marked.
+		A slot without readings is not returned. Readings after the last reading of the summary (last_time) are left out,
+		no summary row in the period: no slots.
 	-->
 	<select id="getChart15MinData" resultType="Map" parameterType="com.nwm.api.entities.TenantBillingEntity">
-		WITH slots AS (
+		<!--
+			the summary job runs after the raw table: the last reading of the summary (site time, yyyy-MM-dd HH:mm) in the period,
+			so the slots stop where the daily kWh stops.
+			TODO: rows from before commit 7fb88d87 have last_time HH:mm:ss, which sorts after yyyy-MM-dd HH:mm in MAX
+		-->
+		WITH last_sum AS (
+			SELECT MAX(sm.last_time) AS last_time
+			FROM bems_tenant_billing_daily_summary sm
+			WHERE sm.id_device = #{id_device}
+				AND sm.id_site = #{id_site}
+				AND sm.`date` BETWEEN #{start_date} AND #{end_date}
+		),
+		slots AS (
 			SELECT
 				FROM_UNIXTIME(FLOOR(UNIX_TIMESTAMP(CONVERT_TZ(dv.time, '+00:00', tz.`value`)) / 900) * 900) AS slot,
 				MAX(dv.nvmActiveEnergy) AS reading
@@ -540,19 +568,21 @@
 				JOIN time_zone tz ON tz.id = s.id_time_zone
 			WHERE
 				dv.id_device = #{id_device}
-				AND dv.time <![CDATA[ >= ]]> CONVERT_TZ(#{start_date}, tz.`value`, '+00:00') - INTERVAL 15 MINUTE
-				AND dv.time <![CDATA[ < ]]> CONVERT_TZ(DATE_ADD(#{end_date}, INTERVAL 1 DAY), tz.`value`, '+00:00')
+				AND dv.time <![CDATA[ >= ]]> CONVERT_TZ(#{start_date}, tz.`value`, '+00:00')
+				AND dv.time <![CDATA[ < ]]> DATE_ADD(CONVERT_TZ(DATE_ADD(#{end_date}, INTERVAL 1 DAY), tz.`value`, '+00:00'), INTERVAL 15 MINUTE)
 			GROUP BY slot
 			ORDER BY slot
 		)
-		SELECT *
+		SELECT t.*
 		FROM (
 			SELECT
 				DATE_FORMAT(slot, '%Y-%m-%d %H:%i') AS time,
 				ROUND(reading - LAG(reading) OVER (ORDER BY slot), 3) AS kwh
 			FROM slots
 		) t
+		JOIN last_sum ls
 		WHERE t.time <![CDATA[ >= ]]> #{start_date}
+			AND t.time <![CDATA[ <= ]]> ls.last_time
 		ORDER BY t.time
 	</select>
 

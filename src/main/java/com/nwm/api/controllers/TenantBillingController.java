@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nwm.api.entities.TenantBillingEntity;
+import com.nwm.api.entities.TenantBillingSettingEntity;
 import com.nwm.api.services.TenantBillingService;
 import com.nwm.api.utils.Constants;
 
@@ -211,20 +212,53 @@ public class TenantBillingController extends BaseController {
 		}
 	}
 
-  /**
-   * @description API 8: get location list for filter
-   * @param id_site
-   */
-  @PostMapping("/location-list")
-  public Object getLocationList(@RequestBody TenantBillingEntity obj) {
-    try {
-      List<SiteAreaBuildingFloorRoomEntity> dataList = service.getLocationList(obj);
-      return this.jsonResult(true, Constants.GET_SUCCESS_MSG, dataList, dataList.size());
-    } catch (IllegalArgumentException | IllegalStateException e) {
-      return this.jsonResult(false, e.getMessage(), null, 0);
-    } catch (Exception e) {
-      log.error(e);
-      return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
-    }
-  }
+	/**
+	 * @description API 8: get location list for filter
+	 * @param id_site
+	 */
+	@PostMapping("/location-list")
+	public Object getLocationList(@RequestBody TenantBillingEntity obj) {
+		try {
+			List<SiteAreaBuildingFloorRoomEntity> dataList = service.getLocationList(obj);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, dataList, dataList.size());
+		} catch (IllegalArgumentException | IllegalStateException e) {
+			return this.jsonResult(false, e.getMessage(), null, 0);
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+
+	/**
+	 * @description Setting of the site to receive the CSV (FTP / email), data null when not set yet
+	 * @param id_site
+	 */
+	@PostMapping("/get-setting")
+	public Object getSetting(@RequestBody TenantBillingSettingEntity obj) {
+		try {
+			TenantBillingSettingEntity setting = service.getSetting(obj);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, setting, setting == null ? 0 : 1);
+		} catch (IllegalArgumentException | IllegalStateException e) {
+			return this.jsonResult(false, e.getMessage(), null, 0);
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+
+	/**
+	 * @description Saves the setting of the site, ftp_password encrypted by the FE
+	 * @param id_site, type, ftp_host, ftp_port, ftp_user_name, ftp_password, receive_email, receive_date (day of month 1-31, the last day in the months without it)
+	 */
+	@PostMapping("/save-setting")
+	public Object saveSetting(@RequestBody TenantBillingSettingEntity obj) {
+		try {
+			return this.jsonResult(true, Constants.UPDATE_SUCCESS_MSG, service.saveSetting(obj), 1);
+		} catch (IllegalArgumentException | IllegalStateException e) {
+			return this.jsonResult(false, e.getMessage(), null, 0);
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.UPDATE_ERROR_MSG, e, 0);
+		}
+	}
 }
