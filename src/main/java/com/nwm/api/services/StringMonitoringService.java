@@ -112,6 +112,7 @@ public class StringMonitoringService extends DB {
 																Optional.ofNullable(mpptMedian).ifPresent(median -> {
 																	if (median != 0) {
 																		string.setDeviation(BigDecimal.valueOf((stringCurrent - median) / median * 100).setScale(1, RoundingMode.HALF_UP).doubleValue());
+																		string.setThreshold(BigDecimal.valueOf(stringCurrent / median * 100).setScale(1, RoundingMode.HALF_UP).doubleValue());
 																	}
 																});
 															});
