@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.TenantBillingEntity;
+import com.nwm.api.entities.TenantBillingSettingEntity;
 import com.nwm.api.utils.Lib;
 import com.opencsv.CSVWriter;
 
@@ -357,4 +358,40 @@ public class TenantBillingService extends DB {
     }
     return new ArrayList<>();
   }
+
+	/**
+	 * Setting of the site, null when not set yet. ftp_password stays encrypted, the FE decrypts it with its key.
+	 */
+	public TenantBillingSettingEntity getSetting(TenantBillingSettingEntity obj) throws Exception {
+		if (obj.getId_site() <= 0) throw new IllegalArgumentException("id_site is required");
+		return (TenantBillingSettingEntity) queryForObject("BemsTenantBilling.getSetting", obj);
+	}
+
+	/**
+	 * Updates the setting of the site, or adds it when the site has none. ftp_password comes encrypted from the FE.
+	 */
+	public TenantBillingSettingEntity saveSetting(TenantBillingSettingEntity obj) throws Exception {
+		if (obj.getId_site() <= 0) throw new IllegalArgumentException("id_site is required");
+		if (obj.getType() == CronJobTenantBillingSendService.TYPE_FTP) {
+			if (Lib.isBlank(obj.getFtp_host()) || obj.getFtp_port() == null || Lib.isBlank(obj.getFtp_user_name()) || Lib.isBlank(obj.getFtp_password())) {
+				throw new IllegalArgumentException("Host, port, username and password are required");
+			}
+		} else if (obj.getType() == CronJobTenantBillingSendService.TYPE_EMAIL) {
+			if (Lib.isBlank(obj.getReceive_email())) throw new IllegalArgumentException("Email is required");
+		} else if (obj.getType() != 0) {
+			throw new IllegalArgumentException("Unknown type");
+		}
+		if (obj.getType() != 0 && (obj.getReceive_date() == null || obj.getReceive_date() < 1 || obj.getReceive_date() > 31)) {
+			throw new IllegalArgumentException("Day of month must be 1 to 31");
+		}
+
+		TenantBillingSettingEntity current = getSetting(obj);
+		if (current == null) {
+			insert("BemsTenantBilling.insertSetting", obj);
+		} else {
+			obj.setId(current.getId());
+			if (update("BemsTenantBilling.updateSetting", obj) <= 0) throw new Exception("Setting not saved");
+		}
+		return getSetting(obj);
+	}
 }

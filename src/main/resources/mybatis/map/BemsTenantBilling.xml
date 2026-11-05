@@ -149,17 +149,38 @@
 			tbs.ftp_user_name,
 			tbs.ftp_password,
 			tbs.receive_email,
-			DATE_FORMAT(tbs.receive_date, '%Y-%m-%d') AS receive_date,
+			tbs.receive_date,
 			s.`name` AS site_name,
 			tz.`value` AS timezone
 		FROM
-			tenant_billing_setting tbs
+			bems_tenant_billing_setting tbs
 			INNER JOIN site s ON s.id = tbs.id_site AND s.is_delete = 0
 			LEFT JOIN time_zone tz ON tz.id = s.id_time_zone
 		WHERE
 			tbs.type <![CDATA[<>]]> 0
 		ORDER BY tbs.id
 	</select>
+
+	<select id="getSetting" resultType="com.nwm.api.entities.TenantBillingSettingEntity" parameterType="com.nwm.api.entities.TenantBillingSettingEntity">
+		SELECT id, id_site, type, ftp_host, ftp_port, ftp_user_name, ftp_password, receive_email, receive_date
+		FROM bems_tenant_billing_setting
+		WHERE id_site = #{id_site}
+		ORDER BY id DESC
+		LIMIT 1
+	</select>
+
+	<insert id="insertSetting" parameterType="com.nwm.api.entities.TenantBillingSettingEntity">
+		INSERT INTO bems_tenant_billing_setting (id, id_site, type, ftp_host, ftp_port, ftp_user_name, ftp_password, receive_email, receive_date, created_at, updated_at)
+		SELECT IFNULL(MAX(id), 0) + 1, #{id_site}, #{type}, #{ftp_host}, #{ftp_port}, #{ftp_user_name}, #{ftp_password}, #{receive_email}, #{receive_date}, NOW(), NOW()
+		FROM bems_tenant_billing_setting
+	</insert>
+
+	<update id="updateSetting" parameterType="com.nwm.api.entities.TenantBillingSettingEntity">
+		UPDATE bems_tenant_billing_setting
+		SET type = #{type}, ftp_host = #{ftp_host}, ftp_port = #{ftp_port}, ftp_user_name = #{ftp_user_name}, ftp_password = #{ftp_password},
+			receive_email = #{receive_email}, receive_date = #{receive_date}, updated_at = NOW()
+		WHERE id = #{id}
+	</update>
 
 	<!-- Site name, code and time zone offset -->
 	<select id="getSiteInfo" resultType="Map" parameterType="com.nwm.api.entities.TenantBillingEntity">
