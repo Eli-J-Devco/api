@@ -1675,8 +1675,6 @@ public class ReportsService extends DB {
 	
 	public ReportDetail getPerformanceReport(ViewReportEntity req) throws Exception {
 		try {
-			req.setId_site(Integer.parseInt(Optional.ofNullable(req.getId_sites()).orElse(Optional.ofNullable(req.getIds_site()).orElse("0"))));
-			
 			ReportDetail reportDetail = getReportDetail(req);
 
 			int totalMonths = 12;
@@ -1685,8 +1683,6 @@ public class ReportsService extends DB {
 			ChartingGranularity granularity = ChartingGranularity._1_MONTH;
 			ChartingFilter filter = ChartingFilter.LAST_12_MONTHS;
 
-			filterSiteOnRequest(reportDetail, req.getId_site());
-			
 			List<CompletableFuture<Void>> futures = Optional.ofNullable(reportDetail.getSites()).orElse(new ArrayList<>()).stream()
 					.map(site -> CompletableFuture.runAsync(() -> {
 						try {
