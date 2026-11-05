@@ -7343,14 +7343,11 @@ public class ReportsService extends DB {
 	    
 	    public ViewReportEntity getCitiCorePhDailyReport(ViewReportEntity obj) {
 	      try {
- 	        obj.setId_site(Integer.parseInt(Optional.ofNullable(obj.getId_sites()).orElse(Optional.ofNullable(obj.getIds_site()).orElse("0"))));
-	        
 	        ReportDetail reportDetail = getReportDetail(obj);
 
 	        SiteByReport site = Optional.ofNullable(reportDetail.getSites())
 	    			.orElse(new ArrayList<>())
 	    			.stream()
-	    			.filter(item -> item.getId() == obj.getId_site())
 	    			.findFirst()
 	    			.orElse(null);
 	    	if (Objects.isNull(site)) return obj;
@@ -7359,7 +7356,8 @@ public class ReportsService extends DB {
 	    	dataObj.setReport_name(reportDetail.getName());
 	    	dataObj.setmWh(true);
 	    	dataObj.setDc_capacity(site.getDc_capacity());
-	    	
+
+			obj.setId_site(site.getId());
 	        obj.setCadence_range(reportDetail.getCadence_range());
 	        obj.setData_intervals(reportDetail.getData_intervals());
 	        obj.setmWh(true);
@@ -7536,6 +7534,8 @@ public class ReportsService extends DB {
 	     */
 	    public boolean sentMailCitiCorePhDailyReport(ViewReportEntity obj) {
 	      try {
+			  ReportDetail reportDetail = getReportDetail(obj);
+
 	    	  ViewReportEntity reportData = obj;
 	          boolean hasReportData = obj.getDataInverters() != null && !obj.getDataInverters().isEmpty()
 	        		  				  && obj.getDataMeters() != null && !obj.getDataMeters().isEmpty()
@@ -7547,11 +7547,11 @@ public class ReportsService extends DB {
 	              reportData.setDate_from(obj.getDate_from());
 	          }
 	          
-	          String filePath = obj.getFile_type() == ReportFileType.PDF.getValue() ? createCiticoreDailyPdfFile(reportData) : createCitiCorePhDailyReportSheetFile(reportData);
+	          String filePath = reportDetail.getFile_type() == ReportFileType.PDF.getValue() ? createCiticoreDailyPdfFile(reportData) : createCitiCorePhDailyReportSheetFile(reportData);
 
 	          if (filePath == null) return false;
 
-	          sentReportByMail(filePath, reportData.getSubscribers(), "citicorephdaily", 30);
+	          sentReportByMail(filePath, reportDetail.getSubscribers(), "citicorephdaily", 30);
 	          return true;
 	      } catch (Exception e) {
 	        return false;
