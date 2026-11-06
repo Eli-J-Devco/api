@@ -1347,4 +1347,14 @@ public class DashboardService extends DB {
         return null;
     }
 
+    public Map<String, Object> countSiteAlert(PortfolioEntity obj){
+        try {
+            Map<String, Object> data = (Map<String, Object>) queryForObject("Dashboard.countSiteAlert", obj);
+            return data;
+        } catch (Exception e) {
+            log.error("DashboardService.countSiteAlert", e);
+        }
+        return null;
+    }
+
 }

@@ -31,387 +31,423 @@ import java.util.stream.Collectors;
 @ApiIgnore
 @RequestMapping("/kiosk")
 
-public class KioskController extends BaseController{
-	@Autowired
-	DashboardService dashboardService;
-    @Autowired
-    PortfolioService portfolioService;
-	
-    /**
-     * description Get data for site map in kiosk
-     * @author minh le
-     * @since 2026-06-05
-     * @param body
-     * @param authz
-     * @return data (status, message, array, total_row)
-     */
-    @PostMapping("/site-map-data")
-    public Object getSiteMapData(@RequestBody Map<String, Object> body) {
-        try {
-            // mode 1 is dashboard, 2 is kiosk
-//            int mode = body.get("mode") != null ? (int) body.get("mode") : 1;
-//            if (mode == 1) {
-//                List sites = Lib.sitesManagedByUser(authz);
-//                if (sites == null || sites.isEmpty()) {
-//                    return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
-//                }
-//                params.put("ids", sites);
-//            }
+public class KioskController extends BaseController {
+  @Autowired
+  DashboardService dashboardService;
+  @Autowired
+  PortfolioService portfolioService;
 
-            SiteService siteService = new SiteService();
-            Map<String, Object> params = new HashMap<>();
-            params.put("company_hash", body.get("company_hash_id"));
-            List<SiteEntity> sites = siteService.getSiteByCondition(params);
-            List<Integer> siteIds = sites.stream().map(SiteEntity::getId).collect(Collectors.toList());
-            if (siteIds.isEmpty()) {
-                return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
-            }
-            params.put("ids", siteIds);
+  /**
+   * description Get data for site map in kiosk
+   * 
+   * @author minh le
+   * @since 2026-06-05
+   * @param body
+   * @param authz
+   * @return data (status, message, array, total_row)
+   */
+  @PostMapping("/site-map-data")
+  public Object getSiteMapData(@RequestBody Map<String, Object> body) {
+    try {
+      // mode 1 is dashboard, 2 is kiosk
+      // int mode = body.get("mode") != null ? (int) body.get("mode") : 1;
+      // if (mode == 1) {
+      // List sites = Lib.sitesManagedByUser(authz);
+      // if (sites == null || sites.isEmpty()) {
+      // return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
+      // }
+      // params.put("ids", sites);
+      // }
 
-            List<Map<String, Object>> dataList = dashboardService.getSiteMapData(params);
-            if (dataList == null) {
-                return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
-            }
-            return this.jsonResult(true, Constants.GET_SUCCESS_MSG, dataList, dataList.size());
-        } catch (Exception e) {
-            log.error(e);
-            return this.jsonResult(false, e.getMessage(), null);
-        }
+      SiteService siteService = new SiteService();
+      Map<String, Object> params = new HashMap<>();
+      params.put("company_hash", body.get("company_hash_id"));
+      List<SiteEntity> sites = siteService.getSiteByCondition(params);
+      List<Integer> siteIds = sites.stream().map(SiteEntity::getId).collect(Collectors.toList());
+      if (siteIds.isEmpty()) {
+        return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
+      }
+      params.put("ids", siteIds);
+
+      List<Map<String, Object>> dataList = dashboardService.getSiteMapData(params);
+      if (dataList == null) {
+        return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
+      }
+      return this.jsonResult(true, Constants.GET_SUCCESS_MSG, dataList, dataList.size());
+    } catch (Exception e) {
+      log.error(e);
+      return this.jsonResult(false, e.getMessage(), null);
     }
+  }
 
-    /**
-     * @description Get list actual vs expected energy for site map in kiosk
-     * @author minh le
-     * @since 2026-06-05
-     * @param obj
-     * @return data (status, message, array, total_row)
-     */
-    @PostMapping("/list-actual-vs-expected")
-    public Object getListActualvsExpected(@RequestBody DashboardEntity obj){
-        try {
-            SiteService siteService = new SiteService();
+  /**
+   * @description Get list actual vs expected energy for site map in kiosk
+   * @author minh le
+   * @since 2026-06-05
+   * @param obj
+   * @return data (status, message, array, total_row)
+   */
+  @PostMapping("/list-actual-vs-expected")
+  public Object getListActualvsExpected(@RequestBody DashboardEntity obj) {
+    try {
+      SiteService siteService = new SiteService();
 
-            Map<String, Object> params = new HashMap<>();
-            params.put("company_hash", obj.getCompany_hash_id());
-            List<SiteEntity> sites = siteService.getSiteByCondition(params);
+      Map<String, Object> params = new HashMap<>();
+      params.put("company_hash", obj.getCompany_hash_id());
+      List<SiteEntity> sites = siteService.getSiteByCondition(params);
 
-            if (sites.isEmpty()) {
-                return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
-            }
-            obj.setId_sites(sites);
+      if (sites.isEmpty()) {
+        return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
+      }
+      obj.setId_sites(sites);
 
-            List data = dashboardService.getListActualvsExpected(obj);
-            return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
-        } catch (Exception e) {
-            log.error(e);
-            return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
-        }
+      List data = dashboardService.getListActualvsExpected(obj);
+      return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+    } catch (Exception e) {
+      log.error(e);
+      return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
     }
+  }
 
-    /**
-     * @description Get KPI data for kiosk
-     * @author minh le
-     * @since 2026-06-05
-     * @param obj
-     * @return
-     */
-    @PostMapping("/kpi-data")
-    public Object getKPIData(@RequestBody PortfolioEntity obj) {
-        try {
-            SiteService siteService = new SiteService();
-            Map<String, Object> res = new HashMap<>();
+  /**
+   * @description Get KPI data for kiosk
+   * @author minh le
+   * @since 2026-06-05
+   * @param obj
+   * @return
+   */
+  @PostMapping("/kpi-data")
+  public Object getKPIData(@RequestBody PortfolioEntity obj) {
+    try {
+      SiteService siteService = new SiteService();
+      Map<String, Object> res = new HashMap<>();
 
-            Map<String, Object> params = new HashMap<>();
-            params.put("company_hash", obj.getCompany_hash_id());
-            List<SiteEntity> sites = siteService.getSiteByCondition(params);
-            List<Integer> siteIds = sites.stream().map(SiteEntity::getId).collect(Collectors.toList());
-            List<Integer> dataSendTime = sites.stream().map(SiteEntity::getData_send_time).collect(Collectors.toList());
-            // default get 1 min interval
-            int interval = Constants.UploadingDataIntervals._1_MINUTE.getInterval();
-            if (dataSendTime != null && !dataSendTime.isEmpty()) {
-                interval = Constants.UploadingDataIntervals.fromValue(Collections.min(dataSendTime)).getInterval();
-            }
-            if (siteIds.isEmpty()) {
-                return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
-            }
+      Map<String, Object> params = new HashMap<>();
+      params.put("company_hash", obj.getCompany_hash_id());
+      List<SiteEntity> sites = siteService.getSiteByCondition(params);
+      List<Integer> siteIds = sites.stream().map(SiteEntity::getId).collect(Collectors.toList());
+      List<Integer> dataSendTime = sites.stream().map(SiteEntity::getData_send_time).collect(Collectors.toList());
+      // default get 1 min interval
+      int interval = Constants.UploadingDataIntervals._1_MINUTE.getInterval();
+      if (dataSendTime != null && !dataSendTime.isEmpty()) {
+        interval = Constants.UploadingDataIntervals.fromValue(Collections.min(dataSendTime)).getInterval();
+      }
+      if (siteIds.isEmpty()) {
+        return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
+      }
 
-            res.put("data_send_time", interval);
-            obj.setId_sites(siteIds);
-            if (Lib.isBlank(obj.getId_filter())) {
-                obj.setId_filter("today");
-                List<Map<String, Object>> energy = dashboardService.getKPIData(obj);
-                if (energy == null) {
-                    return this.jsonResult(false, Constants.GET_ERROR_MSG, res);
-                }
-                Map<String, Object> power = new HashMap<>();
-                Double totalExpected = null;
-                Double totalActual = null;
-                double totalPower = 0;
-                double totalDCCapacity = 0;
-                double totalACCapacity = 0;
-                Double totalLoss = null;
-                Double totalAE = null;
-//                Double totalGenerationIndex = null;
-                int totalDeviceAlert = 0;
-                for (Map<String, Object> item : energy) {
-                    Object expected = item.get("expected_energy");
-                    Object actual = item.get("actual_energy");
-                    Object loss = item.get("loss");
-                    Object PR = item.get("performance_ratio");
-//                    Object generationIndex = item.get("generation_index");
-                    if (expected != null) {
-                        double value = ((Number) expected).doubleValue();
-                        totalExpected = totalExpected == null ? value : totalExpected + value;
-                    }
-                    if (actual != null) {
-                        double value = ((Number) actual).doubleValue();
-                        totalActual = totalActual == null ? value : totalActual + value;
-                    }
-                    if (loss != null) {
-                        double value = ((Number) loss).doubleValue();
-                        totalLoss = totalLoss == null ? value : totalLoss + value;
-                    }
-                    if (PR != null) {
-                        double value = ((Number) PR).doubleValue();
-                        totalAE = totalAE == null ? value : totalAE + value;
-                    }
-//                    if (generationIndex != null) {
-//                        double value = ((Number) generationIndex).doubleValue();
-//                        totalGenerationIndex = totalGenerationIndex == null ? value : totalGenerationIndex + value;
-//                    }
-                    totalPower += item.get("active_power") != null ? ((Number) item.get("active_power")).doubleValue() : 0;
-                    totalDCCapacity += item.get("dc_capacity") != null ? ((Number) item.get("dc_capacity")).doubleValue() : 0;
-                    totalACCapacity += item.get("ac_capacity") != null ? ((Number) item.get("ac_capacity")).doubleValue() : 0;
-//                    totalAE += item.get("performance_ratio") != null ? ((Number) item.get("performance_ratio")).doubleValue() : 0;
-                    totalDeviceAlert += item.get("warning_count") != null ? ((Number) item.get("warning_count")).intValue() : 0;
-                    totalDeviceAlert += item.get("critical_count") != null ? ((Number) item.get("critical_count")).intValue() : 0;
-                }
-                Double totalGenerationIndex = null;
-                if (totalActual != null && totalExpected != null) {
-                    totalGenerationIndex = (totalActual / totalExpected) * 100;
-                    totalGenerationIndex = Math.max(0, totalGenerationIndex);
-                }
-
-                power.put("active_power", totalPower);
-                power.put("dc_capacity", totalDCCapacity);
-                power.put("ac_capacity", totalACCapacity);
-
-                res.put("total_expected_today", totalExpected);
-                res.put("total_actual_today", totalActual);
-                res.put("total_generation_index", totalGenerationIndex);
-                res.put("total_loss_today", totalLoss == null ? null : Math.max(totalLoss, 0));
-                res.put("total_performance_ratio", totalAE != null ? totalAE / sites.size() : null);
-//                res.put("total_performance_ratio", (totalActual / totalExpected) * 100);
-                res.put("total_device_alert", totalDeviceAlert);
-                res.put("power", power);
-                res.put("energy", energy);
-
-                obj.setId_filter("this_week");
-                List<Map<String, Object>> sitePerformance = dashboardService.getKPIData(obj);
-                res.put("site_performance", sitePerformance);
-
-                return this.jsonResult(true, Constants.GET_SUCCESS_MSG, res);
-            }
-
-            res = dashboardService.getKPIDataByKey(obj, obj.getId_filter());
-            if (res == null) {
-                return this.jsonResult(false, Constants.GET_ERROR_MSG, res);
-            }
-            return this.jsonResult(true, Constants.GET_SUCCESS_MSG, res);
-        } catch (Exception e) {
-            log.error(e);
-            return this.jsonResult(false, e.getMessage(), null);
+      res.put("data_send_time", interval);
+      obj.setId_sites(siteIds);
+      if (Lib.isBlank(obj.getId_filter())) {
+        obj.setId_filter("today");
+        List<Map<String, Object>> energy = dashboardService.getKPIData(obj);
+        if (energy == null) {
+          return this.jsonResult(false, Constants.GET_ERROR_MSG, res);
         }
-    }
-
-    /**
-     * @description Get top priority site
-     * @author minh le
-     * @since 2026-06-12
-     * @param obj
-     * @return
-     */
-    @PostMapping("/top-priority-site")
-    public Object getTopPrioritySite(@RequestBody SiteEntity obj) {
-        try {
-            Map<String, Object> data = dashboardService.getTopPrioritySite(obj);
-            return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data);
-        } catch (Exception e) {
-            log.error(e);
-            return this.jsonResult(false, e.getMessage(), null);
+        Map<String, Object> power = new HashMap<>();
+        Double totalExpected = null;
+        Double totalActual = null;
+        double totalPower = 0;
+        double totalDCCapacity = 0;
+        double totalACCapacity = 0;
+        Double totalLoss = null;
+        Double totalAE = null;
+        Double totalInverterAvailability = null;
+        // Double totalGenerationIndex = null;
+        int totalDeviceAlert = 0;
+        for (Map<String, Object> item : energy) {
+          Object expected = item.get("expected_energy");
+          Object actual = item.get("actual_energy");
+          Object loss = item.get("loss");
+          Object PR = item.get("performance_ratio");
+          Object inverterAvailability = item.get("inverter_availability");
+          // Object generationIndex = item.get("generation_index");
+          if (expected != null) {
+            double value = ((Number) expected).doubleValue();
+            totalExpected = totalExpected == null ? value : totalExpected + value;
+          }
+          if (actual != null) {
+            double value = ((Number) actual).doubleValue();
+            totalActual = totalActual == null ? value : totalActual + value;
+          }
+          if (loss != null) {
+            double value = ((Number) loss).doubleValue();
+            totalLoss = totalLoss == null ? value : totalLoss + value;
+          }
+          if (PR != null) {
+            double value = ((Number) PR).doubleValue();
+            totalAE = totalAE == null ? value : totalAE + value;
+          }
+          if (inverterAvailability != null) {
+            double value = ((Number) inverterAvailability).doubleValue();
+            totalInverterAvailability = totalInverterAvailability == null ? value : totalInverterAvailability + value;
+          }
+          // if (generationIndex != null) {
+          // double value = ((Number) generationIndex).doubleValue();
+          // totalGenerationIndex = totalGenerationIndex == null ? value :
+          // totalGenerationIndex + value;
+          // }
+          totalPower += item.get("active_power") != null ? ((Number) item.get("active_power")).doubleValue() : 0;
+          totalDCCapacity += item.get("dc_capacity") != null ? ((Number) item.get("dc_capacity")).doubleValue() : 0;
+          totalACCapacity += item.get("ac_capacity") != null ? ((Number) item.get("ac_capacity")).doubleValue() : 0;
+          // totalAE += item.get("performance_ratio") != null ? ((Number)
+          // item.get("performance_ratio")).doubleValue() : 0;
+          totalDeviceAlert += item.get("warning_count") != null ? ((Number) item.get("warning_count")).intValue() : 0;
+          totalDeviceAlert += item.get("critical_count") != null ? ((Number) item.get("critical_count")).intValue() : 0;
         }
-    }
-
-    /**
-     * @description Get data for chart energy flow in kiosk
-     * @author minh le
-     * @since 2026-06-09
-     * @param body
-     * @param authz
-     * @return
-     */
-    @PostMapping("/chart-energy-flow")
-    public Object getChartEnergyFlow(@RequestBody Map<String, Object> body, @RequestHeader(name = "Authorization", required = false) String authz) {
-        try {
-            // mode 1 is dashboard, 2 is kiosk
-//            int mode = body.get("mode") != null ? (int) body.get("mode") : 1;
-            Map<String, Object> res = new HashMap<>();
-            // if mode is dashboard, check user login
-//            if (mode == 1) {
-//                List sites = Lib.sitesManagedByUser(authz);
-//                if (sites == null || sites.isEmpty()) {
-//                    return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
-//                }
-//                body.put("id_sites", sites);
-//            }
-
-            SiteService siteService = new SiteService();
-            Map<String, Object> params = new HashMap<>();
-            params.put("company_hash", body.get("company_hash_id"));
-            List<SiteEntity> sites = siteService.getSiteByCondition(params);
-            List<Integer> siteIds = sites.stream().map(item -> item.getId()).collect(Collectors.toList());
-            if (siteIds.isEmpty()) {
-                return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
-            }
-            body.put("id_sites", siteIds);
-            List<Map<String, Object>> data = dashboardService.getChartEnergyFlow(body);
-
-            return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data);
-        } catch (Exception e) {
-            log.error(e);
-            return this.jsonResult(false, e.getMessage(), null);
+        Double totalGenerationIndex = null;
+        if (totalActual != null && totalExpected != null) {
+          totalGenerationIndex = (totalActual / totalExpected) * 100;
+          totalGenerationIndex = Math.max(0, totalGenerationIndex);
         }
+
+        power.put("active_power", totalPower);
+        power.put("dc_capacity", totalDCCapacity);
+        power.put("ac_capacity", totalACCapacity);
+
+        res.put("total_expected_today", totalExpected);
+        res.put("total_actual_today", totalActual);
+        res.put("total_generation_index", totalGenerationIndex);
+        res.put("total_loss_today", totalLoss == null ? null : Math.max(totalLoss, 0));
+        res.put("total_performance_ratio", totalAE != null ? totalAE / sites.size() : null);
+        res.put("inverter_availability",
+            totalInverterAvailability != null ? totalInverterAvailability / sites.size() : null);
+        // res.put("total_performance_ratio", (totalActual / totalExpected) * 100);
+        res.put("total_device_alert", totalDeviceAlert);
+        res.put("power", power);
+        res.put("energy", energy);
+
+        obj.setId_filter("this_week");
+        List<Map<String, Object>> sitePerformance = dashboardService.getKPIData(obj);
+        res.put("site_performance", sitePerformance);
+
+        return this.jsonResult(true, Constants.GET_SUCCESS_MSG, res);
+      }
+
+      res = dashboardService.getKPIDataByKey(obj, obj.getId_filter());
+      if (res == null) {
+        return this.jsonResult(false, Constants.GET_ERROR_MSG, res);
+      }
+      return this.jsonResult(true, Constants.GET_SUCCESS_MSG, res);
+    } catch (Exception e) {
+      log.error(e);
+      return this.jsonResult(false, e.getMessage(), null);
     }
+  }
 
-    @PostMapping("/chart-data-performance")
-    public Object getChartDataPerformance(@RequestBody Map<String, Object> body) {
-        try {
-            SiteService siteService = new SiteService();
-            Map<String, Object> params = new HashMap<>();
-            params.put("company_hash", body.get("company_hash_id"));
-            List<SiteEntity> sites = siteService.getSiteByCondition(params);
-            List<Integer> siteIds = sites.stream().map(item -> item.getId()).collect(Collectors.toList());
-            if (siteIds.isEmpty()) {
-                return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
-            }
-            body.put("id_sites", siteIds);
-            List<Map<String, Object>> data = dashboardService.getChartDataPerformance(body);
-
-            return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data);
-        } catch (Exception e) {
-            log.error(e);
-            return this.jsonResult(false, e.getMessage(), null);
-        }
+  /**
+   * @description Get top priority site
+   * @author minh le
+   * @since 2026-06-12
+   * @param obj
+   * @return
+   */
+  @PostMapping("/top-priority-site")
+  public Object getTopPrioritySite(@RequestBody SiteEntity obj) {
+    try {
+      Map<String, Object> data = dashboardService.getTopPrioritySite(obj);
+      return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data);
+    } catch (Exception e) {
+      log.error(e);
+      return this.jsonResult(false, e.getMessage(), null);
     }
+  }
 
-    /**
-     * @description Get top device alert
-     * @author minh le
-     * @since 2026-06-17
-     * @param body
-     * @param authz
-     * @return
-     */
-    @PostMapping("get-top-device-alert")
-    public Object getTopDeviceAlert(@RequestBody Map<String, Object> body, @RequestHeader(name = "Authorization", required = false) String authz) {
-        try {
-//            int mode = body.get("mode") != null ? (int) body.get("mode") : 1;
-            Map<String, Object> res = new HashMap<>();
+  /**
+   * @description Get data for chart energy flow in kiosk
+   * @author minh le
+   * @since 2026-06-09
+   * @param body
+   * @param authz
+   * @return
+   */
+  @PostMapping("/chart-energy-flow")
+  public Object getChartEnergyFlow(@RequestBody Map<String, Object> body,
+      @RequestHeader(name = "Authorization", required = false) String authz) {
+    try {
+      // mode 1 is dashboard, 2 is kiosk
+      // int mode = body.get("mode") != null ? (int) body.get("mode") : 1;
+      Map<String, Object> res = new HashMap<>();
+      // if mode is dashboard, check user login
+      // if (mode == 1) {
+      // List sites = Lib.sitesManagedByUser(authz);
+      // if (sites == null || sites.isEmpty()) {
+      // return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
+      // }
+      // body.put("id_sites", sites);
+      // }
 
-//            if (mode == 1) {
-//                List sites = Lib.sitesManagedByUser(authz);
-//                if (sites == null || sites.isEmpty()) {
-//                    return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
-//                }
-//                body.put("id_sites", sites);
-//            }
+      SiteService siteService = new SiteService();
+      Map<String, Object> params = new HashMap<>();
+      params.put("company_hash", body.get("company_hash_id"));
+      List<SiteEntity> sites = siteService.getSiteByCondition(params);
+      List<Integer> siteIds = sites.stream().map(item -> item.getId()).collect(Collectors.toList());
+      if (siteIds.isEmpty()) {
+        return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
+      }
+      body.put("id_sites", siteIds);
+      List<Map<String, Object>> data = dashboardService.getChartEnergyFlow(body);
 
-            SiteService siteService = new SiteService();
-            Map<String, Object> params = new HashMap<>();
-            params.put("company_hash", body.get("company_hash_id"));
-            List<SiteEntity> sites = siteService.getSiteByCondition(params);
-            List<Integer> siteIds = sites.stream().map(SiteEntity::getId).collect(Collectors.toList());
-            if (siteIds.isEmpty()) {
-                return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
-            }
-            body.put("id_sites", siteIds);
-
-            List<Map<String, Object>> data = dashboardService.getTopDeviceAlert(body);
-            return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data);
-        } catch (Exception e) {
-            log.error(e);
-            return this.jsonResult(false, e.getMessage(), null);
-        }
+      return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data);
+    } catch (Exception e) {
+      log.error(e);
+      return this.jsonResult(false, e.getMessage(), null);
     }
+  }
 
-    /**
-     * @description Get list portfolio for kiosk
-     * @author minh le
-     * @since 2026-06-05
-     * @param obj
-     * @return
-     */
-    @PostMapping("/list-portfolio")
-    public Object getList(@RequestBody PortfolioEntity obj) {
-        try {
-            (new EmployeeService()).getTableSort(obj);
-            PortfolioService service = new PortfolioService();
-            List data = service.getList(obj);
+  @PostMapping("/chart-data-performance")
+  public Object getChartDataPerformance(@RequestBody Map<String, Object> body) {
+    try {
+      SiteService siteService = new SiteService();
+      Map<String, Object> params = new HashMap<>();
+      params.put("company_hash", body.get("company_hash_id"));
+      List<SiteEntity> sites = siteService.getSiteByCondition(params);
+      List<Integer> siteIds = sites.stream().map(item -> item.getId()).collect(Collectors.toList());
+      if (siteIds.isEmpty()) {
+        return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
+      }
+      body.put("id_sites", siteIds);
+      List<Map<String, Object>> data = dashboardService.getChartDataPerformance(body);
 
-            return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
-        } catch (Exception e) {
-            log.error(e);
-            return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
-        }
+      return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data);
+    } catch (Exception e) {
+      log.error(e);
+      return this.jsonResult(false, e.getMessage(), null);
     }
+  }
 
-    @PostMapping("/metrics/actual-vs-expected")
-    public Object getSitesMetricsActualVsExpected(@RequestBody PortfolioEntity obj) {
-        try {
-            if (Lib.isBlank(obj.getCompany_hash_id())) {
-                return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
-            }
-            SiteService siteService = new SiteService();
-            Map<String, Object> params = new HashMap<>();
-            params.put("company_hash", obj.getCompany_hash_id());
-            List<SiteEntity> siteList = siteService.getSiteByCondition(params);
-            if (siteList == null) {
-                return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
-            }
-            List sites = siteList.stream().map(item -> item.getId()).collect(Collectors.toList());
-            if (sites.size() == 0) return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
+  /**
+   * @description Get top device alert
+   * @author minh le
+   * @since 2026-06-17
+   * @param body
+   * @param authz
+   * @return
+   */
+  @PostMapping("get-top-device-alert")
+  public Object getTopDeviceAlert(@RequestBody Map<String, Object> body,
+      @RequestHeader(name = "Authorization", required = false) String authz) {
+    try {
+      // int mode = body.get("mode") != null ? (int) body.get("mode") : 1;
+      Map<String, Object> res = new HashMap<>();
 
-            obj.setId_sites(sites);
-            List<SiteEnergyEntity> data = portfolioService.getSitesMetricsActualVsExpected(obj);
+      // if (mode == 1) {
+      // List sites = Lib.sitesManagedByUser(authz);
+      // if (sites == null || sites.isEmpty()) {
+      // return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
+      // }
+      // body.put("id_sites", sites);
+      // }
 
-            return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
-        } catch (Exception e) {
-            log.error(e);
-            return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
-        }
+      SiteService siteService = new SiteService();
+      Map<String, Object> params = new HashMap<>();
+      params.put("company_hash", body.get("company_hash_id"));
+      List<SiteEntity> sites = siteService.getSiteByCondition(params);
+      List<Integer> siteIds = sites.stream().map(SiteEntity::getId).collect(Collectors.toList());
+      if (siteIds.isEmpty()) {
+        return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
+      }
+      body.put("id_sites", siteIds);
+
+      List<Map<String, Object>> data = dashboardService.getTopDeviceAlert(body);
+      return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data);
+    } catch (Exception e) {
+      log.error(e);
+      return this.jsonResult(false, e.getMessage(), null);
     }
+  }
 
-    @PostMapping("/ae-last-week")
-    public Object getPerformanceRatioLastWeek(@RequestBody PortfolioEntity obj) {
-        try {
-            if (Lib.isBlank(obj.getCompany_hash_id())) {
-                return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
-            }
-            SiteService siteService = new SiteService();
-            Map<String, Object> params = new HashMap<>();
-            params.put("company_hash", obj.getCompany_hash_id());
-            List<SiteEntity> siteList = siteService.getSiteByCondition(params);
-            if (siteList == null) {
-                return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
-            }
-            List sites = siteList.stream().map(item -> item.getId()).collect(Collectors.toList());
-            if (sites.size() == 0) return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
+  /**
+   * @description Get list portfolio for kiosk
+   * @author minh le
+   * @since 2026-06-05
+   * @param obj
+   * @return
+   */
+  @PostMapping("/list-portfolio")
+  public Object getList(@RequestBody PortfolioEntity obj) {
+    try {
+      (new EmployeeService()).getTableSort(obj);
+      PortfolioService service = new PortfolioService();
+      List data = service.getList(obj);
 
-            obj.setId_sites(sites);
-            Map<String, Object> res = dashboardService.getGenerationIndexLastWeek(obj);
-            return this.jsonResult(res != null, res != null ? Constants.GET_SUCCESS_MSG : Constants.GET_ERROR_MSG, res);
-        } catch (Exception e) {
-            return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
-        }
+      return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+    } catch (Exception e) {
+      log.error(e);
+      return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
     }
+  }
+
+  @PostMapping("/metrics/actual-vs-expected")
+  public Object getSitesMetricsActualVsExpected(@RequestBody PortfolioEntity obj) {
+    try {
+      if (Lib.isBlank(obj.getCompany_hash_id())) {
+        return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
+      }
+      SiteService siteService = new SiteService();
+      Map<String, Object> params = new HashMap<>();
+      params.put("company_hash", obj.getCompany_hash_id());
+      List<SiteEntity> siteList = siteService.getSiteByCondition(params);
+      if (siteList == null) {
+        return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
+      }
+      List sites = siteList.stream().map(item -> item.getId()).collect(Collectors.toList());
+      if (sites.size() == 0)
+        return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
+
+      obj.setId_sites(sites);
+      List<SiteEnergyEntity> data = portfolioService.getSitesMetricsActualVsExpected(obj);
+
+      return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+    } catch (Exception e) {
+      log.error(e);
+      return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
+    }
+  }
+
+  @PostMapping("/ae-last-week")
+  public Object getPerformanceRatioLastWeek(@RequestBody PortfolioEntity obj) {
+    try {
+      if (Lib.isBlank(obj.getCompany_hash_id())) {
+        return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
+      }
+      SiteService siteService = new SiteService();
+      Map<String, Object> params = new HashMap<>();
+      params.put("company_hash", obj.getCompany_hash_id());
+      List<SiteEntity> siteList = siteService.getSiteByCondition(params);
+      if (siteList == null) {
+        return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
+      }
+      List sites = siteList.stream().map(item -> item.getId()).collect(Collectors.toList());
+      if (sites.size() == 0)
+        return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
+
+      obj.setId_sites(sites);
+      Map<String, Object> res = dashboardService.getGenerationIndexLastWeek(obj);
+      return this.jsonResult(res != null, res != null ? Constants.GET_SUCCESS_MSG : Constants.GET_ERROR_MSG, res);
+    } catch (Exception e) {
+      return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+    }
+  }
+
+  @PostMapping("/count-site-alert")
+  public Object countSiteAlert(@RequestBody PortfolioEntity obj) {
+    try {
+      SiteService siteService = new SiteService();
+
+      Map<String, Object> params = new HashMap<>();
+      params.put("company_hash", obj.getCompany_hash_id());
+      List<SiteEntity> sites = siteService.getSiteByCondition(params);
+      List<Integer> siteIds = sites.stream().map(SiteEntity::getId).collect(Collectors.toList());
+      obj.setId_sites(siteIds);
+      Map<String, Object> data = dashboardService.countSiteAlert(obj);
+      if (data == null) {
+        return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
+      }
+      return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data);
+    } catch (Exception e) {
+      log.error(e);
+      return this.jsonResult(false, e.getMessage(), null);
+    }
+  }
 }

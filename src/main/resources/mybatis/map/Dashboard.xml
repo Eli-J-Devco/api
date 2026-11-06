@@ -835,4 +835,69 @@
             )
         </foreach>
     </select>
+
+	<select id="countSiteAlert" resultType="Map">
+		SELECT
+			SUM(CASE WHEN alert_type = 'withoutAlert' THEN total ELSE 0 END) AS withoutAlert,
+			SUM(CASE WHEN alert_type = 'withAlert' THEN total ELSE 0 END) AS withAlert,
+			SUM(total) AS totalSite,
+			MAX(list_site_no_alert) AS list_site_no_alert,
+			MAX(list_site_alert) AS list_site_alert
+		FROM (
+			SELECT 
+				'withoutAlert' AS alert_type,
+				COUNT(s.id) AS total,
+				GROUP_CONCAT(s.id) AS list_site_no_alert,
+        		NULL AS list_site_alert
+			FROM site s
+			WHERE 
+				s.id IN (
+					<foreach item="item" index="index" collection="id_sites" separator=" , ">
+						#{item}
+					</foreach>
+				)
+				AND EXISTS (
+					SELECT 1
+					FROM device d
+					WHERE 
+						d.id_site = s.id
+						AND d.status = 1
+						AND d.is_delete = 0
+				)
+				AND NOT EXISTS (
+					SELECT 1
+					FROM device d
+					INNER JOIN alert al ON al.id_device = d.id
+					WHERE 
+						d.id_site = s.id
+						AND d.status = 1
+						AND d.is_delete = 0
+						AND (
+							al.end_date IS NULL
+							OR al.status = 1
+							OR al.is_delete != 0
+						)
+				)
+			UNION ALL
+			SELECT 
+				'withAlert' AS alert_type,
+				COUNT(DISTINCT s.id) AS total,
+				NULL AS list_site_no_alert,
+        		GROUP_CONCAT(DISTINCT s.id) AS list_site_alert
+			FROM site s
+			INNER JOIN device d ON d.id_site = s.id
+			INNER JOIN alert al ON al.id_device = d.id
+			WHERE 
+				s.id IN (
+					<foreach item="item" index="index" collection="id_sites" separator=" , ">
+						#{item}
+					</foreach>
+				)
+				AND d.status = 1
+				AND d.is_delete = 0
+				AND al.end_date IS NULL
+				AND al.status = 1
+				AND al.is_delete = 0
+		) as result
+	</select>
 </mapper>
