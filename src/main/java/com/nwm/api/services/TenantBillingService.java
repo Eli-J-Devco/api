@@ -13,9 +13,11 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -136,14 +138,93 @@ public class TenantBillingService extends DB {
 		try (CSVWriter writer = new CSVWriter(out)) {
 			writer.writeAll(rows, false);
 		}
-		// Tenant_Billing_SMLU_2026-09.csv for a whole month, Tenant_Billing_SMLU_2026-09-05_2026-10-04.csv otherwise
+		Map<String, Object> file = new LinkedHashMap<>();
+		file.put("file_name", fileName(siteCode, period) + ".csv");
+		file.put("content", out.toString().getBytes(StandardCharsets.UTF_8));
+		return file;
+	}
+
+	// Tenant_Billing_SMLU_2026-09 for a whole month, Tenant_Billing_SMLU_2026-09-05_2026-10-04 otherwise (no extension)
+	private static String fileName(String siteCode, Period period) {
 		boolean wholeMonth = period.start.getDayOfMonth() == 1
 				&& period.end.equals(period.start.withDayOfMonth(period.start.lengthOfMonth()));
 		String range = wholeMonth ? period.start.toString().substring(0, 7) : period.start + "_" + period.end;
+		return "Tenant_Billing_" + siteCode.replaceAll("[^A-Za-z0-9_-]", "") + "_" + range;
+	}
+
+	private static String num(Object value, int width) {
+		return value == null ? "" : String.format("%" + width + "s", Lib.format(((Number) value).doubleValue(), "#,##0.00"));
+	}
+
+	/**
+	 * The file sent by FTP / email (send job): the SM SAP "Utility Consumption Report" layout (SMLU Oct billing 3.xls,
+	 * see WEBDEV-5686-billing-file-mapping.md): tab separated text, UTF-16LE with BOM, CRLF, one row per meter.
+	 * Company Code = site code, Description = meter S/N, Present / Previous Meas = closing / opening reading,
+	 * Present Consumption = kWh, Previous Consumption = kWh of the same meter one month back (as API 2),
+	 * % INC/DEC = Present vs Previous Consumption, Average Consumption = kWh per day with data (as Average daily, API 7),
+	 * Characteristics = NORMALPOWER, Date Uploaded = date the file is made (sent), site time.
+	 * TODO: blank until mapped: Program Name, User, Rental Object, Contract Name, MeasPoint, MeasPos (SM SAP codes).
+	 * @return { file_name (.xls), content (byte[]) }
+	 */
+	public Map<String, Object> exportBillingReport(TenantBillingEntity obj) throws Exception {
+		Map<String, Object> data = getExportAllData(obj);
+		Period period = new Period();
+		period.start = LocalDate.parse(obj.getStart_date());
+		period.end = LocalDate.parse(obj.getEnd_date());
+		LocalDateTime now = LocalDateTime.now(clock.withZone(ZoneId.of(data.get("timezone") == null ? "UTC" : Lib.str(data.get("timezone")))));
+		String today = now.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+		String siteCode = Lib.str(data.get("site_code"));
+
+		// kWh of each meter one month back, e.g. Oct 1-31 -> Sep 1-30
+		TenantBillingEntity previousPeriod = new TenantBillingEntity();
+		previousPeriod.setId_site(obj.getId_site());
+		previousPeriod.setStart_date(period.start.minusMonths(1).toString());
+		previousPeriod.setEnd_date(period.end.minusMonths(1).toString());
+		previousPeriod.setKeyword(obj.getKeyword());
+		previousPeriod.setId_location(obj.getId_location());
+		Map<Object, Object> previousKwh = new HashMap<>();
+		for (Map<String, Object> m : (List<Map<String, Object>>) getExportAllData(previousPeriod).get("meters")) {
+			previousKwh.put(m.get("id_device"), m.get("kwh"));
+		}
+
+		List<String> lines = new ArrayList<>();
+		lines.add(String.format("%-89s%-157s%s", today, "Dynamic List Display", "1"));
+		lines.add("");
+		lines.add(String.join("\t", "Program Name : ", "", "", "", "", "", "", "", "", "Utility Consumption Report", "", "", "", "", "",
+			"Date", "", today, "Time", "", now.format(DateTimeFormatter.ofPattern("HH:mm:ss"))));
+		lines.add(String.join("\t", "User: ", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "Page", "", "    1"));
+		lines.add("");
+		lines.add("Utility Consumption Report");
+		lines.add("");
+		lines.add(String.join("\t", "", "", "Company Code", "Rental Object", "Contract Name", "MeasPoint", "MeasPos", "Description",
+			"Present Meas/TCRdg", "", "Previous Meas/TCRdg", "Present Consumption", "% INC/DEC", "Previous Consumption",
+			"Average Consumption", "", "Characteristics", "", "", "Date Uploaded"));
+		lines.add("");
+		double present = 0, previous = 0, kwh = 0, previousTotal = 0;
+		for (Map<String, Object> m : (List<Map<String, Object>>) data.get("meters")) {
+			if (m.get("closing_reading") != null) present += ((Number) m.get("closing_reading")).doubleValue();
+			if (m.get("opening_reading") != null) previous += ((Number) m.get("opening_reading")).doubleValue();
+			if (m.get("kwh") != null) kwh += ((Number) m.get("kwh")).doubleValue();
+			Number meterKwh = (Number) m.get("kwh");
+			Number meterPrevious = (Number) previousKwh.get(m.get("id_device"));
+			if (meterPrevious != null) previousTotal += meterPrevious.doubleValue();
+			// % only when both periods have kWh and the previous one is not 0
+			String change = meterKwh == null || meterPrevious == null || meterPrevious.doubleValue() == 0 ? ""
+				: Lib.format((meterKwh.doubleValue() - meterPrevious.doubleValue()) / meterPrevious.doubleValue() * 100, "0.00");
+			int days = m.get("days_with_data") == null ? 0 : ((Number) m.get("days_with_data")).intValue();
+			lines.add(String.join("\t", "", "", siteCode, "", "", "", "", Lib.str(m.get("serial")),
+				num(m.get("closing_reading"), 17), "", num(m.get("opening_reading"), 18), num(meterKwh, 18),
+				change, num(meterPrevious, 19), meterKwh == null || days == 0 ? "" : num(meterKwh.doubleValue() / days, 18),
+				"", "NORMALPOWER", "", "", today));
+		}
+		lines.add("");
+		lines.add(String.join("\t", "", "*", "GRAND TOTAL", "", "", "", "", "", num(present, 17), "", num(previous, 18), num(kwh, 18), "",
+			num(previousTotal, 19)));
 
 		Map<String, Object> file = new LinkedHashMap<>();
-		file.put("file_name", "Tenant_Billing_" + siteCode.replaceAll("[^A-Za-z0-9_-]", "") + "_" + range + ".csv");
-		file.put("content", out.toString().getBytes(StandardCharsets.UTF_8));
+		file.put("file_name", fileName(siteCode, period) + ".xls");
+		// BOM, then UTF-16LE: Excel opens it as a sheet, like the SAP file
+		file.put("content", ("\uFEFF" + String.join("\r\n", lines) + "\r\n").getBytes(StandardCharsets.UTF_16LE));
 		return file;
 	}
 
@@ -385,25 +466,12 @@ public class TenantBillingService extends DB {
 			throw new IllegalArgumentException("Unknown type");
 		}
 		if (obj.getType() != 0) {
-			// schedule: start date (yyyy-MM-dd), every 1-12 months, time (HH:mm), end date on or after the start date or none
-			LocalDate start;
+			// schedule: start date (yyyy-MM-dd) and time (HH:mm), every month
 			try {
-				start = LocalDate.parse(Lib.str(obj.getStart_date()));
+				LocalDate.parse(Lib.str(obj.getStart_date()));
 				LocalTime.parse(Lib.str(obj.getExecution_time()));
 			} catch (DateTimeParseException e) {
 				throw new IllegalArgumentException("Start date and execution time are required");
-			}
-			if (obj.getRepeat_month() == null || obj.getRepeat_month() < 1 || obj.getRepeat_month() > 12) {
-				throw new IllegalArgumentException("Repeat every must be 1 to 12 months");
-			}
-			if (!Lib.isBlank(obj.getEnd_date())) {
-				try {
-					if (LocalDate.parse(obj.getEnd_date()).isBefore(start)) throw new IllegalArgumentException("End date must be on or after the start date");
-				} catch (DateTimeParseException e) {
-					throw new IllegalArgumentException("End date is not a date");
-				}
-			} else {
-				obj.setEnd_date(null);
 			}
 		}
 

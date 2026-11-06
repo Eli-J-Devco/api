@@ -19,12 +19,10 @@ public class TenantBillingSettingEntity {
 	// encrypted by the FE (CryptoJS AES with the tenant billing key), decrypted only to connect to the FTP
 	private String ftp_password;
 	private String receive_email;
-	// schedule, site time: from start_date (yyyy-MM-dd) every repeat_month months on the day of start_date
-	// (the last day in the months without it) at execution_time (HH:mm), until end_date (yyyy-MM-dd, null = never)
+	// schedule, site time: from start_date (yyyy-MM-dd) every month on the day of start_date
+	// (the last day in the months without it) at execution_time (HH:mm)
 	private String start_date;
-	private Integer repeat_month;
 	private String execution_time;
-	private String end_date;
 
 	public int getId() {
 		return id;
@@ -80,22 +78,10 @@ public class TenantBillingSettingEntity {
 	public void setStart_date(String start_date) {
 		this.start_date = start_date;
 	}
-	public Integer getRepeat_month() {
-		return repeat_month;
-	}
-	public void setRepeat_month(Integer repeat_month) {
-		this.repeat_month = repeat_month;
-	}
 	public String getExecution_time() {
 		return execution_time;
 	}
 	public void setExecution_time(String execution_time) {
 		this.execution_time = execution_time;
-	}
-	public String getEnd_date() {
-		return end_date;
-	}
-	public void setEnd_date(String end_date) {
-		this.end_date = end_date;
 	}
 }

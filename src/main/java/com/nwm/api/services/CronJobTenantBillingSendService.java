@@ -15,7 +15,6 @@ import java.time.LocalTime;
 import java.time.YearMonth;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
@@ -42,9 +41,9 @@ import com.nwm.api.utils.Lib;
 import com.nwm.api.utils.SendMail;
 
 /**
- * Tenant Billing (WEBDEV-5686): sends the CSV of all meters (API 3) of a site by FTP or email,
- * on the schedule of each bems_tenant_billing_setting row (site time): from start_date every repeat_month months
- * on the day of start_date (the last day in the months without it) at execution_time, until end_date.
+ * Tenant Billing (WEBDEV-5686): sends the billing report of all meters (TenantBillingService.exportBillingReport) of a site by FTP or email,
+ * on the schedule of each bems_tenant_billing_setting row (site time): from start_date every month
+ * on the day of start_date (the last day in the months without it) at execution_time.
  * The job runs every 15 minutes (cron.tenant.billing.send.scheduler); last_sent_at keeps a run from being sent twice.
  */
 @Service
@@ -95,15 +94,14 @@ public class CronJobTenantBillingSendService extends DB {
 
 	/**
 	 * The run of today (site time) that is due at now, null when none: today is a run day of the schedule
-	 * (from start, every repeatMonth months, on the day of start or the last day of a shorter month, until end),
+	 * (from start, every month, on the day of start or the last day of a shorter month),
 	 * and now is at or after its time. A run day that passed without a send (e.g. the BE was down) is not sent later.
 	 */
-	static LocalDateTime dueRun(LocalDate start, int repeatMonth, LocalTime time, LocalDate end, LocalDateTime now) {
+	static LocalDateTime dueRun(LocalDate start, LocalTime time, LocalDateTime now) {
 		LocalDate today = now.toLocalDate();
-		long months = ChronoUnit.MONTHS.between(YearMonth.from(start), YearMonth.from(today));
-		if (months < 0 || months % repeatMonth != 0) return null;
+		if (today.isBefore(start)) return null;
 		LocalDate runDay = YearMonth.from(today).atDay(Math.min(start.getDayOfMonth(), today.lengthOfMonth()));
-		if (!runDay.equals(today) || (end != null && runDay.isAfter(end))) return null;
+		if (!runDay.equals(today)) return null;
 		LocalDateTime run = runDay.atTime(time);
 		return now.isBefore(run) ? null : run;
 	}
@@ -121,9 +119,7 @@ public class CronJobTenantBillingSendService extends DB {
 		}
 		LocalDateTime run = dueRun(
 			LocalDate.parse(Lib.str(setting.get("start_date"))),
-			setting.get("repeat_month") == null ? 1 : Math.max(1, ((Number) setting.get("repeat_month")).intValue()),
 			setting.get("execution_time") == null ? LocalTime.MIDNIGHT : LocalTime.parse(Lib.str(setting.get("execution_time"))),
-			setting.get("end_date") == null ? null : LocalDate.parse(Lib.str(setting.get("end_date"))),
 			now);
 		// every 15 minutes: no log when no run is due
 		if (run == null) return false;
@@ -131,14 +127,14 @@ public class CronJobTenantBillingSendService extends DB {
 			return false;
 		}
 
-		// TODO: the last month only, also for a schedule of every 2+ months
 		YearMonth month = YearMonth.from(run).minusMonths(1);
 		TenantBillingEntity obj = new TenantBillingEntity();
 		obj.setId_site(((Number) setting.get("id_site")).intValue());
 		obj.setStart_date(month.atDay(1).toString());
 		obj.setEnd_date(month.atEndOfMonth().toString());
 		tenantBillingService.clock = clock;
-		Map<String, Object> file = tenantBillingService.exportAll(obj);
+		// SM SAP Utility Consumption Report layout (.xls)
+		Map<String, Object> file = tenantBillingService.exportBillingReport(obj);
 		String fileName = Lib.str(file.get("file_name"));
 		byte[] content = (byte[]) file.get("content");
 		log.info("Tenant billing send: " + fileName + " (" + content.length + " bytes) for " + month + ", " + tag(setting));

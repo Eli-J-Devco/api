@@ -151,9 +151,7 @@
 			tbs.ftp_password,
 			tbs.receive_email,
 			DATE_FORMAT(tbs.start_date, '%Y-%m-%d') AS start_date,
-			tbs.repeat_month,
 			TIME_FORMAT(tbs.execution_time, '%H:%i') AS execution_time,
-			DATE_FORMAT(tbs.end_date, '%Y-%m-%d') AS end_date,
 			DATE_FORMAT(tbs.last_sent_at, '%Y-%m-%d %H:%i') AS last_sent_at,
 			s.`name` AS site_name,
 			tz.`value` AS timezone
@@ -171,9 +169,7 @@
 		SELECT
 			id, id_site, type, ftp_host, ftp_port, ftp_user_name, ftp_password, receive_email,
 			DATE_FORMAT(start_date, '%Y-%m-%d') AS start_date,
-			repeat_month,
-			TIME_FORMAT(execution_time, '%H:%i') AS execution_time,
-			DATE_FORMAT(end_date, '%Y-%m-%d') AS end_date
+			TIME_FORMAT(execution_time, '%H:%i') AS execution_time
 		FROM bems_tenant_billing_setting
 		WHERE id_site = #{id_site}
 		ORDER BY id DESC
@@ -183,17 +179,17 @@
 	<!-- TODO: id is not AUTO_INCREMENT in the table; the next id is MAX(id) + 1 for now -->
 	<insert id="insertSetting" parameterType="com.nwm.api.entities.TenantBillingSettingEntity">
 		INSERT INTO bems_tenant_billing_setting (id, id_site, type, ftp_host, ftp_port, ftp_user_name, ftp_password, receive_email,
-			start_date, repeat_month, execution_time, end_date, created_at, updated_at)
+			start_date, execution_time, created_at, updated_at)
 		SELECT IFNULL(MAX(id), 0) + 1, #{id_site}, #{type}, #{ftp_host}, #{ftp_port}, #{ftp_user_name}, #{ftp_password}, #{receive_email},
-			#{start_date}, IFNULL(#{repeat_month}, 1), IFNULL(#{execution_time}, '00:00'), #{end_date}, NOW(), NOW()
+			#{start_date}, IFNULL(#{execution_time}, '00:00'), NOW(), NOW()
 		FROM bems_tenant_billing_setting
 	</insert>
 
 	<update id="updateSetting" parameterType="com.nwm.api.entities.TenantBillingSettingEntity">
 		UPDATE bems_tenant_billing_setting
 		SET type = #{type}, ftp_host = #{ftp_host}, ftp_port = #{ftp_port}, ftp_user_name = #{ftp_user_name}, ftp_password = #{ftp_password},
-			receive_email = #{receive_email}, start_date = #{start_date}, repeat_month = IFNULL(#{repeat_month}, 1),
-			execution_time = IFNULL(#{execution_time}, '00:00'), end_date = #{end_date}, updated_at = NOW()
+			receive_email = #{receive_email}, start_date = #{start_date},
+			execution_time = IFNULL(#{execution_time}, '00:00'), updated_at = NOW()
 		WHERE id = #{id}
 	</update>
 	<!-- the send job: the run (site time, yyyy-MM-dd HH:mm) is sent, not sent again -->
@@ -598,6 +594,7 @@
 	-->
 	<select id="getExportAll" resultType="Map" parameterType="com.nwm.api.entities.TenantBillingEntity">
 		SELECT
+			t.id_device,
 			t.serial,
 			t.tenant_name,
 			t.location,
@@ -607,6 +604,12 @@
 			c.closing_reading,
 			CONCAT(c.`date`, ' ', LEFT(c.last_time, 5)) AS closing_time,
 			ROUND((c.closing_reading - o.opening_reading) * t.multiplier, 2) AS kwh,
+			<!-- days with kWh in the period, for the average per day of the billing report (as Average daily, API 7) -->
+			(
+				SELECT COUNT(*) FROM bems_tenant_billing_daily_summary s
+				WHERE s.id_device = t.id_device AND s.id_site = #{id_site} AND s.`date` BETWEEN #{start_date} AND #{end_date}
+					AND s.total_energy <![CDATA[ > ]]> 0
+			) AS days_with_data,
 			t.status
 		FROM (
 			<include refid="meterPeriod"/>
@@ -690,8 +693,9 @@
 		FROM (
 			SELECT
 				DATE_FORMAT(slot, '%Y-%m-%d %H:%i') AS time,
-				ROUND(reading - LAG(reading) OVER (ORDER BY slot), 3) AS kwh
+				ROUND(LAG(reading) OVER (ORDER BY slot DESC) - reading, 3) AS kwh
 			FROM slots
+			ORDER BY slot ASC
 		) t
 		JOIN last_sum ls
 		WHERE t.time <![CDATA[ >= ]]> #{start_date}
