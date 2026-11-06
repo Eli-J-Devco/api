@@ -161,6 +161,7 @@
 		ORDER BY tbs.id
 	</select>
 
+	<!-- Setting of one site. TODO: no unique key on id_site; the latest row for now -->
 	<select id="getSetting" resultType="com.nwm.api.entities.TenantBillingSettingEntity" parameterType="com.nwm.api.entities.TenantBillingSettingEntity">
 		SELECT id, id_site, type, ftp_host, ftp_port, ftp_user_name, ftp_password, receive_email, receive_date
 		FROM bems_tenant_billing_setting
@@ -169,6 +170,7 @@
 		LIMIT 1
 	</select>
 
+	<!-- TODO: id is not AUTO_INCREMENT in the table; the next id is MAX(id) + 1 for now -->
 	<insert id="insertSetting" parameterType="com.nwm.api.entities.TenantBillingSettingEntity">
 		INSERT INTO bems_tenant_billing_setting (id, id_site, type, ftp_host, ftp_port, ftp_user_name, ftp_password, receive_email, receive_date, created_at, updated_at)
 		SELECT IFNULL(MAX(id), 0) + 1, #{id_site}, #{type}, #{ftp_host}, #{ftp_port}, #{ftp_user_name}, #{ftp_password}, #{receive_email}, #{receive_date}, NOW(), NOW()
@@ -258,48 +260,126 @@
 		</if>
 	</sql>
 
-	<sql id="meterFilter">
-		HAVING 1 = 1
-		<include refid="keywordMatch"/>
-		<if test="status == 'ready' or status == 'incomplete'">
-			AND status = #{status}
-		</if>
-        <if test="id_location > 0">
-            AND id_location = #{id_location}
-        </if>
-	</sql>
-
-	<!-- API 1 list, and the meter of API 5, 6. Ready first, then sort_column (serial | tenant_name | location | kwh) in sort_direction (asc | desc). -->
+	<!--
+		API 1 list: the tenant meters of the site with their totals for [start_date, end_date] (same columns as meterPeriod).
+		keyword and location filter the devices before the GROUP BY; status is on the totals, so it is in HAVING.
+		HAVING / ORDER BY use MAX(s.is_incomplete), not the status alias, which is also a column of device.
+		Ready = rows in the period and none is_incomplete; no rows (MAX NULL) is incomplete.
+		Ready first, then sort_column (serial | tenant_name | location | kwh) in sort_direction (asc | desc).
+	-->
 	<select id="getListMeter" resultType="Map" parameterType="com.nwm.api.entities.TenantBillingEntity">
-		<include refid="meterPeriod"/>
-		<include refid="meterFilter"/>
+		SELECT
+			d.id AS id_device,
+			d.devicename AS tenant_name,
+			d.serialnumber AS serial,
+			IFNULL(s.meter_name, d.devicename) AS meter_name,
+			d.status AS device_status,
+			IFNULL(d.multiplier, 1) AS multiplier,
+			r.name AS location,
+			ROUND(SUM(s.total_energy), 2) AS kwh,
+			CASE WHEN MAX(s.is_incomplete) = 0 THEN 'ready' ELSE 'incomplete' END AS status
+		FROM
+			device d
+			LEFT JOIN bems_tenant_billing_daily_summary s
+				ON s.id_device = d.id
+				AND s.id_site = d.id_site
+				AND s.`date` BETWEEN #{start_date} AND #{end_date}
+			LEFT JOIN site_area_building_floor_room_device_map map
+				ON map.id_device = d.id
+			LEFT JOIN site_area_building_floor_room r
+				ON r.id = map.id_room
+		WHERE
+			d.id_site = #{id_site}
+			AND d.meter_type = 14
+			AND d.is_delete = 0
+			<if test="keyword != null and keyword != ''">
+				AND (
+					d.devicename LIKE CONCAT("%", #{keyword}, "%")
+					OR d.serialnumber LIKE CONCAT("%", #{keyword}, "%")
+				)
+			</if>
+			<!-- the meter is mapped to the room -->
+			<if test="id_location != null">
+				AND r.id = #{id_location}
+			</if>
+		GROUP BY d.id
+		<if test="status == 'ready'">
+			HAVING MAX(s.is_incomplete) = 0
+		</if>
+		<if test="status == 'incomplete'">
+			HAVING IFNULL(MAX(s.is_incomplete), 1) != 0
+		</if>
 		ORDER BY
-			status = 'incomplete',
+			IFNULL(MAX(s.is_incomplete), 1) != 0,
 			<!-- kwh: highest first unless asc, meters without data last; location, tenant_name, serial: asc unless desc; then by S/N -->
 			<choose>
 				<when test="sort_column == 'kwh'">
-					kwh IS NULL, kwh <if test="sort_direction == 'asc'">ASC</if><if test="sort_direction != 'asc'">DESC</if>,
+					SUM(s.total_energy) IS NULL, kwh <if test="sort_direction == 'asc'">ASC</if><if test="sort_direction != 'asc'">DESC</if>,
 				</when>
 				<when test="sort_column == 'location'">
 					location <if test="sort_direction == 'desc'">DESC</if>,
 				</when>
 				<when test="sort_column == 'tenant_name'">
-					tenant_name <if test="sort_direction == 'desc'">DESC</if>,
+					d.devicename <if test="sort_direction == 'desc'">DESC</if>,
 				</when>
 			</choose>
-			CAST(serial AS UNSIGNED) <if test="(sort_column == null or sort_column == 'serial') and sort_direction == 'desc'">DESC</if>
+			CAST(d.serialnumber AS UNSIGNED) <if test="(sort_column == null or sort_column == 'serial') and sort_direction == 'desc'">DESC</if>
 		<if test="limit > 0">
 			LIMIT #{limit} OFFSET #{offset}
 		</if>
 	</select>
 
+	<!--
+		API 1 total: the meters of getListMeter, counted on device only (no GROUP BY / HAVING).
+		Status with EXISTS on the summary rows of the period, same as MAX(is_incomplete) in getListMeter:
+		ready = a row with is_incomplete 0 and none with is_incomplete != 0; incomplete = otherwise (no rows included).
+	-->
 	<select id="getListMeterTotal" resultType="int" parameterType="com.nwm.api.entities.TenantBillingEntity">
 		SELECT
 			COUNT(*) AS totalRecord
-		FROM (
-			<include refid="meterPeriod"/>
-			<include refid="meterFilter"/>
-		) t
+		FROM
+			device d
+			LEFT JOIN site_area_building_floor_room_device_map map ON map.id_device = d.id
+			LEFT JOIN site_area_building_floor_room r ON r.id = map.id_room
+		WHERE
+			d.id_site = #{id_site}
+			AND d.meter_type = 14
+			AND d.is_delete = 0
+			<if test="keyword != null and keyword != ''">
+				AND (
+					d.devicename LIKE CONCAT("%", #{keyword}, "%")
+					OR d.serialnumber LIKE CONCAT("%", #{keyword}, "%")
+				)
+			</if>
+			<if test="id_location != null">
+				AND r.id = #{id_location}
+			</if>
+			<if test="status == 'ready'">
+				AND EXISTS (
+					SELECT 1 FROM bems_tenant_billing_daily_summary s
+					WHERE s.id_device = d.id AND s.id_site = d.id_site AND s.`date` BETWEEN #{start_date} AND #{end_date}
+						AND s.is_incomplete = 0
+				)
+				AND NOT EXISTS (
+					SELECT 1 FROM bems_tenant_billing_daily_summary s
+					WHERE s.id_device = d.id AND s.id_site = d.id_site AND s.`date` BETWEEN #{start_date} AND #{end_date}
+						AND s.is_incomplete != 0
+				)
+			</if>
+			<if test="status == 'incomplete'">
+				AND (
+					NOT EXISTS (
+						SELECT 1 FROM bems_tenant_billing_daily_summary s
+						WHERE s.id_device = d.id AND s.id_site = d.id_site AND s.`date` BETWEEN #{start_date} AND #{end_date}
+							AND s.is_incomplete = 0
+					)
+					OR EXISTS (
+						SELECT 1 FROM bems_tenant_billing_daily_summary s
+						WHERE s.id_device = d.id AND s.id_site = d.id_site AND s.`date` BETWEEN #{start_date} AND #{end_date}
+							AND s.is_incomplete != 0
+					)
+				)
+			</if>
 	</select>
 
 	<!--
@@ -568,7 +648,7 @@
 				JOIN time_zone tz ON tz.id = s.id_time_zone
 			WHERE
 				dv.id_device = #{id_device}
-				AND dv.time <![CDATA[ >= ]]> CONVERT_TZ(#{start_date}, tz.`value`, '+00:00')
+				AND dv.time <![CDATA[ >= ]]> DATE_SUB(CONVERT_TZ(#{start_date}, tz.`value`, '+00:00'), INTERVAL 15 MINUTE)
 				AND dv.time <![CDATA[ < ]]> DATE_ADD(CONVERT_TZ(DATE_ADD(#{end_date}, INTERVAL 1 DAY), tz.`value`, '+00:00'), INTERVAL 15 MINUTE)
 			GROUP BY slot
 			ORDER BY slot
