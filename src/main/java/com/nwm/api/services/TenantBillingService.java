@@ -10,6 +10,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeParseException;
@@ -332,8 +333,10 @@ public class TenantBillingService extends DB {
 			if (period.end.isAfter(period.today.withDayOfMonth(period.today.lengthOfMonth()))) throw new IllegalArgumentException("end_date must not be after the current month");
 		}
 
-		// days that need a complete row to be Ready: start until the end of the period or today, whichever is first
-		LocalDate lastDay = period.end.isAfter(period.today) ? period.today : period.end;
+		// days that need a summary row to be Ready: start until the end of the period or yesterday, whichever is first
+		// (today is not over, its row may not be there yet)
+		LocalDate yesterday = period.today.minusDays(1);
+		LocalDate lastDay = period.end.isAfter(yesterday) ? yesterday : period.end;
 		obj.setExpected_days(lastDay.isBefore(period.start) ? 0 : (int) ChronoUnit.DAYS.between(period.start, lastDay) + 1);
 		obj.setTimezone_offset(Lib.str(site.get("timezone_offset")));
 		obj.setToday(period.today.toString());
@@ -381,8 +384,27 @@ public class TenantBillingService extends DB {
 		} else if (obj.getType() != 0) {
 			throw new IllegalArgumentException("Unknown type");
 		}
-		if (obj.getType() != 0 && (obj.getReceive_date() == null || obj.getReceive_date() < 1 || obj.getReceive_date() > 31)) {
-			throw new IllegalArgumentException("Day of month must be 1 to 31");
+		if (obj.getType() != 0) {
+			// schedule: start date (yyyy-MM-dd), every 1-12 months, time (HH:mm), end date on or after the start date or none
+			LocalDate start;
+			try {
+				start = LocalDate.parse(Lib.str(obj.getStart_date()));
+				LocalTime.parse(Lib.str(obj.getExecution_time()));
+			} catch (DateTimeParseException e) {
+				throw new IllegalArgumentException("Start date and execution time are required");
+			}
+			if (obj.getRepeat_month() == null || obj.getRepeat_month() < 1 || obj.getRepeat_month() > 12) {
+				throw new IllegalArgumentException("Repeat every must be 1 to 12 months");
+			}
+			if (!Lib.isBlank(obj.getEnd_date())) {
+				try {
+					if (LocalDate.parse(obj.getEnd_date()).isBefore(start)) throw new IllegalArgumentException("End date must be on or after the start date");
+				} catch (DateTimeParseException e) {
+					throw new IllegalArgumentException("End date is not a date");
+				}
+			} else {
+				obj.setEnd_date(null);
+			}
 		}
 
 		TenantBillingSettingEntity current = getSetting(obj);

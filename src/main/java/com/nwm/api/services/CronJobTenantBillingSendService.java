@@ -10,13 +10,18 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.time.Clock;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.YearMonth;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -38,7 +43,9 @@ import com.nwm.api.utils.SendMail;
 
 /**
  * Tenant Billing (WEBDEV-5686): sends the CSV of all meters (API 3) of a site by FTP or email,
- * on the receive date of each bems_tenant_billing_setting row.
+ * on the schedule of each bems_tenant_billing_setting row (site time): from start_date every repeat_month months
+ * on the day of start_date (the last day in the months without it) at execution_time, until end_date.
+ * The job runs every 15 minutes (cron.tenant.billing.send.scheduler); last_sent_at keeps a run from being sent twice.
  */
 @Service
 @SuppressWarnings("unchecked")
@@ -53,6 +60,8 @@ public class CronJobTenantBillingSendService extends DB {
 	private static final int FTP_PORT = 21;
 	// a server that does not answer fails the setting instead of blocking the job
 	private static final int FTP_TIMEOUT_MS = 30000;
+
+	private static final DateTimeFormatter SENT_AT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
 	// replaced in tests to get a fixed "now"
 	Clock clock = Clock.systemUTC();
@@ -85,23 +94,45 @@ public class CronJobTenantBillingSendService extends DB {
 	}
 
 	/**
-	 * @return true when the file was sent, false when today is not the receive day
+	 * The run of today (site time) that is due at now, null when none: today is a run day of the schedule
+	 * (from start, every repeatMonth months, on the day of start or the last day of a shorter month, until end),
+	 * and now is at or after its time. A run day that passed without a send (e.g. the BE was down) is not sent later.
+	 */
+	static LocalDateTime dueRun(LocalDate start, int repeatMonth, LocalTime time, LocalDate end, LocalDateTime now) {
+		LocalDate today = now.toLocalDate();
+		long months = ChronoUnit.MONTHS.between(YearMonth.from(start), YearMonth.from(today));
+		if (months < 0 || months % repeatMonth != 0) return null;
+		LocalDate runDay = YearMonth.from(today).atDay(Math.min(start.getDayOfMonth(), today.lengthOfMonth()));
+		if (!runDay.equals(today) || (end != null && runDay.isAfter(end))) return null;
+		LocalDateTime run = runDay.atTime(time);
+		return now.isBefore(run) ? null : run;
+	}
+
+	/**
+	 * @return true when the file was sent, false when no run is due or the run was sent already
 	 */
 	private boolean send(Map<String, Object> setting) throws Exception {
-		// 2. only on the receive day of month, in the site time zone; a day the month does not have (e.g. 31 in April) runs on its last day
+		// 2. only when a run of the schedule is due, in the site time zone, and not sent yet
 		ZoneId zone = ZoneId.of(setting.get("timezone") == null ? "UTC" : Lib.str(setting.get("timezone")));
-		LocalDate today = LocalDate.now(clock.withZone(zone));
-		if (setting.get("receive_date") == null) {
-			log.info("Tenant billing send: skipped, no receive day, " + tag(setting));
+		LocalDateTime now = LocalDateTime.now(clock.withZone(zone));
+		if (setting.get("start_date") == null) {
+			log.info("Tenant billing send: skipped, no start date, " + tag(setting));
 			return false;
 		}
-		int day = ((Number) setting.get("receive_date")).intValue();
-		if (today.getDayOfMonth() != Math.min(day, today.lengthOfMonth())) {
-			log.info("Tenant billing send: skipped, receive day " + day + ", today " + today + " (" + zone + "), " + tag(setting));
+		LocalDateTime run = dueRun(
+			LocalDate.parse(Lib.str(setting.get("start_date"))),
+			setting.get("repeat_month") == null ? 1 : Math.max(1, ((Number) setting.get("repeat_month")).intValue()),
+			setting.get("execution_time") == null ? LocalTime.MIDNIGHT : LocalTime.parse(Lib.str(setting.get("execution_time"))),
+			setting.get("end_date") == null ? null : LocalDate.parse(Lib.str(setting.get("end_date"))),
+			now);
+		// every 15 minutes: no log when no run is due
+		if (run == null) return false;
+		if (setting.get("last_sent_at") != null && !LocalDateTime.parse(Lib.str(setting.get("last_sent_at")), SENT_AT).isBefore(run)) {
 			return false;
 		}
 
-		YearMonth month = YearMonth.from(today).minusMonths(1);
+		// TODO: the last month only, also for a schedule of every 2+ months
+		YearMonth month = YearMonth.from(run).minusMonths(1);
 		TenantBillingEntity obj = new TenantBillingEntity();
 		obj.setId_site(((Number) setting.get("id_site")).intValue());
 		obj.setStart_date(month.atDay(1).toString());
@@ -121,7 +152,12 @@ public class CronJobTenantBillingSendService extends DB {
 		} else {
 			throw new Exception("Unknown type " + type);
 		}
-		log.info("Tenant billing send: " + fileName + " sent, " + tag(setting));
+		// 4. the run is sent: not sent again by the next runs of the job
+		Map<String, Object> sentAt = new HashMap<>();
+		sentAt.put("id", setting.get("id"));
+		sentAt.put("last_sent_at", run.format(SENT_AT));
+		update("BemsTenantBilling.updateSettingSent", sentAt);
+		log.info("Tenant billing send: " + fileName + " sent, run " + run + " (" + zone + "), " + tag(setting));
 		return true;
 	}
 
