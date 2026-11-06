@@ -248,7 +248,8 @@ public class TenantBillingController extends BaseController {
 
 	/**
 	 * @description Saves the setting of the site, ftp_password encrypted by the FE
-	 * @param id_site, type, ftp_host, ftp_port, ftp_user_name, ftp_password, receive_email, receive_date (day of month 1-31, the last day in the months without it)
+	 * @param id_site, type, ftp_host, ftp_port, ftp_user_name, ftp_password, receive_email,
+	 *        start_date (yyyy-MM-dd), repeat_month (1-12), execution_time (HH:mm), end_date (yyyy-MM-dd, null = never), site time
 	 */
 	@PostMapping("/save-setting")
 	public Object saveSetting(@RequestBody TenantBillingSettingEntity obj) {

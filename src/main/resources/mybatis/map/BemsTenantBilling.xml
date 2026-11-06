@@ -150,7 +150,11 @@
 			tbs.ftp_user_name,
 			tbs.ftp_password,
 			tbs.receive_email,
-			tbs.receive_date,
+			DATE_FORMAT(tbs.start_date, '%Y-%m-%d') AS start_date,
+			tbs.repeat_month,
+			TIME_FORMAT(tbs.execution_time, '%H:%i') AS execution_time,
+			DATE_FORMAT(tbs.end_date, '%Y-%m-%d') AS end_date,
+			DATE_FORMAT(tbs.last_sent_at, '%Y-%m-%d %H:%i') AS last_sent_at,
 			s.`name` AS site_name,
 			tz.`value` AS timezone
 		FROM
@@ -164,7 +168,12 @@
 
 	<!-- Setting of one site. TODO: no unique key on id_site; the latest row for now -->
 	<select id="getSetting" resultType="com.nwm.api.entities.TenantBillingSettingEntity" parameterType="com.nwm.api.entities.TenantBillingSettingEntity">
-		SELECT id, id_site, type, ftp_host, ftp_port, ftp_user_name, ftp_password, receive_email, receive_date
+		SELECT
+			id, id_site, type, ftp_host, ftp_port, ftp_user_name, ftp_password, receive_email,
+			DATE_FORMAT(start_date, '%Y-%m-%d') AS start_date,
+			repeat_month,
+			TIME_FORMAT(execution_time, '%H:%i') AS execution_time,
+			DATE_FORMAT(end_date, '%Y-%m-%d') AS end_date
 		FROM bems_tenant_billing_setting
 		WHERE id_site = #{id_site}
 		ORDER BY id DESC
@@ -173,15 +182,24 @@
 
 	<!-- TODO: id is not AUTO_INCREMENT in the table; the next id is MAX(id) + 1 for now -->
 	<insert id="insertSetting" parameterType="com.nwm.api.entities.TenantBillingSettingEntity">
-		INSERT INTO bems_tenant_billing_setting (id, id_site, type, ftp_host, ftp_port, ftp_user_name, ftp_password, receive_email, receive_date, created_at, updated_at)
-		SELECT IFNULL(MAX(id), 0) + 1, #{id_site}, #{type}, #{ftp_host}, #{ftp_port}, #{ftp_user_name}, #{ftp_password}, #{receive_email}, #{receive_date}, NOW(), NOW()
+		INSERT INTO bems_tenant_billing_setting (id, id_site, type, ftp_host, ftp_port, ftp_user_name, ftp_password, receive_email,
+			start_date, repeat_month, execution_time, end_date, created_at, updated_at)
+		SELECT IFNULL(MAX(id), 0) + 1, #{id_site}, #{type}, #{ftp_host}, #{ftp_port}, #{ftp_user_name}, #{ftp_password}, #{receive_email},
+			#{start_date}, IFNULL(#{repeat_month}, 1), IFNULL(#{execution_time}, '00:00'), #{end_date}, NOW(), NOW()
 		FROM bems_tenant_billing_setting
 	</insert>
 
 	<update id="updateSetting" parameterType="com.nwm.api.entities.TenantBillingSettingEntity">
 		UPDATE bems_tenant_billing_setting
 		SET type = #{type}, ftp_host = #{ftp_host}, ftp_port = #{ftp_port}, ftp_user_name = #{ftp_user_name}, ftp_password = #{ftp_password},
-			receive_email = #{receive_email}, receive_date = #{receive_date}, updated_at = NOW()
+			receive_email = #{receive_email}, start_date = #{start_date}, repeat_month = IFNULL(#{repeat_month}, 1),
+			execution_time = IFNULL(#{execution_time}, '00:00'), end_date = #{end_date}, updated_at = NOW()
+		WHERE id = #{id}
+	</update>
+	<!-- the send job: the run (site time, yyyy-MM-dd HH:mm) is sent, not sent again -->
+	<update id="updateSettingSent" parameterType="Map">
+		UPDATE bems_tenant_billing_setting
+		SET last_sent_at = #{last_sent_at}
 		WHERE id = #{id}
 	</update>
 
@@ -208,7 +226,8 @@
 		A meter is a tenant meter device of the site (meter_type 14, as the summary job), active or not;
 		one without rows in the period (e.g. not sending) has kwh NULL and is incomplete.
 		Name, serial and location are the current values of the device.
-		Ready = the meter has rows in the period and none is flagged is_incomplete by the summary job.
+		Ready = the meter has rows in the period, none is flagged is_incomplete by the summary job,
+		and every day from start_date until yesterday (expected_days, set by the service) has a row.
 		Wrapped in a derived table: device.status would hide the status alias in ORDER BY / HAVING.
 	-->
 	<sql id="meterPeriod">
@@ -231,7 +250,7 @@
 					LIMIT 1
 				) AS location,
 				ROUND(SUM(s.total_energy), 2) AS kwh,
-				CASE WHEN MAX(s.is_incomplete) = 0 THEN 'ready' ELSE 'incomplete' END AS status,
+				CASE WHEN MAX(s.is_incomplete) = 0 AND COUNT(DISTINCT CASE WHEN s.`date` <![CDATA[ < ]]> #{today} THEN s.`date` END) <![CDATA[ >= ]]> #{expected_days} THEN 'ready' ELSE 'incomplete' END AS status,
                 r.id as id_location
 			FROM
 				device d
@@ -264,8 +283,9 @@
 	<!--
 		API 1 list: the tenant meters of the site with their totals for [start_date, end_date] (same columns as meterPeriod).
 		keyword and location filter the devices before the GROUP BY; status is on the totals, so it is in HAVING.
-		HAVING / ORDER BY use MAX(s.is_incomplete), not the status alias, which is also a column of device.
-		Ready = rows in the period and none is_incomplete; no rows (MAX NULL) is incomplete.
+		HAVING / ORDER BY repeat the status expression, not the status alias, which is also a column of device.
+		Ready = rows in the period, none is_incomplete, and a row for every day from start_date until yesterday
+		(expected_days, set by the service; today is not over); no rows (MAX NULL) is incomplete.
 		Ready first, then sort_column (serial | tenant_name | location | kwh) in sort_direction (asc | desc).
 	-->
 	<select id="getListMeter" resultType="Map" parameterType="com.nwm.api.entities.TenantBillingEntity">
@@ -278,7 +298,7 @@
 			IFNULL(d.multiplier, 1) AS multiplier,
 			r.name AS location,
 			ROUND(SUM(s.total_energy), 2) AS kwh,
-			CASE WHEN MAX(s.is_incomplete) = 0 THEN 'ready' ELSE 'incomplete' END AS status
+			CASE WHEN MAX(s.is_incomplete) = 0 AND COUNT(DISTINCT CASE WHEN s.`date` <![CDATA[ < ]]> #{today} THEN s.`date` END) <![CDATA[ >= ]]> #{expected_days} THEN 'ready' ELSE 'incomplete' END AS status
 		FROM
 			device d
 			LEFT JOIN bems_tenant_billing_daily_summary s
@@ -305,13 +325,13 @@
 			</if>
 		GROUP BY d.id
 		<if test="status == 'ready'">
-			HAVING MAX(s.is_incomplete) = 0
+			HAVING MAX(s.is_incomplete) = 0 AND COUNT(DISTINCT CASE WHEN s.`date` <![CDATA[ < ]]> #{today} THEN s.`date` END) <![CDATA[ >= ]]> #{expected_days}
 		</if>
 		<if test="status == 'incomplete'">
-			HAVING IFNULL(MAX(s.is_incomplete), 1) != 0
+			HAVING NOT (IFNULL(MAX(s.is_incomplete), 1) = 0 AND COUNT(DISTINCT CASE WHEN s.`date` <![CDATA[ < ]]> #{today} THEN s.`date` END) <![CDATA[ >= ]]> #{expected_days})
 		</if>
 		ORDER BY
-			IFNULL(MAX(s.is_incomplete), 1) != 0,
+			NOT (IFNULL(MAX(s.is_incomplete), 1) = 0 AND COUNT(DISTINCT CASE WHEN s.`date` <![CDATA[ < ]]> #{today} THEN s.`date` END) <![CDATA[ >= ]]> #{expected_days}),
 			<!-- kwh: highest first unless asc, meters without data last; location, tenant_name, serial: asc unless desc; then by S/N -->
 			<choose>
 				<when test="sort_column == 'kwh'">
@@ -333,7 +353,8 @@
 	<!--
 		API 1 total: the meters of getListMeter, counted on device only (no GROUP BY / HAVING).
 		Status with EXISTS on the summary rows of the period, same as MAX(is_incomplete) in getListMeter:
-		ready = a row with is_incomplete 0 and none with is_incomplete != 0; incomplete = otherwise (no rows included).
+		ready = a row with is_incomplete 0, none with is_incomplete != 0 and a row for every day from start_date until yesterday
+		(expected_days); incomplete = otherwise (no rows included).
 	-->
 	<select id="getListMeterTotal" resultType="int" parameterType="com.nwm.api.entities.TenantBillingEntity">
 		SELECT
@@ -366,6 +387,12 @@
 					WHERE s.id_device = d.id AND s.id_site = d.id_site AND s.`date` BETWEEN #{start_date} AND #{end_date}
 						AND s.is_incomplete != 0
 				)
+				<!-- every day from start_date until yesterday has a row -->
+				AND (
+					SELECT COUNT(DISTINCT s.`date`) FROM bems_tenant_billing_daily_summary s
+					WHERE s.id_device = d.id AND s.id_site = d.id_site AND s.`date` BETWEEN #{start_date} AND #{end_date}
+						AND s.`date` <![CDATA[ < ]]> #{today}
+				) <![CDATA[ >= ]]> #{expected_days}
 			</if>
 			<if test="status == 'incomplete'">
 				AND (
@@ -379,6 +406,11 @@
 						WHERE s.id_device = d.id AND s.id_site = d.id_site AND s.`date` BETWEEN #{start_date} AND #{end_date}
 							AND s.is_incomplete != 0
 					)
+					OR (
+						SELECT COUNT(DISTINCT s.`date`) FROM bems_tenant_billing_daily_summary s
+						WHERE s.id_device = d.id AND s.id_site = d.id_site AND s.`date` BETWEEN #{start_date} AND #{end_date}
+							AND s.`date` <![CDATA[ < ]]> #{today}
+					) <![CDATA[ < ]]> #{expected_days}
 				)
 			</if>
 	</select>
